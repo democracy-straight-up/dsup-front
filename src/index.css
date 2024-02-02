@@ -100,3 +100,11 @@ body {
   color: black;
   text-decoration: underline;
 }
+
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
