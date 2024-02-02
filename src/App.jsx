@@ -19,6 +19,7 @@ import MemberContactPage from './components/MemberContactPage.jsx';
 import MeetingsAndMinutes from './components/MeetingsAndMinutes.jsx';
 
 import HouseKeeping from './components/houseKeeping/house-keeping.jsx';
+import PasswordResetPage from './components/Password-Reset.jsx';
 
 function App(){
   return (
@@ -26,13 +27,15 @@ function App(){
       <Route>
         <Route index element={<><Header/><Home/><Footer/></>}/>
         <Route path='/claim-your-seat' element={<><Header/><ClaimYourSeat/><Footer/></>}/>
+        {/* add pass word reset page */}
+        <Route path='/password-reset' element={<><Header/><PasswordResetPage/><Footer/></>}/>
         <Route path="/enter-the-floor" element={<><Header/><EnterTheFloor/><Footer/></>}/>
 
         <Route path="/voter-page" element={<ProtectedRoute><Header/><VoterPage/><Footer/></ProtectedRoute>}/>
         <Route path="/house-keeping-page" element={<ProtectedRoute><Header/><HouseKeeping/><Footer/></ProtectedRoute>}/>
         <Route path="/join-pod" element={<ProtectedRoute><Header/><JoinPod/><Footer/></ProtectedRoute>}/>
         <Route path="/pod-back-n-forth" element={<ProtectedRoute><Header/><PodBackNforth/><Footer/></ProtectedRoute>}/>
-        
+
         <Route path="/sign-up" element={<><Header/><SignUpConfirm/><Footer/></>}/>
         <Route path="/api/activate/:uid/:token" element={<><Header/><UserActivate/><Footer/></>}/>
         <Route path='/*' element={<><Header/><Error/> <Footer/> </>}></Route>
