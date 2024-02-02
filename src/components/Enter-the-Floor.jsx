@@ -58,7 +58,7 @@ function EnterTheFloor() {
         let header = { 'Authorization': `Bearer ${token.access}` }
         axios.get(billsURL, { headers: header })
             .then(response => {
-                
+
                 if (response.status === 200) {
                     dispatch(retrieveBillsSuccess(response.data));
                     console.log(response.data)
@@ -112,8 +112,15 @@ function EnterTheFloor() {
             <h1 className="text-center mt-5">Enter The Floor</h1>
             <div className="row text-center ">
                 <div className="col col-sm-12 ">
-                    <p >If you haven't done so already, to Enter the Floor, you must first</p>  
-                    <Link to='/claim-your-seat' className='btn btn-lg btn-primary m-3'>Claim Your Seat</Link>
+                    <p >If you haven't done so already, to Enter the Floor, you must first</p>
+                    <OverlayTrigger
+                        overlay={
+                            <Tooltip>
+                                <strong>Claim Your Seat </strong>
+                            </Tooltip>
+                        }>
+                        <Link to='/claim-your-seat' className='btn btn-lg btn-primary m-3'>Claim Your Seat</Link>
+                    </OverlayTrigger>
                     <p >If you've already Claimed Your Seat, Enter The Floor:</p>
                 </div>
             </div>
@@ -191,15 +198,14 @@ function EnterTheFloor() {
                 <div className="col col-sm-12 ">
                     <br />
                     <br />
-                    <p >If you haven't done so already, to Enter the Floor, you must first</p>
+                    <p >Forgot your password?</p>
                     <OverlayTrigger
                         overlay={
                             <Tooltip>
-                                <strong>Sign Up </strong>
+                                <strong>Reset Password </strong>
                             </Tooltip>
-                        }
-                    >
-                        <Link to="/claim-your-seat" className="btn btn-md btn-primary m-3 text-decoration-none"> Claim Your Seat</Link>
+                        }>
+                        <Link to="/password-reset" className="btn btn-md btn-primary m-3 text-decoration-none"> Reset Your Password</Link>
                     </OverlayTrigger>
                 </div>
             </div>
