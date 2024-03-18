@@ -148,15 +148,6 @@ function ClaimYourSeat() {
         setSubmitStatus(true);
 
     }
-    function GenPass(length) {
-        var result = '';
-        var characters = '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        var charactersLength = characters.length;
-        for (var i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-    }
 
     /**
      * Form check in case of submission, any input changes, or click, password generation btn as.
