@@ -7,6 +7,34 @@ import { Eye, EyeSlash } from 'react-bootstrap-icons';
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
+export const GenPass = function (length) {
+  const charset =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+  let password = "";
+  let hasLower = false,
+    hasUpper = false,
+    hasNumber = false,
+    hasSpecial = false;
+
+  while (
+    !hasLower ||
+    !hasUpper ||
+    !hasNumber ||
+    !hasSpecial ||
+    password.length < length
+  ) {
+    const char = charset.charAt(Math.floor(Math.random() * charset.length));
+    password += char;
+
+    hasLower = hasLower || /[a-z]/.test(char);
+    hasUpper = hasUpper || /[A-Z]/.test(char);
+    hasNumber = hasNumber || /[0-9]/.test(char);
+    hasSpecial = hasSpecial || /[!@#$%^&*()]/.test(char);
+  }
+
+  return password;
+};
+
 function ClaimYourSeat() {
     const navigate = useNavigate();
     const [district, setDistrict] = useState('');
