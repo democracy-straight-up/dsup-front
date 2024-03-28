@@ -7,29 +7,6 @@ import { Eye, EyeSlash } from 'react-bootstrap-icons';
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
-export const GenPass = function(length) {
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-    const lowerCase = "abcdefghijklmnopqrstuvwxyz";
-    const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const numbers = "0123456789";
-    const specialChars = "!@#$%^&*()";
-    let password = [];
-  
-    password.push(lowerCase.charAt(Math.floor(Math.random() * lowerCase.length)));
-    password.push(upperCase.charAt(Math.floor(Math.random() * upperCase.length)));
-    password.push(numbers.charAt(Math.floor(Math.random() * numbers.length)));
-    password.push(specialChars.charAt(Math.floor(Math.random() * specialChars.length)));
-  
-    for (let i = 4; i < length; i++) {
-        password.push(charset.charAt(Math.floor(Math.random() * charset.length)));
-    }
-  
-    // shuffle password
-    password = password.sort(() => Math.random() - 0.5);
-  
-    return password.join('');
-};
-
 function ClaimYourSeat() {
     const navigate = useNavigate();
     const [district, setDistrict] = useState('');
@@ -142,6 +119,15 @@ function ClaimYourSeat() {
         setPasswordTypeConf('')
         setSubmitStatus(true);
 
+    }
+    function GenPass(length) {
+        var result = '';
+        var characters = '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
     }
 
     /**
