@@ -24,6 +24,8 @@ function ClaimYourSeat() {
     const [passwordTypeConf, setPasswordTypeConf] = useState('password'); // show/hide confirm password input
 
     const [formErr, setFormErr] = useState('');
+    const [LegalName_Err, setLegalName_Err] = useState(false);
+    const [Address_Err, setAddress_Err] = useState(false);
     const [is_formErr, setIs_formErr] = useState(false);
 
     const handleCheck = (e) => {
@@ -43,6 +45,28 @@ function ClaimYourSeat() {
                     }
                 }
             }); //endof then function
+    }
+
+    const handleCheckLegalName = (e) => {
+        //check legal name in valid or not
+        const reEmoji = /[^a-zA-Z0-9 ]/gm;
+        if (!reEmoji.test(e.target.value)) {
+            setLegalName_Err(false);
+        } else {
+            setLegalName_Err(true);
+        }
+         //endof then function
+    }
+
+    const handleCheckAddress = (e) => {
+        //check legal name in valid or not
+        const reAddress = /[^a-zA-Z0-9\s,.-]/gm;
+        if (!reAddress.test(e.target.value)) {
+            setAddress_Err(false);
+        } else {
+            setAddress_Err(true);
+        }
+         //endof then function
     }
 
     const handlePassword = (e) => {
@@ -171,6 +195,7 @@ function ClaimYourSeat() {
                             followed by a two-digit number. For instance,
                             the third district in Alabama would be AL03.
                         </span>
+                        <span className="red-airstrike ">*</span>
                         <br />
                         {/* <label htmlFor="district" className="text-right">District:</label> */}
                         <input type="text"
@@ -210,18 +235,21 @@ function ClaimYourSeat() {
                             Use your name as it appears on your voter registration card. If you don't know exactly,
                             use your name as it would
                             normally appear on legal documents, in the order you would use for your signature.
-                        </span> <br />
+                        </span> <span className="red-airstrike ">*</span><br />
                         {/* <label htmlFor="legalName" required ={true} className="text-right">Legal Name:</label> */}
                         <input type="text"
                             onChange={(e) => setLegalName(e.target.value)}
+                            onBlur={(e) => handleCheckLegalName(e)}
                             className="form-control"
                             id="legalName" placeholder="Enter your full legal name " />
                         {is_formErr ? <p className="m-0 text-danger"> {formErr?.legalName ? formErr?.legalName[0] : ''}</p> : ''}
+                        {LegalName_Err && legalName.length > 0 ? <p className="text-danger m-0">Please enter valid legal name.</p> : ''}
                         <br />
 
 
                         <span> This email address will only be used to confirm your registration.
                             Once you join a Pod, all further communications from the project will go through your First Delegate.</span>
+                            <span className="red-airstrike ">*</span>
                         <br />
                         {/* <label htmlFor="email" className="text-right">Email:</label> */}
                         <input type="email"
@@ -234,16 +262,18 @@ function ClaimYourSeat() {
                         <span>
                             Use the address that appears on your voter registration card.
                             If you don't know exactly, use your address as you would write it if sending a letter.
-                        </span> <br />
+                        </span> <span className="red-airstrike ">*</span><br />
                         {/* <label htmlFor="address" className="text-right">Address:</label> */}
                         <textarea placeholder="Enter your address "
                             onChange={(e) => setAddress(e.target.value)}
+                            onBlur={(e) => handleCheckAddress(e)}
                             className="form-control" rows="5" />
                         {/* <input type="text" 
                         className="form-control" 
                         
                         id="address" placeholder="enter your address"/>
                         <br/> */}
+                        {Address_Err && address.length > 0 ? <p className="text-danger m-0">Please enter valid address.</p> : ''}
                         <br />
                         <button className="btn btn-primary my-2" onClick={(e) => generatePass(e)}>
                             Generate password
