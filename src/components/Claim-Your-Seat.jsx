@@ -15,19 +15,19 @@ export const GenPass = function(length) {
     const numbers = "0123456789";
     const specialChars = "!@#$%^&*()";
     let password = [];
-  
+
     password.push(lowerCase.charAt(Math.floor(Math.random() * lowerCase.length)));
     password.push(upperCase.charAt(Math.floor(Math.random() * upperCase.length)));
     password.push(numbers.charAt(Math.floor(Math.random() * numbers.length)));
     password.push(specialChars.charAt(Math.floor(Math.random() * specialChars.length)));
-  
+
     for (let i = 4; i < length; i++) {
         password.push(charset.charAt(Math.floor(Math.random() * charset.length)));
     }
-  
+
     // shuffle password
     password = password.sort(() => Math.random() - 0.5);
-  
+
     return password.join('');
 };
 
@@ -177,7 +177,7 @@ function ClaimYourSeat() {
         if (district.length === 0) {
             setSubmitStatus(false);
         }
-        
+
         // 2. district input is a valid district code
         // 3. check legal name input is not empty
         // 4. check email input is not empty and is valid email format
@@ -283,9 +283,9 @@ function ClaimYourSeat() {
                             onChange={(e) => setAddress(e.target.value)}
                             onBlur={(e) => handleCheckAddress(e)}
                             className="form-control" rows="5" />
-                        {/* <input type="text" 
-                        className="form-control" 
-                        
+                        {/* <input type="text"
+                        className="form-control"
+
                         id="address" placeholder="enter your address"/>
                         <br/> */}
                         {Address_Err && address.length > 0 ? <p className="text-danger m-0">Please enter valid address.</p> : ''}
@@ -311,7 +311,7 @@ function ClaimYourSeat() {
                         </div>
 
                         {Pass_Err && password.length > 0 ? <p className="text-danger m-0">Your password is not valid</p> : ''}
-                        <p className="m-0 fw-bold">Password Guidlines:</p>
+                        <p className="m-0 fw-bold">Password Guidelines:</p>
                         <ol>
                             <li>Is at least 8 characters long</li>
                             <li>Has at least one upper and lower case</li>
