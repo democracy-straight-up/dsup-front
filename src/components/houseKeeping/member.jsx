@@ -5,7 +5,7 @@ import { baseURL } from '../../store/conf.js'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Button } from 'react-bootstrap';
 
-const Member = ({member, index, chatSocket,dissolve, fDel, podInfo, Iam_member, Iam_delegate}) => {
+const Member = ({member, index, chatSocket,dissolve, fDel, circleInfo, Iam_member, Iam_delegate}) => {
     const AuthUser  = useSelector((state) => state.AuthUser.user);
     const [voted_out, setVoted_out] = useState(false);
     const [put_farward, setPut_farward] = useState(false);
@@ -17,14 +17,14 @@ const Member = ({member, index, chatSocket,dissolve, fDel, podInfo, Iam_member, 
       // Open the modal when the input value changes
       setShowModal(true);
     };
-  
+
     const handleCloseModal = () => {
       // Close the modal without performing the action
       setShowModal(false);
     };
 
     // checking if the member voted out for the member
-    useEffect(()=>{ 
+    useEffect(()=>{
         /** Check for the AuthUser if he/she voted in for this candidate */
         const Url = `${window.location.protocol}//${baseURL}/api/circle-vote-out-list/`;
         axios.get(Url, {params: { member: member.id} },
@@ -37,7 +37,7 @@ const Member = ({member, index, chatSocket,dissolve, fDel, podInfo, Iam_member, 
     },[clicked])
 
     // checking if the member voted for gelegation.
-    useEffect(()=>{ 
+    useEffect(()=>{
         /** Check for the AuthUser if he/she vote for delegation  */
         const putFarwardURL = `${window.location.protocol}//${baseURL}/api/circle-put-farward-list/`;
         axios.get(putFarwardURL, {params: { member: member.id} },
@@ -57,11 +57,11 @@ const Member = ({member, index, chatSocket,dissolve, fDel, podInfo, Iam_member, 
             "payload":{
                 "remover": AuthUser.username,
                 "candidate":member.id,
-                "pod":member.pod.code,
+                "circle":member.circle.code,
             }
         }))
     }
-    
+
     const voteOut = ()=>{
         /** send the vote to the server */
         chatSocket.send(JSON.stringify({
@@ -69,7 +69,7 @@ const Member = ({member, index, chatSocket,dissolve, fDel, podInfo, Iam_member, 
             "payload":{
                 "voter": AuthUser.username,
                 "member":member.id,
-                "pod":member.pod.code,
+                "circle":member.circle.code,
             }
         }))
     }
@@ -81,7 +81,7 @@ const Member = ({member, index, chatSocket,dissolve, fDel, podInfo, Iam_member, 
             "payload":{
                 "voter": AuthUser.username,
                 "member":member.id,
-                "pod":member.pod.code,
+                "circle":member.circle.code,
             }
         }))
     }
@@ -94,7 +94,7 @@ const Member = ({member, index, chatSocket,dissolve, fDel, podInfo, Iam_member, 
             "payload":{
                 "voter": AuthUser.username,
                 "member":member.id,
-                "pod":member.pod.code,
+                "circle":member.circle.code,
             }
         }))
         setClicked(!clicked);
@@ -108,19 +108,19 @@ const Member = ({member, index, chatSocket,dissolve, fDel, podInfo, Iam_member, 
                 { member?.is_delegate ? <span className='alert alert-success p-0 px-2 mx-2'>F-Del</span>:null}
             </td>
 
-            {podInfo?.is_active ? <>
+            {circleInfo?.is_active ? <>
             {/* ckeck if the member is auth user so that he/she can not vote for his own delegation  */}
-                <th className='fw-bold'>Yes 
+                <th className='fw-bold'>Yes
                     <input
-                    type="checkbox" 
+                    type="checkbox"
                     checked={put_farward}
                     onChange={()=>putFarward()}
                     className='form-check-input mx-2'
-                    /> 
+                    />
                     <span className="alert alert-primary p-0 px-2 mx-2">{member?.count_put_farward} votes</span>
                 </th>
             </>:null}
-             {/* if the pod is not active
+             {/* if the circle is not active
              and the member is delegate
              then can he remove the member.
              otherwise, the members can vote out to remove.. */}
@@ -128,43 +128,43 @@ const Member = ({member, index, chatSocket,dissolve, fDel, podInfo, Iam_member, 
              {/* you can not not remove yourself. */}
              {member?.user?.username === AuthUser.username ? <td>
                 {/* check if the circle is dissolvable.  */}
-               
+
                 {dissolve === true ? <>
-                    Dissolve This Circle {dissolve} ? 
-                    <input type='checkbox' checked={clicked} 
-                    onChange={()=>handleInputChange()} 
+                    Dissolve This Circle {dissolve} ?
+                    <input type='checkbox' checked={clicked}
+                    onChange={()=>handleInputChange()}
                     className='form-check-input mx-2'/>
                 </> :null}
 
              </td> :
 
-                podInfo?.is_active === true ? 
+                circleInfo?.is_active === true ?
                 // if the user vote out this member
-                <td> Yes 
-                    {!voted_out ? 
+                <td> Yes
+                    {!voted_out ?
                         <input checked={voted_out}
                         onChange={()=>voteOut()}
-                        type="checkbox"  
-                        className='form-check-input mx-2' /> 
+                        type="checkbox"
+                        className='form-check-input mx-2' />
                     :null}
                     <span className="alert alert-primary p-0 px-2 mx-2">{member?.count_vote_out} votes</span>
                 </td>
 
                 :
-                // if the circle is not active and the auth user is the delegate. 
+                // if the circle is not active and the auth user is the delegate.
                 // then he can remove the members.
-                <td> 
+                <td>
                 {Iam_delegate ? <>
                     <span> Yes </span>
                     <input checked={false}
                     onChange={()=>removeMember()}
-                    type="checkbox"  
-                    className='form-check-input mx-2' /> 
+                    type="checkbox"
+                    className='form-check-input mx-2' />
                 </>
                 :null}
                 </td>
              }
-    
+
         </tr>
         <Modal show={showModal} onHide={handleCloseModal}>
             <Modal.Header className='border-0' closeButton>

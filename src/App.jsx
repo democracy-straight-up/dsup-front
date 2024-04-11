@@ -8,10 +8,10 @@ import Footer from './components/Footer.jsx';
 import Error from './components/Error.jsx';
 import VoterPage from './components/Voter-Page.jsx';
 import ProtectedRoute from './protectedRoutes.js';
-import JoinPod from './components/joinPod.jsx';
+import JoinCircle from './components/joinCircle.jsx';
 // import HouseKeeping from './components/houseKeeping/houseKeeping.jsx';
 import UserActivate from './components/UserActivate';
-import PodBackNforth from './components/PodBackNforth.jsx';
+import CircleBackNforth from './components/CircleBackNforth.jsx';
 import SettingsPage from './components/SettingsPage.jsx';
 // import SearchFeature from './components/SearchFeature.jsx';
 import Insight from './components/bills/Insight.jsx';
@@ -30,9 +30,9 @@ function App(){
 
         <Route path="/voter-page" element={<ProtectedRoute><Header/><VoterPage/><Footer/></ProtectedRoute>}/>
         <Route path="/house-keeping-page" element={<ProtectedRoute><Header/><HouseKeeping/><Footer/></ProtectedRoute>}/>
-        <Route path="/join-pod" element={<ProtectedRoute><Header/><JoinPod/><Footer/></ProtectedRoute>}/>
-        <Route path="/pod-back-n-forth" element={<ProtectedRoute><Header/><PodBackNforth/><Footer/></ProtectedRoute>}/>
-        
+        <Route path="/join-circle" element={<ProtectedRoute><Header/><JoinCircle/><Footer/></ProtectedRoute>}/>
+        <Route path="/circle-back-n-forth" element={<ProtectedRoute><Header/><CircleBackNforth/><Footer/></ProtectedRoute>}/>
+
         <Route path="/sign-up" element={<><Header/><SignUpConfirm/><Footer/></>}/>
         <Route path="/api/activate/:uid/:token" element={<><Header/><UserActivate/><Footer/></>}/>
         <Route path='/*' element={<><Header/><Error/> <Footer/> </>}></Route>

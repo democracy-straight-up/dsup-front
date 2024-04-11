@@ -1,7 +1,7 @@
 import {useSelector,useDispatch, } from 'react-redux';
 import {useNavigate,Link} from 'react-router-dom';
 import {useState, useEffect} from 'react';
-import {pod,desolvePod,authenticate,addPodmMembers} from '../../store/userSlice.js';
+import {circle,desolveCircle,authenticate,addCirclemMembers} from '../../store/userSlice.js';
 import Member from './member.jsx'
 import Candidate  from './candidate.jsx';
 import axios from "axios";
@@ -9,7 +9,7 @@ import Status from './statusMessages.jsx';
 
 function HouseKeeping(){
     const AuthUser      = useSelector((state) => state.AuthUser.user);
-    const podInfo       = useSelector((state) => state.AuthUser.pod);
+    const circleInfo       = useSelector((state) => state.AuthUser.circle);
     const [err, setErr] = useState('');
     const [connectionErr, setConnectionErr] = useState(null);
     const navigate      = useNavigate();
@@ -28,23 +28,23 @@ function HouseKeeping(){
     const [Iam_candidate, setIam_candidate] = useState(false);
 
     let ws_schame = window.location.protocol === "https:" ? "wss" : "ws";
-    const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${podInfo?.code}/${AuthUser.username}`
+    const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${circleInfo?.code}/${AuthUser.username}`
     const chatSocket = new WebSocket(url);
 
     useEffect(()=>{
         // on each member change, check if the Circle has one member.
-        if(members.length <= 1 && candidate.length === 0){ setDissolve(true); 
+        if(members.length <= 1 && candidate.length === 0){ setDissolve(true);
         }else { setDissolve(false)}
     },[candidate,members,])
 
     useEffect(()=>{
         // if(members?.length > 5){
             // check for circle endpoint to update
-            // getting the update of pod as it has become active.
-            const podURL = `${window.location.protocol}//${process.env.REACT_APP_BASE_URL}/api/circle/${podInfo.id}/`;
+            // getting the update of circle as it has become active.
+            const circleURL = `${window.location.protocol}//${process.env.REACT_APP_BASE_URL}/api/circle/${circleInfo.id}/`;
             let header = { 'Authorization': `Bearer ${AuthUser.token.access}` }
-            axios.get(podURL,{ headers: header } )
-            .then((response)=>{ dispatch(pod(response.data))})
+            axios.get(circleURL,{ headers: header } )
+            .then((response)=>{ dispatch(circle(response.data))})
             .catch(err=>console.log(err))
         // }
     },[members,])
@@ -60,14 +60,14 @@ function HouseKeeping(){
         /** This function gets called on each message being sent from server
          * it saperate the delegate, members and candidates and sets their state
          */
-        // if the new data being received is invitation key change, 
+        // if the new data being received is invitation key change,
         // update the circle global state and return nothing to stop the function
         if(data.action === 'invitationKey'){
-            dispatch(pod(data.circle))
+            dispatch(circle(data.circle))
             return
         }
         if(data.action === 'dissolve' && data.status === 'success'){
-            dispatch(desolvePod())
+            dispatch(desolveCircle())
             // set the userType to 0 and reset AuthUser
             let u = {...AuthUser}
             u.userType = 0
@@ -77,7 +77,7 @@ function HouseKeeping(){
         }
 
         if(data.status === 'success'){
-            // on each members and candidate changes, check if the auth user is inside the list! 
+            // on each members and candidate changes, check if the auth user is inside the list!
             // if not, redirect to the voter page.
             if(!data.member_list?.find((member)=> member.user.username === AuthUser.username)){
                 setErr('You have been removed fron this circle. Taking you back to your voter page.');
@@ -100,7 +100,7 @@ function HouseKeeping(){
             setCandidate(data.member_list?.filter((member)=> !member.is_member))
 
             // this is circle members list is only for global state to use elsewhere.
-            dispatch(addPodmMembers(data.member_list?.filter((member)=> member.is_member)))
+            dispatch(addCirclemMembers(data.member_list?.filter((member)=> member.is_member)))
         }
         if(data.status === 'error'){
             /** if the auth user is the same as user on error message:
@@ -115,10 +115,10 @@ function HouseKeeping(){
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             /**
-             * all the messages that comes from this end point is the same. 
-             * it contains pod members
+             * all the messages that comes from this end point is the same.
+             * it contains circle members
              * make a function that gets the data and saperate the candidates and members
-             * adds the candidates and members to their states. 
+             * adds the candidates and members to their states.
              */
             // console.log("got new message: ", data)
             MembersFilter(data)
@@ -135,7 +135,7 @@ function HouseKeeping(){
             /**
              * 1. close the connection
              * 2. clear the states
-             * 3. terminate any functions in running or in background 
+             * 3. terminate any functions in running or in background
              */
             setMembers('');
             setCandidate('');
@@ -151,7 +151,7 @@ function HouseKeeping(){
     const invitationKey=()=>{
         chatSocket.send(JSON.stringify({
             "action":"invitationKey",
-            "payload":{ "pod":podInfo.code,}
+            "payload":{ "circle":circleInfo.code,}
         }))
     }
     return (
@@ -164,27 +164,27 @@ function HouseKeeping(){
                         { connectionErr ? <div className="alert alert-danger" role="alert">{connectionErr} </div>:null}
                     </div>
                     <h1 className="text-center">Housekeeping Page</h1>
-                    <h3 className='text-center'>Circle No. {podInfo?.code} District: {podInfo?.district.code}</h3>
-                    <h4 className='text-center'>Invitation Key: {podInfo?.invitation_code}</h4>
+                    <h3 className='text-center'>Circle No. {circleInfo?.code} District: {circleInfo?.district.code}</h3>
+                    <h4 className='text-center'>Invitation Key: {circleInfo?.invitation_code}</h4>
 
                     {fDel?.user?.username === AuthUser?.username ?
-                        <button className='d-block mx-auto my-2 btn btn-success text-center' 
-                        onClick={()=>invitationKey()}>Generate new key</button> 
+                        <button className='d-block mx-auto my-2 btn btn-success text-center'
+                        onClick={()=>invitationKey()}>Generate new key</button>
                         :null}
-                    
-                    {podInfo?.is_active?
+
+                    {circleInfo?.is_active?
                         <p className='text-center'>Circle Status: ACTIVE!</p>
                     : null}
                 </div>
                 <div className="col-sm-12 col-md-3"></div>
             </div>
             <div className="row">
-                <table className='table table-bordered '> 
+                <table className='table table-bordered '>
                     <thead>
                         <tr>
                             <th className='fw-bold'>#</th>
                             <th className='fw-bold'>Member Name</th>
-                            {podInfo?.is_active ? <>
+                            {circleInfo?.is_active ? <>
                                 <th className='fw-bold'>Put forward as First Delegate</th>
                             </>:null}
                             { Iam_delegate ? <th className='fw-bold'>Remove Member</th> :<th></th>}
@@ -192,16 +192,16 @@ function HouseKeeping(){
                     </thead>
                     <tbody>
                         {/**
-                         * It will always be 1 at least. 
-                         * first check if the members is greater than 0. 
+                         * It will always be 1 at least.
+                         * first check if the members is greater than 0.
                          *  */ }
-                        {members?.length > 0 ? 
+                        {members?.length > 0 ?
                             members?.map((member, index)=>(
-                                <Member 
-                                key={index} 
+                                <Member
+                                key={index}
                                 dissolve={dissolve}
-                                index={index} 
-                                podInfo={podInfo}
+                                index={index}
+                                circleInfo={circleInfo}
                                 member={member}
                                 chatSocket = {chatSocket}
                                 Iam_member={Iam_member}
@@ -211,29 +211,29 @@ function HouseKeeping(){
                         :null}
                     </tbody>
                 </table>
-                
+
                 {/* candidate list table */}
                 <p className='py-0 my-0 mt-2'>Candidate(s) awaiting votes...</p>
-                <table className='table table-bordered '> 
+                <table className='table table-bordered '>
                     <thead>
                         <tr>
                             <th className='fw-bold'>#</th>
                             <th className='fw-bold'>Candidate Name</th>
-                            {Iam_delegate || Iam_member ? <th className='fw-bold'>Do you want this candidate to be a member?</th>:null} 
+                            {Iam_delegate || Iam_member ? <th className='fw-bold'>Do you want this candidate to be a member?</th>:null}
                             {Iam_delegate ? <th className='fw-bold'>Remove Candidate</th>:null}
                         </tr>
                     </thead>
                     <tbody>
                     {/**
                      * check if the candidate list is greater than 0
-                     * 
+                     *
                      */}
-                     {candidate?.length > 0 ? 
+                     {candidate?.length > 0 ?
                         candidate?.map((candidate, index)=>(
-                            <Candidate 
-                            chatSocket = {chatSocket} 
-                            key={index} 
-                            index={index} 
+                            <Candidate
+                            chatSocket = {chatSocket}
+                            key={index}
+                            index={index}
                             Iam_member={Iam_member}
                             Iam_delegate={Iam_delegate}
                             candidate={candidate}
@@ -246,11 +246,11 @@ function HouseKeeping(){
             </div>
 
             {/* status messages */}
-            <Status 
+            <Status
             Iam_delegate={Iam_delegate}
             Iam_member={Iam_member}
             Iam_candidate={Iam_candidate}
-            podInfo={podInfo}
+            circleInfo={circleInfo}
             candidate ={candidate}
             members = {members}
             >

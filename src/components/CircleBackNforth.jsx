@@ -7,8 +7,8 @@ import { baseURL } from '../store/conf.js'
 
 
 
-const PodBackNforth = () => {
-    const podInfo = useSelector((state) => state.AuthUser.pod);
+const CircleBackNforth = () => {
+    const circleInfo = useSelector((state) => state.AuthUser.circle);
     const AuthUser = useSelector((state) => state.AuthUser.user);
     const [pages, setPages] = useState(2)
     const [message, setMessage] = useState('')
@@ -22,7 +22,7 @@ const PodBackNforth = () => {
     const scrollableElementRef = useRef(null);
 
     useEffect (()=>{
-        /** This use effect function is responsible for smooth scrolling to 
+        /** This use effect function is responsible for smooth scrolling to
          * the end of entries list
          * does so by new entries being added
          */
@@ -36,7 +36,7 @@ const PodBackNforth = () => {
     useEffect(() => {
         /** This useEffect opens the web socket protocal and fetches B&F data */
         let ws_schame = window.location.protocol == "https:" ? "wss" : "ws";
-        const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/ws/${podInfo.code}/${AuthUser.username}/`
+        const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/ws/${circleInfo.code}/${AuthUser.username}/`
         socketRef.current = new WebSocket(url);
 
         socketRef.current.onopen = (event) => {
@@ -82,7 +82,7 @@ const PodBackNforth = () => {
 
     }
     const handleSend = () => {
-        /* This function sends a new message entry (Back And Forth Entry). 
+        /* This function sends a new message entry (Back And Forth Entry).
         It checks if the web socket is open   */
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
             socketRef.current.send(JSON.stringify({sender: AuthUser.username,message: message}));
@@ -91,14 +91,14 @@ const PodBackNforth = () => {
     }
 
     const date_format = (date, _24h = false) => {
-        /* this function is used on msg function for the date format of message. 
+        /* this function is used on msg function for the date format of message.
         _24h is only for the last part of the date format which is in hours: minutes: seconds. */
 
         if (_24h === true){
             return new Date(date).toLocaleString('en-US', {hour: "2-digit", minute: "2-digit", second: "2-digit",hour12: false})
         }else{
             return new Date(date).toLocaleString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric',});
-        } 
+        }
     }
 
     const msg = (message, index) => {
@@ -108,7 +108,7 @@ const PodBackNforth = () => {
                     {/* checking if this message has handle */}
                     <p className='mb-0'>
                     <span className='fw-bold fw-bold'>{message.sender?.users?.legalName}</span>
-                    <span className='text-muted small'> &nbsp;&nbsp;{date_format(message.date)}&nbsp; [ {date_format(message.date, true)} ] </span>                                                                                 
+                    <span className='text-muted small'> &nbsp;&nbsp;{date_format(message.date)}&nbsp; [ {date_format(message.date, true)} ] </span>
                     </p>
                 </div>
                 <div className='row'>
@@ -120,9 +120,9 @@ const PodBackNforth = () => {
         )
     }
 
-    // User.handle? 
+    // User.handle?
     return (
-        // the message history area. 
+        // the message history area.
         <div className="container my-5">
             <div className="container">
                 <div className="row">
@@ -131,7 +131,7 @@ const PodBackNforth = () => {
             </div>
             <div className="card mx-auto "  >
                 <div className="card-header border-0 shadow-sm text-center" >
-                    <h3>Back & Forth <br /> Circle No. {podInfo.code} <br />  {podInfo.district.code} </h3>
+                    <h3>Back & Forth <br /> Circle No. {circleInfo.code} <br />  {circleInfo.district.code} </h3>
                 </div>
                 <div className="card-body mh-100 p-0" style={{ height: "500px", overflowY: 'auto' }}>
                     <div className='text-center p-2' >
@@ -155,7 +155,7 @@ const PodBackNforth = () => {
                             style={{ "cursor": "pointer" }}
                             id="basic-addon1">Send</span>
                     </div>
-    
+
                 </div>
             </div>
 
@@ -163,4 +163,4 @@ const PodBackNforth = () => {
     )
 }
 
-export default PodBackNforth;
+export default CircleBackNforth;

@@ -263,7 +263,7 @@ function ClaimYourSeat() {
 
 
                         <span> This email address will only be used to confirm your registration.
-                            Once you join a Pod, all further communications from the project will go through your First Delegate.</span>
+                            Once you join a Circle, all further communications from the project will go through your First Delegate.</span>
                             <span className="red-airstrike ">*</span>
                         <br />
                         {/* <label htmlFor="email" className="text-right">Email:</label> */}

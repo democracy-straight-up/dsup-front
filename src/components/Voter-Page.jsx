@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { pod, authenticate } from '../store/userSlice.js';
+import { circle, authenticate } from '../store/userSlice.js';
 import { baseURL } from '../store/conf.js'
 import jwtDecode from 'jwt-decode';
 import { Container, Row, Col, Table } from 'react-bootstrap';
@@ -20,10 +20,10 @@ function VoterPage() {
     const [pageLoaded, setPageLoaded] = useState(false)
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const podMembers = useSelector((state) => state.AuthUser.podMembers);
-    const [delegate, setDelegate] = useState(podMembers?.filter((e) => e.is_delegate === true)[0]);
+    const circleMembers = useSelector((state) => state.AuthUser.circleMembers);
+    const [delegate, setDelegate] = useState(circleMembers?.filter((e) => e.is_delegate === true)[0]);
     // const bills = useSelector((state) => state.bills.bills);
-    
+
     const [currentPage, setCurrentPage] = useState(1);
     const [bills, setBills] = useState({})
 
@@ -67,7 +67,7 @@ function VoterPage() {
 
     useEffect(() => {
         switch (action) {
-            // if no action is specified, fetch user info and pod
+            // if no action is specified, fetch user info and circle
             case 'userinfo':
                 if (AuthUser.token.access.length > 0) {
                     const url = `${window.location.protocol}//${baseURL}/api/userinfo/`;
@@ -79,36 +79,36 @@ function VoterPage() {
                                 let token = AuthUser.token
                                 dispatch(authenticate({ ...response.data.user, token }))
                                 if (response.data.user.users.userType === 1) {
-                                    dispatch(pod(response.data.pod))
+                                    dispatch(circle(response.data.circle))
                                 }
                             } else {
-                                setMessage({ type: "alert alert-danger", msg: "could not get user info and pod" })
+                                setMessage({ type: "alert alert-danger", msg: "could not get user info and circle" })
                             }
                         })
                         .catch(error => {
-                            console.log("error on fetching user and pod info:", error)
+                            console.log("error on fetching user and circle info:", error)
                         });
                 }
                 break
             case 'joinPd':
-                console.log("joining a pod here")
+                console.log("joining a circle here")
                 break
-            case 'createPod':
-                console.log("creating a pod")
+            case 'createCircle':
+                console.log("creating a circle")
                 if (token.length > 0) {
                     let header = { 'Authorization': `Bearer ${token}` }
-                    const url = `${window.location.protocol}//${baseURL}/api/create-pod/`
+                    const url = `${window.location.protocol}//${baseURL}/api/create-circle/`
                     const param = { "user": AuthUser.username, 'district': AuthUser.users.district.code }
                     axios.post(url, param, { headers: header })
                         .then(response => {
                             if (response.status === 400) {
                                 setMessage({ msg: response.data.message, type: "alert alert-danger" })
                             } else if (response.status === 200) {
-                                dispatch(pod(response.data))
+                                dispatch(circle(response.data))
                                 let u = { ...AuthUser }
                                 u.userType = 1
                                 dispatch(authenticate(u))
-                                setMessage({ type: "alert alert-success", msg: "pod created." })
+                                setMessage({ type: "alert alert-success", msg: "circle created." })
                                 // nagivate to voter page...
                                 navigate('/house-keeping-page');
                             } else {
@@ -143,10 +143,10 @@ function VoterPage() {
                 return (
                     <div className="row text-center">
                         <div className="col-sm-12 ">
-                            <Link to={'/join-pod'} className="btn btn-success m-2">Join a Circle</Link>
+                            <Link to={'/join-circle'} className="btn btn-success m-2">Join a Circle</Link>
                         </div>
                         <div className="col-sm-12 ">
-                            <a onClick={() => setAction('createPod')} className="btn btn-success m-2">Create a Circle</a>
+                            <a onClick={() => setAction('createCircle')} className="btn btn-success m-2">Create a Circle</a>
                         </div>
                     </div>
                 )
@@ -167,7 +167,7 @@ function VoterPage() {
                         </>
                             : ""}
                         <div className="col-sm-12 col-lg-6 my-1">
-                            <Link className='btn btn-primary' style={{ whiteSpace: 'nowrap' }} to={'/pod-back-n-forth'}>Back & Forth</Link>
+                            <Link className='btn btn-primary' style={{ whiteSpace: 'nowrap' }} to={'/circle-back-n-forth'}>Back & Forth</Link>
                             {/* <a className="btn btn-primary m-2" >Back-and-Forth</a> */}
                         </div>
                     </div>
@@ -209,7 +209,7 @@ function VoterPage() {
                     <h1>Voter Page</h1>
                 </div>
                 <Row>
-                   
+
                     <Col>
                         <Row>
                             <Col xs="auto">
@@ -249,9 +249,9 @@ function VoterPage() {
                 <div className="col-sm-12 col-md-4 d-flex justify-content-center text-lg-start text-center text-md-start">
                     <ul className="list-unstyled">
                         {/* {(AuthUser?.users?.userType != 0) ? <li className="mb-2"><Link to={'/voter-page'}>List of Delegates</Link></li>:""} */}
-                        {(AuthUser?.users?.userType != 0) ? <li className="mb-2"><Link to={'/pod-back-n-forth'}> Back-and-Forth </Link></li>:""}
+                        {(AuthUser?.users?.userType != 0) ? <li className="mb-2"><Link to={'/circle-back-n-forth'}> Back-and-Forth </Link></li>:""}
                         {(AuthUser?.users?.userType != 0) ? <li className="mb-2"><Link to={'/member-contact'}>  Member Contact Page </Link></li>:""}
-                        {(AuthUser?.users?.userType != 0) ? <li className="mb-2"><Link to={'/house-keeping-page'}>Pod Housekeeping Page </Link></li>:""}
+                        {(AuthUser?.users?.userType != 0) ? <li className="mb-2"><Link to={'/house-keeping-page'}>Circle Housekeeping Page </Link></li>:""}
                     </ul>
                 </div>
                 <div className="col-sm-12 col-md-4 d-flex justify-content-center">
@@ -285,28 +285,28 @@ function VoterPage() {
                 </thead>
                 <tbody>
                     {bills?.results?.map((bill, index) => (
-                        <Bill_Item bill={bill} key={index} index={index}></Bill_Item> 
+                        <Bill_Item bill={bill} key={index} index={index}></Bill_Item>
                     ))}
-                </tbody> 
+                </tbody>
                 <tfoot className='border-0'>
                     <tr className='p-2 border-0'>
                         <td colSpan={4} className='border-0'></td>
                         <td colSpan={4} className='border-0' style={{ textAlign: 'right' }}>
-                            {bills?.previous ? <span 
+                            {bills?.previous ? <span
                                 className='btn btn-outline-success mx-1 p-0 px-3'
                                 onClick={()=>setCurrentPage(currentPage-1)}>Previous</span> : ""}
 
-                            {bills?.previous ? <span 
+                            {bills?.previous ? <span
                                     className='btn btn-outline-success mx-1 p-0 px-3'
                                     onClick={()=>setCurrentPage(currentPage-1)}>{currentPage-1}</span>: ""}
 
                             <span className='btn btn-success mx-1 p-0 px-3'>{currentPage}</span>
 
-                            {bills?.next ? <span 
-                                    className='btn btn-outline-success mx-1 p-0 px-3' 
+                            {bills?.next ? <span
+                                    className='btn btn-outline-success mx-1 p-0 px-3'
                                     onClick={()=>setCurrentPage(currentPage+1)}>{currentPage+1}</span> : ""}
-                            
-                            {bills?.next ? <span 
+
+                            {bills?.next ? <span
                                 className='btn btn-outline-success mx-1 p-0 px-3'
                                 onClick={()=>setCurrentPage(currentPage+1)}>Next</span> : ""}
                         </td>

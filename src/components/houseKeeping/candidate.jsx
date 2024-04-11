@@ -6,8 +6,8 @@ import { baseURL } from '../../store/conf.js'
 const Candidate = ({candidate, index, chatSocket,fDel, Iam_member,Iam_delegate})=>{
     const [voted, setVoted] = useState(false);
     const AuthUser  = useSelector((state) => state.AuthUser.user);
-    
-    useEffect(()=>{ 
+
+    useEffect(()=>{
         /** Check for the AuthUser if he/she voted in for this candidate */
         const Url = `${window.location.protocol}//${baseURL}/api/circle-vote-in-list/`;
         axios.get(Url, {params: { candidate: candidate.id} },
@@ -26,7 +26,7 @@ const Candidate = ({candidate, index, chatSocket,fDel, Iam_member,Iam_delegate})
             "payload":{
                 "voter": AuthUser.username,
                 "candidate":candidate.id,
-                "pod":candidate.pod.code,
+                "circle":candidate.circle.code,
             }
         }))
     }
@@ -38,7 +38,7 @@ const Candidate = ({candidate, index, chatSocket,fDel, Iam_member,Iam_delegate})
             "payload":{
                 "remover": AuthUser.username,
                 "candidate":candidate.id,
-                "pod":candidate.pod.code,
+                "circle":candidate.circle.code,
             }
         }))
     }
@@ -48,9 +48,9 @@ const Candidate = ({candidate, index, chatSocket,fDel, Iam_member,Iam_delegate})
         <td>{index+1}</td>
         <td>{candidate?.user?.users?.legalName}</td>
 
-        {Iam_delegate || Iam_member ? 
+        {Iam_delegate || Iam_member ?
             <td> <span className='mx-2'>Yes</span>
-                {!voted ?  <input type="checkbox"  checked={voted} 
+                {!voted ?  <input type="checkbox"  checked={voted}
                         onChange={()=>VoteIn()} className='form-check-input mx-3' />
                 :null}
                 <span className="alert alert-primary p-0 px-2">{candidate?.count_vote_in} votes</span>
@@ -58,16 +58,16 @@ const Candidate = ({candidate, index, chatSocket,fDel, Iam_member,Iam_delegate})
         :null}
 
         {/* check if the auth user is delegate to this circle */}
-        {Iam_delegate ? 
-            <td> Yes 
-                <input 
-                type="checkbox" 
-                checked={false} 
+        {Iam_delegate ?
+            <td> Yes
+                <input
+                type="checkbox"
+                checked={false}
                 onChange={()=>removeCadidate()}
                 className='form-check-input mx-2' />
             </td>
         : null}
-        
+
     </tr>
     )
 }
