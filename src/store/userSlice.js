@@ -1,9 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+
+function getLocalStorageItem(key) {
+  const item = localStorage.getItem(key);
+  try {
+    return JSON.parse(item);
+  } catch (e) {
+    console.error('Error parsing data from localStorage:', e);
+    return null;
+  }
+}
+
 // init the initial State to local and check if the user already added to cart
-const userLocal = JSON.parse(localStorage.getItem('AuthUser'))
-const circleLocal = JSON.parse(localStorage.getItem('circle'))
-const circleMembersLocal = JSON.parse(localStorage.getItem('circleMembers'))
+const userLocal = getLocalStorageItem('AuthUser');
+const circleLocal = getLocalStorageItem('circle');
+const circleMembersLocal = getLocalStorageItem('circleMembers');
 
 let userInit = null;
 let circleInit = null;
@@ -53,7 +64,11 @@ export const UserSlice = createSlice({
 })
 
 function toLocalStorage(store, user) {
-  localStorage.setItem(store, JSON.stringify(user));
+  if (user === null) {
+    localStorage.removeItem(store);
+  } else {
+    localStorage.setItem(store, JSON.stringify(user));
+  }
 }
 
 // Action creators are generated for each case reducer function
