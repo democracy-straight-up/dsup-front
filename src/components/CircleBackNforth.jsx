@@ -36,7 +36,7 @@ const CircleBackNforth = () => {
     useEffect(() => {
         /** This useEffect opens the web socket protocal and fetches B&F data */
         let ws_schame = window.location.protocol == "https:" ? "wss" : "ws";
-        const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/ws/${circleInfo.code}/${AuthUser.username}/`
+        const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/ws/${circleInfo?.code}/${AuthUser?.username}/`
         socketRef.current = new WebSocket(url);
 
         socketRef.current.onopen = (event) => {
@@ -131,7 +131,7 @@ const CircleBackNforth = () => {
             </div>
             <div className="card mx-auto "  >
                 <div className="card-header border-0 shadow-sm text-center" >
-                    <h3>Back & Forth <br /> Circle No. {circleInfo.code} <br />  {circleInfo.district.code} </h3>
+                    <h3>Back & Forth <br /> Circle No. {circleInfo?.code} <br />  {circleInfo?.district?.code} </h3>
                 </div>
                 <div className="card-body mh-100 p-0" style={{ height: "500px", overflowY: 'auto' }}>
                     <div className='text-center p-2' >
