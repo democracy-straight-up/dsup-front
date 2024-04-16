@@ -41,7 +41,7 @@ function HouseKeeping(){
         // if(members?.length > 5){
             // check for circle endpoint to update
             // getting the update of circle as it has become active.
-            const circleURL = `${window.location.protocol}//${process.env.REACT_APP_BASE_URL}/api/circle/${circleInfo.id}/`;
+            const circleURL = `${window.location.protocol}//${process.env.REACT_APP_BASE_URL}/api/circle/${circleInfo?.id}/`;
             let header = { 'Authorization': `Bearer ${AuthUser.token.access}` }
             axios.get(circleURL,{ headers: header } )
             .then((response)=>{ dispatch(circle(response.data))})

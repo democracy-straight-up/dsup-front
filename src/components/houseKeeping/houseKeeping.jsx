@@ -233,7 +233,7 @@ function HouseKeeping(){
                         return ( <>  <input type="checkbox"
                                 className='form-check-input'
                                 checked={showModel}
-                                onChange={()=>handleModelShow('removemember', member.id)} />
+                                onChange={()=>handleModelShow('removemember', member?.id)} />
                             </> )
                     }
                     return ""
@@ -247,7 +247,7 @@ function HouseKeeping(){
                         <input type="checkbox"
                         className='form-check-input mx-2'
                         checked={true}
-                        onChange={()=>handleModelShow('removemember', member.id)} />
+                        onChange={()=>handleModelShow('removemember', member?.id)} />
                     </>)
                 }else{
                     return ""
@@ -273,7 +273,7 @@ function HouseKeeping(){
         chatSocket.send(JSON.stringify({
             type: "voteOut",
             circle: circleInfo.code,
-            member: member.id,
+            member: member?.id,
             voter: AuthUser.username,
         }));
         setShowModel(false)
@@ -283,7 +283,7 @@ function HouseKeeping(){
         chatSocket.send(JSON.stringify({
             type: "delegate",
             circle: circleInfo.code,
-            recipient: member.id,
+            recipient: member?.id,
             voter: AuthUser.username,
         }));
     }
@@ -416,7 +416,7 @@ function HouseKeeping(){
                                         Yes
                                     <input type="checkbox"
                                         className='form-check-input mx-2'
-                                        value={candidate[0].id}
+                                        value={candidate[0]?.id}
                                         checked={!voteInsChck(candidate[0]?.voteIns)}
                                         onChange={(e)=> handleVoteIn(e)}/>
 

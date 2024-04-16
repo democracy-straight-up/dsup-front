@@ -27,11 +27,11 @@ const Member = ({member, index, chatSocket,dissolve, fDel, circleInfo, Iam_membe
     useEffect(()=>{
         /** Check for the AuthUser if he/she voted in for this candidate */
         const Url = `${window.location.protocol}//${baseURL}/api/circle-vote-out-list/`;
-        axios.get(Url, {params: { member: member.id} },
+        axios.get(Url, {params: { member: member?.id} },
         {headers: { Authorization: `Bearer ${AuthUser.token.access}`}})
         .then(response=>{
             // checking whether the auth user has voted for this candidate
-            response.data.map((res)=>{ if(res.voter == AuthUser.id){setVoted_out(true) }})
+            response.data.map((res)=>{ if(res.voter == AuthUser?.id){setVoted_out(true) }})
         })
         .catch(err=>console.log(err))
     },[clicked])
@@ -40,11 +40,11 @@ const Member = ({member, index, chatSocket,dissolve, fDel, circleInfo, Iam_membe
     useEffect(()=>{
         /** Check for the AuthUser if he/she vote for delegation  */
         const putFarwardURL = `${window.location.protocol}//${baseURL}/api/circle-put-farward-list/`;
-        axios.get(putFarwardURL, {params: { member: member.id} },
+        axios.get(putFarwardURL, {params: { member: member?.id} },
         {headers: { Authorization: `Bearer ${AuthUser.token.access}`}})
         .then(response=>{
             // checking whether the auth user has voted for delegation.
-            response.data.map((res)=>{ if(res.voter == AuthUser.id){setPut_farward(true) }})
+            response.data.map((res)=>{ if(res.voter == AuthUser?.id){setPut_farward(true) }})
         })
         .catch(err=>console.log(err))
     },[clicked])
@@ -56,7 +56,7 @@ const Member = ({member, index, chatSocket,dissolve, fDel, circleInfo, Iam_membe
             "action":"remove_candidate",
             "payload":{
                 "remover": AuthUser.username,
-                "candidate":member.id,
+                "candidate":member?.id,
                 "circle":member.circle.code,
             }
         }))
@@ -68,7 +68,7 @@ const Member = ({member, index, chatSocket,dissolve, fDel, circleInfo, Iam_membe
             "action":"vote_out",
             "payload":{
                 "voter": AuthUser.username,
-                "member":member.id,
+                "member":member?.id,
                 "circle":member.circle.code,
             }
         }))
@@ -80,7 +80,7 @@ const Member = ({member, index, chatSocket,dissolve, fDel, circleInfo, Iam_membe
             "action":"dissolve",
             "payload":{
                 "voter": AuthUser.username,
-                "member":member.id,
+                "member":member?.id,
                 "circle":member.circle.code,
             }
         }))
@@ -93,7 +93,7 @@ const Member = ({member, index, chatSocket,dissolve, fDel, circleInfo, Iam_membe
             "action":"putFarward",
             "payload":{
                 "voter": AuthUser.username,
-                "member":member.id,
+                "member":member?.id,
                 "circle":member.circle.code,
             }
         }))
