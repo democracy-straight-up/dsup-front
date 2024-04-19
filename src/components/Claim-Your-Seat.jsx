@@ -7,6 +7,30 @@ import { Eye, EyeSlash } from 'react-bootstrap-icons';
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
+
+export const GenPass = function(length) {
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+    const lowerCase = "abcdefghijklmnopqrstuvwxyz";
+    const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const specialChars = "!@#$%^&*()";
+    let password = [];
+  
+    password.push(lowerCase.charAt(Math.floor(Math.random() * lowerCase.length)));
+    password.push(upperCase.charAt(Math.floor(Math.random() * upperCase.length)));
+    password.push(numbers.charAt(Math.floor(Math.random() * numbers.length)));
+    password.push(specialChars.charAt(Math.floor(Math.random() * specialChars.length)));
+  
+    for (let i = 4; i < length; i++) {
+        password.push(charset.charAt(Math.floor(Math.random() * charset.length)));
+    }
+  
+    // shuffle password
+    password = password.sort(() => Math.random() - 0.5);
+  
+    return password.join('');
+};
+
 function ClaimYourSeat() {
     const navigate = useNavigate();
     const [district, setDistrict] = useState('');
@@ -24,6 +48,8 @@ function ClaimYourSeat() {
     const [passwordTypeConf, setPasswordTypeConf] = useState('password'); // show/hide confirm password input
 
     const [formErr, setFormErr] = useState('');
+    const [LegalName_Err, setLegalName_Err] = useState(false);
+    const [Address_Err, setAddress_Err] = useState(false);
     const [LegalName_Err, setLegalName_Err] = useState(false);
     const [Address_Err, setAddress_Err] = useState(false);
     const [is_formErr, setIs_formErr] = useState(false);
@@ -45,6 +71,28 @@ function ClaimYourSeat() {
                     }
                 }
             }); //endof then function
+    }
+
+    const handleCheckLegalName = (e) => {
+        //check legal name in valid or not
+        const reEmoji = /[^a-zA-Z0-9 ]/gm;
+        if (!reEmoji.test(e.target.value)) {
+            setLegalName_Err(false);
+        } else {
+            setLegalName_Err(true);
+        }
+         //endof then function
+    }
+
+    const handleCheckAddress = (e) => {
+        //check legal name in valid or not
+        const reAddress = /[^a-zA-Z0-9\s,.-]/gm;
+        if (!reAddress.test(e.target.value)) {
+            setAddress_Err(false);
+        } else {
+            setAddress_Err(true);
+        }
+         //endof then function
     }
 
     const handleCheckLegalName = (e) => {
@@ -144,15 +192,6 @@ function ClaimYourSeat() {
         setSubmitStatus(true);
 
     }
-    function GenPass(length) {
-        var result = '';
-        var characters = '0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        var charactersLength = characters.length;
-        for (var i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-    }
 
     /**
      * Form check in case of submission, any input changes, or click, password generation btn as.
@@ -196,6 +235,7 @@ function ClaimYourSeat() {
                             the third district in Alabama would be AL03.
                         </span>
                         <span className="red-airstrike ">*</span>
+                        <span className="red-airstrike ">*</span>
                         <br />
                         {/* <label htmlFor="district" className="text-right">District:</label> */}
                         <input type="text"
@@ -236,19 +276,23 @@ function ClaimYourSeat() {
                             use your name as it would
                             normally appear on legal documents, in the order you would use for your signature.
                         </span> <span className="red-airstrike ">*</span><br />
+                        </span> <span className="red-airstrike ">*</span><br />
                         {/* <label htmlFor="legalName" required ={true} className="text-right">Legal Name:</label> */}
                         <input type="text"
                             onChange={(e) => setLegalName(e.target.value)}
                             onBlur={(e) => handleCheckLegalName(e)}
+                            onBlur={(e) => handleCheckLegalName(e)}
                             className="form-control"
                             id="legalName" placeholder="Enter your full legal name " />
                         {is_formErr ? <p className="m-0 text-danger"> {formErr?.legalName ? formErr?.legalName[0] : ''}</p> : ''}
+                        {LegalName_Err && legalName.length > 0 ? <p className="text-danger m-0">Please enter valid legal name.</p> : ''}
                         {LegalName_Err && legalName.length > 0 ? <p className="text-danger m-0">Please enter valid legal name.</p> : ''}
                         <br />
 
 
                         <span> This email address will only be used to confirm your registration.
                             Once you join a Pod, all further communications from the project will go through your First Delegate.</span>
+                            <span className="red-airstrike ">*</span>
                             <span className="red-airstrike ">*</span>
                         <br />
                         {/* <label htmlFor="email" className="text-right">Email:</label> */}
@@ -263,9 +307,11 @@ function ClaimYourSeat() {
                             Use the address that appears on your voter registration card.
                             If you don't know exactly, use your address as you would write it if sending a letter.
                         </span> <span className="red-airstrike ">*</span><br />
+                        </span> <span className="red-airstrike ">*</span><br />
                         {/* <label htmlFor="address" className="text-right">Address:</label> */}
                         <textarea placeholder="Enter your address "
                             onChange={(e) => setAddress(e.target.value)}
+                            onBlur={(e) => handleCheckAddress(e)}
                             onBlur={(e) => handleCheckAddress(e)}
                             className="form-control" rows="5" />
                         {/* <input type="text" 
@@ -273,6 +319,7 @@ function ClaimYourSeat() {
                         
                         id="address" placeholder="enter your address"/>
                         <br/> */}
+                        {Address_Err && address.length > 0 ? <p className="text-danger m-0">Please enter valid address.</p> : ''}
                         {Address_Err && address.length > 0 ? <p className="text-danger m-0">Please enter valid address.</p> : ''}
                         <br />
                         <button className="btn btn-primary my-2" onClick={(e) => generatePass(e)}>
