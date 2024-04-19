@@ -145,6 +145,9 @@ function EnterTheFloor() {
                                     placeholder="Entry code"
                                     type="text"
                                     name="userName" />
+                                     <p className="text-center">
+                                         <Link  to="/forgot-enter-code"> Forgot your entry code?</Link>
+                                     </p>
                             </div>
                         </div>
                         <br />

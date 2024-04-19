@@ -3,21 +3,23 @@ import SignUpConfirm from './components/signUpConform.jsx';
 import ClaimYourSeat from './components/Claim-Your-Seat.jsx';
 import Home from './Home.jsx';
 import EnterTheFloor from './components/Enter-the-Floor.jsx';
+import ForgotEnterCode from './components/Forgot-Enter-Code.jsx';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import Error from './components/Error.jsx';
 import VoterPage from './components/Voter-Page.jsx';
 import ProtectedRoute from './protectedRoutes.js';
 import JoinPod from './components/joinPod.jsx';
-import HouseKeeping from './components/houseKeeping/houseKeeping.jsx';
+// import HouseKeeping from './components/houseKeeping/houseKeeping.jsx';
 import UserActivate from './components/UserActivate';
 import PodBackNforth from './components/PodBackNforth.jsx';
 import SettingsPage from './components/SettingsPage.jsx';
 // import SearchFeature from './components/SearchFeature.jsx';
 import Insight from './components/bills/Insight.jsx';
 import MemberContactPage from './components/MemberContactPage.jsx';
-import MeetingSchedulePage from './components/MeetingSchedulePage.jsx';
+import MeetingsAndMinutes from './components/MeetingsAndMinutes.jsx';
 
+import HouseKeeping from './components/houseKeeping/house-keeping.jsx';
 
 function App(){
   return (
@@ -26,6 +28,8 @@ function App(){
         <Route index element={<><Header/><Home/><Footer/></>}/>
         <Route path='/claim-your-seat' element={<><Header/><ClaimYourSeat/><Footer/></>}/>
         <Route path="/enter-the-floor" element={<><Header/><EnterTheFloor/><Footer/></>}/>
+
+        <Route path="/forgot-enter-code" element={<><Header/><ForgotEnterCode/><Footer/></>}/>
 
         <Route path="/voter-page" element={<ProtectedRoute><Header/><VoterPage/><Footer/></ProtectedRoute>}/>
         <Route path="/house-keeping-page" element={<ProtectedRoute><Header/><HouseKeeping/><Footer/></ProtectedRoute>}/>
@@ -41,7 +45,7 @@ function App(){
         {/* fake path below, real path above for rendering the specific bill that gets clicked on */}
         <Route path="/bill" element={<><Header/><Insight/><Footer/></>}/>
         <Route path="/member-contact" element={<><Header/><MemberContactPage/><Footer/></>}/>
-        <Route path="/meeting-schedule" element={<><Header/><MeetingSchedulePage/><Footer/></>}/>
+        <Route path="/meetings-and-minutes" element={<><Header/><MeetingsAndMinutes/><Footer/></>}/>
       </Route>
     </Routes>
   )

@@ -4,6 +4,8 @@ import {useState, useEffect} from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import {authenticate,pod, addPodmMembers, desolvePod} from '../../store/userSlice.js';
+import Member from './member.jsx'
+
 
 function HouseKeeping(){
     const AuthUser      = useSelector((state) => state.AuthUser.user);

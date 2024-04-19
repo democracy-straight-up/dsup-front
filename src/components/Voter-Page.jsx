@@ -153,21 +153,21 @@ function VoterPage() {
             case 1:
                 return (
                     <div className="row text-center">
-                        <div className="col-sm-12 col-lg-6">
-                            <Link to='/house-keeping-page' className="btn btn-primary m-2 fixed-height-button"> My Circle</Link>
+                        <div className="col-sm-12 col-lg-6 my-1">
+                            <Link to='/house-keeping-page' className="btn btn-primary "> My Circle</Link>
                         </div>
                         {/* add if the user is delegate and then show this two. */}
                         {AuthUser?.username === delegate?.user?.username ? <>
-                            <div className="col-sm-12 col-lg-6">
-                                <a className="btn btn-primary m-2 fixed-height-button" >Join First Link</a>
+                            <div className="col-sm-12 col-lg-6 my-1">
+                                <a className="btn btn-primary " style={{ whiteSpace: 'nowrap' }} >Join First Link</a>
                             </div>
-                            <div className="col-sm-12 col-lg-6">
-                                <a className="btn btn-primary m-2 fixed-height-button" >Create First Link</a>
+                            <div className="col-sm-12 col-lg-6 my-1">
+                                <a className="btn btn-primary " style={{ whiteSpace: 'nowrap' }} >Create First Link</a>
                             </div>
                         </>
                             : ""}
-                        <div className="col-sm-12 col-lg-6">
-                            <Link className='btn btn-primary m-2 fixed-height-button' to={'/pod-back-n-forth'}>Back-and-Forth</Link>
+                        <div className="col-sm-12 col-lg-6 my-1">
+                            <Link className='btn btn-primary' style={{ whiteSpace: 'nowrap' }} to={'/pod-back-n-forth'}>Back & Forth</Link>
                             {/* <a className="btn btn-primary m-2" >Back-and-Forth</a> */}
                         </div>
                     </div>
@@ -248,7 +248,7 @@ function VoterPage() {
             <div className="row d-flex justify-content-center align-items-center mt-2">
                 <div className="col-sm-12 col-md-4 d-flex justify-content-center text-lg-start text-center text-md-start">
                     <ul className="list-unstyled">
-                        {(AuthUser?.users?.userType != 0) ? <li className="mb-2"><Link to={'/voter-page'}>List of Delegates</Link></li>:""}
+                        {/* {(AuthUser?.users?.userType != 0) ? <li className="mb-2"><Link to={'/voter-page'}>List of Delegates</Link></li>:""} */}
                         {(AuthUser?.users?.userType != 0) ? <li className="mb-2"><Link to={'/pod-back-n-forth'}> Back-and-Forth </Link></li>:""}
                         {(AuthUser?.users?.userType != 0) ? <li className="mb-2"><Link to={'/member-contact'}>  Member Contact Page </Link></li>:""}
                         {(AuthUser?.users?.userType != 0) ? <li className="mb-2"><Link to={'/house-keeping-page'}>Pod Housekeeping Page </Link></li>:""}
@@ -260,9 +260,9 @@ function VoterPage() {
                 <div className="col-sm-12 col-md-4 d-flex justify-content-center text-lg-start text-center text-md-start">
                     <ul className="list-unstyled">
                         {(AuthUser?.users?.userType != 0) ? <>
-                            <li className="mb-2"><Link to={'/meeting-schedule'}> First Link Meeting Schedule </Link></li>
-                            <li className="mb-2"><Link to={'/voter-page'}> Meeting Minutes Log </Link></li>
-                            <li className="mb-2"><Link to={'/voter-page'}> Bill Metrics </Link></li>
+                            {/* <li className="mb-2"><Link to={'/meeting-schedule'}> First Link Meeting Schedule </Link></li> */}
+                            <li className="mb-2"><Link to={'/meetings-and-minutes'}> Meetings & Minutes </Link></li>
+                            {/* <li className="mb-2"><Link to={'/voter-page'}> Bill Metrics </Link></li> */}
                             <li className="mb-2"><Link to={'/voter-page'}> Voter Settings </Link></li>
                         </>:""}
                     </ul>

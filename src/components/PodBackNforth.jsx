@@ -107,7 +107,7 @@ const PodBackNforth = () => {
                 <div className='row'>
                     {/* checking if this message has handle */}
                     <p className='mb-0'>
-                    <span className='fw-bold h4'>{message.sender?.users?.legalName}</span>
+                    <span className='fw-bold fw-bold'>{message.sender?.users?.legalName}</span>
                     <span className='text-muted small'> &nbsp;&nbsp;{date_format(message.date)}&nbsp; [ {date_format(message.date, true)} ] </span>                                                                                 
                     </p>
                 </div>
@@ -131,7 +131,7 @@ const PodBackNforth = () => {
             </div>
             <div className="card mx-auto "  >
                 <div className="card-header border-0 shadow-sm text-center" >
-                    <h3>Back & Forth <br /> Circle{podInfo.code} <br />  {podInfo.district.code} </h3>
+                    <h3>Back & Forth <br /> Circle No. {podInfo.code} <br />  {podInfo.district.code} </h3>
                 </div>
                 <div className="card-body mh-100 p-0" style={{ height: "500px", overflowY: 'auto' }}>
                     <div className='text-center p-2' >
