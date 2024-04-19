@@ -61,11 +61,7 @@ function ForgotEnterCode() {
 
                  {       <div className="row">
                             <div className="col">
-                                {message && email.length > 0?
-                                    <div className="alert alert-danger">
-                                        Error submiting the form
-                                    </div>
-                                    : ''}
+                               
                             </div>
                         </div> }
                         <div className="row">
