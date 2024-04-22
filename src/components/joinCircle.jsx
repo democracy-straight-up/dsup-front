@@ -2,15 +2,15 @@ import {useSelector,useDispatch} from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import {useState, useEffect} from 'react';
 import axios from 'axios';
-import {pod,authenticate} from '../store/userSlice.js';
+import {circle,authenticate} from '../store/userSlice.js';
 import {baseURL} from '../store/conf.js'
 
-function JoinPod(){
+function JoinCircle(){
     const AuthUser = useSelector((state) => state.AuthUser.user);
     const [inviteKey, setInviteKey] = useState('');
     const [message, setMessage] = useState({type:'alert alert-',msg:''});
     const [token, setToken] = useState('');
-    const [POD, setPOD] = useState('');
+    const [CIRCLE, setCIRCLE] = useState('');
     const [WS, setWS] = useState({});
     const [clicked, setClicked] = useState('');
     const dispatch = useDispatch();
@@ -18,25 +18,25 @@ function JoinPod(){
 
     useEffect(()=>{
         // we need invitation key and username. token is required for request
-        // after the joint, we have to redirect to the pod page
-        if(clicked === 'pod'){
+        // after the joint, we have to redirect to the circle page
+        if(clicked === 'circle'){
             if(token.length > 0){
-                // console.log("ceating a pod...")
+                // console.log("ceating a circle...")
                 let header = {'Authorization': `Bearer ${token}`}
-                const url = `${window.location.protocol}//${baseURL}/api/create-pod/`
+                const url = `${window.location.protocol}//${baseURL}/api/create-circle/`
                 const param = {"user": AuthUser.username, 'district':AuthUser.users.district.code}
-               
+
                 axios.post(url, param, {headers:header})
                 .then( response => {
                     if(response.status === 400 ){
                         setMessage({msg:response.data.message,type: "alert alert-danger" })
                     }else if(response.status === 200){
-                        dispatch(pod(response.data))
+                        dispatch(circle(response.data))
                         let u = {...AuthUser.users}
                         let userType = 1
                         let users = {...u,userType}
                         dispatch(authenticate({...AuthUser,users}))
-                        setMessage({type:"alert alert-success", msg:"pod created."})
+                        setMessage({type:"alert alert-success", msg:"circle created."})
                         navigate('/house-keeping-page');
                     }else{
                         console.log("something went wrong:", response)
@@ -47,27 +47,27 @@ function JoinPod(){
                 });
             }
         }else if(clicked === 'join'){
-            // console.log("joining a pod ...")
+            // console.log("joining a circle ...")
             if(token.length > 0 && inviteKey.length === 10){
                 let header = {'Authorization': `Bearer ${token}`}
-                const url = `${window.location.protocol}//${baseURL}/api/join-pod/`
-                const param = {"user": AuthUser.username, 'pod':inviteKey}
-            
+                const url = `${window.location.protocol}//${baseURL}/api/join-circle/`
+                const param = {"user": AuthUser.username, 'circle':inviteKey}
+
                 axios.post(url, param, {headers:header})
                 .then( response => {
                     if(response.status === 400 ){
                         setMessage({msg:response.data.message,type: "alert alert-danger" })
                     }else if(response.status === 200){
-                        // set the user and create a store for pod
-                        dispatch(pod(response.data))
+                        // set the user and create a store for circle
+                        dispatch(circle(response.data))
                         let u = {...AuthUser.users}
                         let userType = 1
                         let users = {...u,userType}
                         dispatch(authenticate({...AuthUser,users}))
-                        setMessage({type:"alert alert-success", msg:"Joint the pod. wait for the members to aprove you. Redirecting to Pod..."})
-                        
-                        setPOD(response.data.code)
-                        
+                        setMessage({type:"alert alert-success", msg:"Joint the circle. wait for the members to aprove you. Redirecting to Circle..."})
+
+                        setCIRCLE(response.data.code)
+
                     }else{
                         console.log("something went wrong:", response)
                     }
@@ -84,14 +84,14 @@ function JoinPod(){
     },[token])
 
     useEffect(()=>{
-        if(POD.length > 1){
+        if(CIRCLE.length > 1){
             let ws_schame = window.location.protocol == "https:" ? "wss" : "ws";
-            const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${POD}/${AuthUser.username}/`
+            const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${CIRCLE}/${AuthUser.username}/`
             const chatSocket = new WebSocket(url);
             // get back the messages...
             chatSocket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
-                if(data.type === 'podmember'){
+                if(data.type === 'circlemember'){
                     console.log(data.data)
                 }else if(data.type ==='joined'){
                     console.log("joined: ",data.data)
@@ -100,7 +100,7 @@ function JoinPod(){
             };
         }
 
-    },[POD])
+    },[CIRCLE])
 
     useEffect(()=>{
         if(WS.url){
@@ -108,7 +108,7 @@ function JoinPod(){
                 "action":"join",
                 "payload":{
                     "voter": AuthUser.username,
-                    "pod":POD,
+                    "circle":CIRCLE,
                 }
             }));
             WS.close()
@@ -116,9 +116,9 @@ function JoinPod(){
         }
     },[WS])
 
-    
+
     function GetToken(from){
-        // from is tell weather the join btn is clicked on create pod
+        // from is tell weather the join btn is clicked on create circle
         const TokenUrl = `${window.location.protocol}//${baseURL}/api/token/refresh/`;
         const token_params = {refresh: AuthUser.token.refresh}
         axios.post(TokenUrl, token_params)
@@ -136,19 +136,19 @@ function JoinPod(){
             setMessage({type:"alert alert-danger",msg:"something went wrong with your request"})
             // setErr("Something went wrong. Check your inputs and try again.");
             console.log(error)
-        }); 
+        });
     }
 
     const handleSubmit = () => {
         // get the access token and set the clicked to join
         GetToken('join');
     }
-    const handlePod =()=>{
-        GetToken('pod')
+    const handleCircle =()=>{
+        GetToken('circle')
         // we need username and district code. token is required for request
-        // after the creation pf pod, we have to redirect to pod page
+        // after the creation pf circle, we have to redirect to circle page
     }
-    
+
     return (
         <div className="container">
             <div className="row">
@@ -160,16 +160,16 @@ function JoinPod(){
                         <p className="text-left">The First Delegate of a circle should send you an Invitation Key. This cannot be done via the website.</p>
                         <p className="text-left">Or you can create your own circle and start inviting others to join it.</p>
                         <div className='col text-center'>
-                            <span onClick={handlePod} className="btn btn-primary btn-sm mb-3">Create A Circle</span>
+                            <span onClick={handleCircle} className="btn btn-primary btn-sm mb-3">Create A Circle</span>
                         </div>
                     </div>
 
                     {message.msg ?
                         <div  className={message.type} role="alert"> {message.msg}</div>
                     :""}
-                    
+
                     <label className='text-left'>invitation Key</label>
-                    <input type="text" onChange={(e)=> setInviteKey(e.target.value)} className="form-control" placeholder='Enter the pod invitation key here' />
+                    <input type="text" onChange={(e)=> setInviteKey(e.target.value)} className="form-control" placeholder='Enter the circle invitation key here' />
                     <div className='col text-center'>
                         <button className="btn btn-success mt-2" onClick={handleSubmit}> Join The Circle</button>
                     </div>
@@ -181,4 +181,4 @@ function JoinPod(){
 
 }
 
-export default JoinPod
+export default JoinCircle

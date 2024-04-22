@@ -2,8 +2,8 @@ import React from "react";
 import {useSelector, } from 'react-redux';
 function MemberContactPage() {
   // const AuthUser      = useSelector((state) => state.AuthUser.user);
-  const podInfo       = useSelector((state) => state.AuthUser.pod);
-  const podMembers    = useSelector((state) => state.AuthUser.podMembers);
+  const circleInfo       = useSelector((state) => state.AuthUser.circle);
+  const circleMembers    = useSelector((state) => state.AuthUser.circleMembers);
 
   return (
     <div className="container">
@@ -14,11 +14,11 @@ function MemberContactPage() {
                   <div class="alert alert-danger" role="alert"> </div>
               </div> */}
               <h1 className="text-center">Members Contant Page </h1>
-              <h3 className='text-center'>Circle: {podInfo?.code} District: {podInfo?.district?.code}</h3>
+              <h3 className='text-center'>Circle: {circleInfo?.code} District: {circleInfo?.district?.code}</h3>
           </div>
         <div className="col-sm-12 col-md-3"></div>
       </div>
-    
+
       <div className="row mt-3">
         {/* make a table with columns of No, Legal Name, Address, Contact Info, Contact Rules */}
         <table className="table table-bordered">
@@ -32,14 +32,14 @@ function MemberContactPage() {
               </tr>
           </thead>
           <tbody>
-            {podMembers?.map((member, index) => ( 
+            {circleMembers?.map((member, index) => (
               <tr key={index}>
                 <td>{index+1}</td>
-                <td>{member?.user?.users?.legalName} 
+                <td>{member?.user?.users?.legalName}
                 {member.is_delegate ? <span className="alert alert-primary p-0 px-2 mx-1">Del</span> : null}</td>
                 <td>{member?.user?.users?.address}</td>
                 {/**
-                 * I am not sure how are we going to collect phone numbers of the members? 
+                 * I am not sure how are we going to collect phone numbers of the members?
                  * consult with Don!
                  */}
                 <td> +1 32123223 <br /> {member.user?.email} </td>

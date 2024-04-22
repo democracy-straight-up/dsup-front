@@ -15,19 +15,19 @@ export const GenPass = function(length) {
     const numbers = "0123456789";
     const specialChars = "!@#$%^&*()";
     let password = [];
-  
+
     password.push(lowerCase.charAt(Math.floor(Math.random() * lowerCase.length)));
     password.push(upperCase.charAt(Math.floor(Math.random() * upperCase.length)));
     password.push(numbers.charAt(Math.floor(Math.random() * numbers.length)));
     password.push(specialChars.charAt(Math.floor(Math.random() * specialChars.length)));
-  
+
     for (let i = 4; i < length; i++) {
         password.push(charset.charAt(Math.floor(Math.random() * charset.length)));
     }
-  
+
     // shuffle password
     password = password.sort(() => Math.random() - 0.5);
-  
+
     return password.join('');
 };
 
@@ -50,8 +50,6 @@ function ClaimYourSeat() {
     const [formErr, setFormErr] = useState('');
     const [LegalName_Err, setLegalName_Err] = useState(false);
     const [Address_Err, setAddress_Err] = useState(false);
-    // const [LegalName_Err, setLegalName_Err] = useState(false);
-    // const [Address_Err, setAddress_Err] = useState(false);
     const [is_formErr, setIs_formErr] = useState(false);
 
     const handleCheck = (e) => {
@@ -94,28 +92,6 @@ function ClaimYourSeat() {
         }
          //endof then function
     }
-
-    // const handleCheckLegalName = (e) => {
-    //     //check legal name in valid or not
-    //     const reEmoji = /[^a-zA-Z0-9 ]/gm;
-    //     if (!reEmoji.test(e.target.value)) {
-    //         setLegalName_Err(false);
-    //     } else {
-    //         setLegalName_Err(true);
-    //     }
-    //      //endof then function
-    // }
-
-    // const handleCheckAddress = (e) => {
-    //     //check address in valid or not
-    //     const reAddress = /[^a-zA-Z0-9\s,.-]/gm;
-    //     if (!reAddress.test(e.target.value)) {
-    //         setAddress_Err(false);
-    //     } else {
-    //         setAddress_Err(true);
-    //     }
-    //      //endof then function
-    // }
 
     const handlePassword = (e) => {
         setPassword(e)
@@ -201,7 +177,7 @@ function ClaimYourSeat() {
         if (district.length === 0) {
             setSubmitStatus(false);
         }
-        
+
         // 2. district input is a valid district code
         // 3. check legal name input is not empty
         // 4. check email input is not empty and is valid email format
@@ -234,7 +210,6 @@ function ClaimYourSeat() {
                             followed by a two-digit number. For instance,
                             the third district in Alabama would be AL03.
                         </span>
-                        <span className="red-airstrike ">*</span>
                         <span className="red-airstrike ">*</span>
                         <br />
                         {/* <label htmlFor="district" className="text-right">District:</label> */}
@@ -276,7 +251,6 @@ function ClaimYourSeat() {
                             use your name as it would
                             normally appear on legal documents, in the order you would use for your signature.
                         </span> <span className="red-airstrike ">*</span><br />
-                        <span className="red-airstrike ">*</span><br />
                         {/* <label htmlFor="legalName" required ={true} className="text-right">Legal Name:</label> */}
                         <input type="text"
                             onChange={(e) => setLegalName(e.target.value)}
@@ -290,8 +264,7 @@ function ClaimYourSeat() {
 
 
                         <span> This email address will only be used to confirm your registration.
-                            Once you join a Pod, all further communications from the project will go through your First Delegate.</span>
-                            <span className="red-airstrike ">*</span>
+                            Once you join a Circle, all further communications from the project will go through your First Delegate.</span>
                             <span className="red-airstrike ">*</span>
                         <br />
                         {/* <label htmlFor="email" className="text-right">Email:</label> */}
@@ -306,15 +279,14 @@ function ClaimYourSeat() {
                             Use the address that appears on your voter registration card.
                             If you don't know exactly, use your address as you would write it if sending a letter.
                         </span> <span className="red-airstrike ">*</span><br />
-                        <span className="red-airstrike ">*</span><br />
                         {/* <label htmlFor="address" className="text-right">Address:</label> */}
                         <textarea placeholder="Enter your address "
                             onChange={(e) => setAddress(e.target.value)}
                             onBlur={(e) => handleCheckAddress(e)}
                             className="form-control" rows="5" />
-                        {/* <input type="text" 
-                        className="form-control" 
-                        
+                        {/* <input type="text"
+                        className="form-control"
+
                         id="address" placeholder="enter your address"/>
                         <br/> */}
                         {Address_Err && address.length > 0 ? <p className="text-danger m-0">Please enter valid address.</p> : ''}
@@ -341,7 +313,7 @@ function ClaimYourSeat() {
                         </div>
 
                         {Pass_Err && password.length > 0 ? <p className="text-danger m-0">Your password is not valid</p> : ''}
-                        <p className="m-0 fw-bold">Password Guidlines:</p>
+                        <p className="m-0 fw-bold">Password Guidelines:</p>
                         <ol>
                             <li>Is at least 8 characters long</li>
                             <li>Has at least one upper and lower case</li>
