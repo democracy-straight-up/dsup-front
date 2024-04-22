@@ -50,8 +50,8 @@ function ClaimYourSeat() {
     const [formErr, setFormErr] = useState('');
     const [LegalName_Err, setLegalName_Err] = useState(false);
     const [Address_Err, setAddress_Err] = useState(false);
-    const [LegalName_Err, setLegalName_Err] = useState(false);
-    const [Address_Err, setAddress_Err] = useState(false);
+    // const [LegalName_Err, setLegalName_Err] = useState(false);
+    // const [Address_Err, setAddress_Err] = useState(false);
     const [is_formErr, setIs_formErr] = useState(false);
 
     const handleCheck = (e) => {
@@ -95,27 +95,27 @@ function ClaimYourSeat() {
          //endof then function
     }
 
-    const handleCheckLegalName = (e) => {
-        //check legal name in valid or not
-        const reEmoji = /[^a-zA-Z0-9 ]/gm;
-        if (!reEmoji.test(e.target.value)) {
-            setLegalName_Err(false);
-        } else {
-            setLegalName_Err(true);
-        }
-         //endof then function
-    }
+    // const handleCheckLegalName = (e) => {
+    //     //check legal name in valid or not
+    //     const reEmoji = /[^a-zA-Z0-9 ]/gm;
+    //     if (!reEmoji.test(e.target.value)) {
+    //         setLegalName_Err(false);
+    //     } else {
+    //         setLegalName_Err(true);
+    //     }
+    //      //endof then function
+    // }
 
-    const handleCheckAddress = (e) => {
-        //check address in valid or not
-        const reAddress = /[^a-zA-Z0-9\s,.-]/gm;
-        if (!reAddress.test(e.target.value)) {
-            setAddress_Err(false);
-        } else {
-            setAddress_Err(true);
-        }
-         //endof then function
-    }
+    // const handleCheckAddress = (e) => {
+    //     //check address in valid or not
+    //     const reAddress = /[^a-zA-Z0-9\s,.-]/gm;
+    //     if (!reAddress.test(e.target.value)) {
+    //         setAddress_Err(false);
+    //     } else {
+    //         setAddress_Err(true);
+    //     }
+    //      //endof then function
+    // }
 
     const handlePassword = (e) => {
         setPassword(e)
@@ -276,11 +276,10 @@ function ClaimYourSeat() {
                             use your name as it would
                             normally appear on legal documents, in the order you would use for your signature.
                         </span> <span className="red-airstrike ">*</span><br />
-                        </span> <span className="red-airstrike ">*</span><br />
+                        <span className="red-airstrike ">*</span><br />
                         {/* <label htmlFor="legalName" required ={true} className="text-right">Legal Name:</label> */}
                         <input type="text"
                             onChange={(e) => setLegalName(e.target.value)}
-                            onBlur={(e) => handleCheckLegalName(e)}
                             onBlur={(e) => handleCheckLegalName(e)}
                             className="form-control"
                             id="legalName" placeholder="Enter your full legal name " />
@@ -307,11 +306,10 @@ function ClaimYourSeat() {
                             Use the address that appears on your voter registration card.
                             If you don't know exactly, use your address as you would write it if sending a letter.
                         </span> <span className="red-airstrike ">*</span><br />
-                        </span> <span className="red-airstrike ">*</span><br />
+                        <span className="red-airstrike ">*</span><br />
                         {/* <label htmlFor="address" className="text-right">Address:</label> */}
                         <textarea placeholder="Enter your address "
                             onChange={(e) => setAddress(e.target.value)}
-                            onBlur={(e) => handleCheckAddress(e)}
                             onBlur={(e) => handleCheckAddress(e)}
                             className="form-control" rows="5" />
                         {/* <input type="text" 
