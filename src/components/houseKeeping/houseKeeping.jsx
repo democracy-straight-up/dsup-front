@@ -392,7 +392,7 @@ function HouseKeeping(){
                                         Yes
                                         <input type="checkbox"
                                         className='form-check-input mx-2'
-                                        checked={delegated(member?.putFarward)}
+                                        checked={delegated(member?.putForward)}
                                         onChange={()=> handleDelegate(member)}/>
                                     </td>
 
@@ -400,7 +400,7 @@ function HouseKeeping(){
                                 ""}
                                 {/* end circle active condition */}
 
-                                <td>{ circleInfo?.is_active? member.putFarward.length===0? "":member.putFarward.length :null}</td>
+                                <td>{ circleInfo?.is_active? member.putForward.length===0? "":member.putForward.length :null}</td>
                                 <td>{actions(member)}</td>
                             </tr>
                         ))

@@ -8,7 +8,7 @@ import { Modal, Button } from 'react-bootstrap';
 const Member = ({member, index, chatSocket,dissolve, fDel, circleInfo, Iam_member, Iam_delegate}) => {
     const AuthUser  = useSelector((state) => state.AuthUser.user);
     const [voted_out, setVoted_out] = useState(false);
-    const [put_farward, setPut_farward] = useState(false);
+    const [put_forward, setPut_forward] = useState(false);
     const [clicked, setClicked] = useState(false)   //check the member that clicked
 
     const [showModal, setShowModal] = useState(false);
@@ -39,12 +39,12 @@ const Member = ({member, index, chatSocket,dissolve, fDel, circleInfo, Iam_membe
     // checking if the member voted for gelegation.
     useEffect(()=>{
         /** Check for the AuthUser if he/she vote for delegation  */
-        const putFarwardURL = `${window.location.protocol}//${baseURL}/api/circle-put-farward-list/`;
-        axios.get(putFarwardURL, {params: { member: member?.id} },
+        const putForwardURL = `${window.location.protocol}//${baseURL}/api/circle-put-forward-list/`;
+        axios.get(putForwardURL, {params: { member: member?.id} },
         {headers: { Authorization: `Bearer ${AuthUser.token.access}`}})
         .then(response=>{
             // checking whether the auth user has voted for delegation.
-            response.data.map((res)=>{ if(res.voter == AuthUser?.id){setPut_farward(true) }})
+            response.data.map((res)=>{ if(res.voter == AuthUser?.id){setPut_forward(true) }})
         })
         .catch(err=>console.log(err))
     },[clicked])
@@ -87,10 +87,10 @@ const Member = ({member, index, chatSocket,dissolve, fDel, circleInfo, Iam_membe
     }
 
 
-    const putFarward = ()=>{
+    const putForward = ()=>{
         /** send the vote to the server */
         chatSocket.send(JSON.stringify({
-            "action":"putFarward",
+            "action":"putForward",
             "payload":{
                 "voter": AuthUser.username,
                 "member":member?.id,
@@ -113,11 +113,11 @@ const Member = ({member, index, chatSocket,dissolve, fDel, circleInfo, Iam_membe
                 <th className='fw-bold'>Yes
                     <input
                     type="checkbox"
-                    checked={put_farward}
-                    onChange={()=>putFarward()}
+                    checked={put_forward}
+                    onChange={()=>putForward()}
                     className='form-check-input mx-2'
                     />
-                    <span className="alert alert-primary p-0 px-2 mx-2">{member?.count_put_farward} votes</span>
+                    <span className="alert alert-primary p-0 px-2 mx-2">{member?.count_put_forward} votes</span>
                 </th>
             </>:null}
              {/* if the circle is not active
