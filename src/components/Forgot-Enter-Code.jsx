@@ -8,7 +8,7 @@ import { baseURL } from '../store/conf.js'
 function ForgotEnterCode() {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
-    const [message, setMessage] = useState(false)
+    const [is_formErr, setIs_formErr] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -21,12 +21,12 @@ function ForgotEnterCode() {
 
         .then(response => {
             if (response.status === 200) {
-                setMessage(true)
                 navigate('/sign-up')
             }
         })
         .catch(error => {
-            setMessage(false);
+            setIs_formErr(true);
+            console.log("err: ", error)
         });
        
      
@@ -59,11 +59,15 @@ function ForgotEnterCode() {
                           
                         <br />
 
-                 {       <div className="row">
+                        <div className="row">
                             <div className="col">
-                               
+                                {is_formErr ?
+                                    <div className="alert alert-danger">
+                                        Error submiting the form
+                                    </div>
+                                    : ''}
                             </div>
-                        </div> }
+                        </div>
                         <div className="row">
                             <div className="col text-center">
                                 <input type="submit"

@@ -259,7 +259,6 @@ function ClaimYourSeat() {
                             id="legalName" placeholder="Enter your full legal name " />
                         {is_formErr ? <p className="m-0 text-danger"> {formErr?.legalName ? formErr?.legalName[0] : ''}</p> : ''}
                         {LegalName_Err && legalName.length > 0 ? <p className="text-danger m-0">Please enter valid legal name.</p> : ''}
-                        {LegalName_Err && legalName.length > 0 ? <p className="text-danger m-0">Please enter valid legal name.</p> : ''}
                         <br />
 
 
@@ -289,7 +288,6 @@ function ClaimYourSeat() {
 
                         id="address" placeholder="enter your address"/>
                         <br/> */}
-                        {Address_Err && address.length > 0 ? <p className="text-danger m-0">Please enter valid address.</p> : ''}
                         {Address_Err && address.length > 0 ? <p className="text-danger m-0">Please enter valid address.</p> : ''}
                         <br />
                         <button className="btn btn-primary my-2" onClick={(e) => generatePass(e)}>
