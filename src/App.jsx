@@ -3,6 +3,7 @@ import SignUpConfirm from './components/signUpConform.jsx';
 import ClaimYourSeat from './components/Claim-Your-Seat.jsx';
 import Home from './Home.jsx';
 import EnterTheFloor from './components/Enter-the-Floor.jsx';
+import ForgotEnterCode from './components/Forgot-Enter-Code.jsx';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import Error from './components/Error.jsx';
@@ -27,6 +28,8 @@ function App(){
         <Route index element={<><Header/><Home/><Footer/></>}/>
         <Route path='/claim-your-seat' element={<><Header/><ClaimYourSeat/><Footer/></>}/>
         <Route path="/enter-the-floor" element={<><Header/><EnterTheFloor/><Footer/></>}/>
+
+        <Route path="/forgot-enter-code" element={<><Header/><ForgotEnterCode/><Footer/></>}/>
 
         <Route path="/voter-page" element={<ProtectedRoute><Header/><VoterPage/><Footer/></ProtectedRoute>}/>
         <Route path="/house-keeping-page" element={<ProtectedRoute><Header/><HouseKeeping/><Footer/></ProtectedRoute>}/>

@@ -10,9 +10,9 @@ function Footer(){
                     <p className='text-secondary'>The Democracy, Straight-Up! Project </p>
                 </div>
                 <div className="col text-end">
-                    <Link to='/' className='mx-3 text-secondary'>About</Link>
-                    <Link to='/' className='mx-3 text-secondary'>Contact</Link>
-                    <Link to='/' className='mx-3 text-secondary'>News</Link>
+                    <Link to='https://democracystraightup.org/about-us/' className='mx-3 text-secondary'>About</Link>
+                    <Link to='https://democracystraightup.org/contact-us/' className='mx-3 text-secondary'>Contact</Link>
+                    <Link to='https://democracystraightup.org/category/blog/' className='mx-3 text-secondary'>News</Link>
                     {/* <a className='mx-3 text-secondary' href="#">About</a>
                     <a className='mx-3 text-secondary' href="#">Contact</a>
                     <a className='mx-3 text-secondary' href="#">News</a> */}
