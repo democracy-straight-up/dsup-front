@@ -158,13 +158,13 @@ function VoterPage() {
                         </div>
                         {/* add if the user is delegate and then show this two. */}
                         {AuthUser?.username === delegate?.user?.username ? <>
-                            <div className="col-sm-12 col-lg-6 my-1">
-                                <a className="btn btn-primary " style={{ whiteSpace: 'nowrap' }} >Join First Link</a>
-                            </div>
-                            <div className="col-sm-12 col-lg-6 my-1">
-                                <a className="btn btn-primary " style={{ whiteSpace: 'nowrap' }} >Create First Link</a>
-                            </div>
-                        </>
+                                <div className="col-sm-12 col-lg-6 my-1">
+                                    <a className="btn btn-primary " style={{ whiteSpace: 'nowrap' }} >Join First Link</a>
+                                </div>
+                                <div className="col-sm-12 col-lg-6 my-1">
+                                    <a className="btn btn-primary " style={{ whiteSpace: 'nowrap' }} >Create First Link</a>
+                                </div>
+                            </>
                             : ""}
                         <div className="col-sm-12 col-lg-6 my-1">
                             <Link className='btn btn-primary' style={{ whiteSpace: 'nowrap' }} to={'/circle-back-n-forth'}>Back & Forth</Link>
@@ -209,34 +209,33 @@ function VoterPage() {
                     <h1>Voter Page</h1>
                 </div>
                 <Row>
-
-                    <Col>
+                    <Col className="text-left">
                         <Row>
                             <Col xs="auto">
-                                <p className="text-left">Voter Name:</p>
+                                <p>Voter Name:</p>
                             </Col>
                             <Col>
                                 <p>{AuthUser?.users?.legalName}</p>
                             </Col>
                         </Row>
                     </Col>
-                    <Col>
+                    <Col className="text-center">
                         <Row>
                             <Col xs="auto">
-                                <p className="text-left">Verification Score:</p>
+                                <p>Verification Score:</p>
                             </Col>
                             <Col>
                                 <p>{AuthUser?.users?.verificationScore}/7</p>
                             </Col>
                         </Row>
                     </Col>
-                    <Col>
+                    <Col className="text-right">
                         <Row>
                             <Col xs="auto">
-                                <p className="text-left">District:</p>
+                                <p>District:</p>
                             </Col>
                             <Col>
-                                <p>{AuthUser.users?.district?.code}</p>
+                                <p>{AuthUser?.users?.district?.code}</p>
                             </Col>
                         </Row>
                     </Col>
@@ -272,45 +271,45 @@ function VoterPage() {
             {/* <p> <Link> Bills sorted by Latest Action </Link></p> */}
             <Table striped bordered hover responsive>
                 <thead>
-                    <tr className='bills-list-voter-page-header-row'>
-                        <th>Bill Number</th>
-                        <th style={{"minWidth":"300px"}}>Short Title</th>
-                        <th>Scheduled For Vote</th>
-                        <th>Advisement</th>
-                        <th>Your Vote</th>
-                        <th>District Tally</th>
-                        <th>National Tally</th>
-                        <th>More...</th>
-                    </tr>
+                <tr className='bills-list-voter-page-header-row'>
+                    <th>Bill Number</th>
+                    <th style={{"minWidth":"300px"}}>Short Title</th>
+                    <th>Scheduled For Vote</th>
+                    <th>Advisement</th>
+                    <th>Your Vote</th>
+                    <th>District Tally</th>
+                    <th>National Tally</th>
+                    <th>More...</th>
+                </tr>
                 </thead>
                 <tbody>
-                    {bills?.results?.map((bill, index) => (
-                        <Bill_Item bill={bill} key={index} index={index}></Bill_Item>
-                    ))}
+                {bills?.results?.map((bill, index) => (
+                    <Bill_Item bill={bill} key={index} index={index}></Bill_Item>
+                ))}
                 </tbody>
                 <tfoot className='border-0'>
-                    <tr className='p-2 border-0'>
-                        <td colSpan={4} className='border-0'></td>
-                        <td colSpan={4} className='border-0' style={{ textAlign: 'right' }}>
-                            {bills?.previous ? <span
-                                className='btn btn-outline-success mx-1 p-0 px-3'
-                                onClick={()=>setCurrentPage(currentPage-1)}>Previous</span> : ""}
+                <tr className='p-2 border-0'>
+                    <td colSpan={4} className='border-0'></td>
+                    <td colSpan={4} className='border-0' style={{ textAlign: 'right' }}>
+                        {bills?.previous ? <span
+                            className='btn btn-outline-success mx-1 p-0 px-3'
+                            onClick={()=>setCurrentPage(currentPage-1)}>Previous</span> : ""}
 
-                            {bills?.previous ? <span
-                                    className='btn btn-outline-success mx-1 p-0 px-3'
-                                    onClick={()=>setCurrentPage(currentPage-1)}>{currentPage-1}</span>: ""}
+                        {bills?.previous ? <span
+                            className='btn btn-outline-success mx-1 p-0 px-3'
+                            onClick={()=>setCurrentPage(currentPage-1)}>{currentPage-1}</span>: ""}
 
-                            <span className='btn btn-success mx-1 p-0 px-3'>{currentPage}</span>
+                        <span className='btn btn-success mx-1 p-0 px-3'>{currentPage}</span>
 
-                            {bills?.next ? <span
-                                    className='btn btn-outline-success mx-1 p-0 px-3'
-                                    onClick={()=>setCurrentPage(currentPage+1)}>{currentPage+1}</span> : ""}
+                        {bills?.next ? <span
+                            className='btn btn-outline-success mx-1 p-0 px-3'
+                            onClick={()=>setCurrentPage(currentPage+1)}>{currentPage+1}</span> : ""}
 
-                            {bills?.next ? <span
-                                className='btn btn-outline-success mx-1 p-0 px-3'
-                                onClick={()=>setCurrentPage(currentPage+1)}>Next</span> : ""}
-                        </td>
-                    </tr>
+                        {bills?.next ? <span
+                            className='btn btn-outline-success mx-1 p-0 px-3'
+                            onClick={()=>setCurrentPage(currentPage+1)}>Next</span> : ""}
+                    </td>
+                </tr>
                 </tfoot>
             </Table>
         </div>
