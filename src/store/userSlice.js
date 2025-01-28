@@ -1,67 +1,69 @@
-import { createSlice } from '@reduxjs/toolkit'
-
+import { createSlice } from "@reduxjs/toolkit";
 
 function getLocalStorageItem(key) {
   const item = localStorage.getItem(key);
   try {
     return JSON.parse(item);
   } catch (e) {
-    console.error('Error parsing data from localStorage:', e);
+    console.error(
+      "Error parsing data from localStorage. some local storage is not loaed well"
+    );
     return null;
   }
 }
 
 // init the initial State to local and check if the user already added to cart
-const userLocal = getLocalStorageItem('AuthUser');
-const circleLocal = getLocalStorageItem('circle');
-const circleMembersLocal = getLocalStorageItem('circleMembers');
+const userLocal = getLocalStorageItem("AuthUser");
+const circleLocal = getLocalStorageItem("circle");
+const circleMembersLocal = getLocalStorageItem("circleMembers");
 
 let userInit = null;
 let circleInit = null;
-let circleMembersInit = null
+let circleMembersInit = null;
 
-userLocal ? userInit = userLocal : userInit = null;
-circleLocal ? circleInit = circleLocal : circleInit = null;
-circleMembersLocal ? circleMembersInit = circleMembersLocal : circleMembersInit = null;
+userLocal ? (userInit = userLocal) : (userInit = null);
+circleLocal ? (circleInit = circleLocal) : (circleInit = null);
+circleMembersLocal
+  ? (circleMembersInit = circleMembersLocal)
+  : (circleMembersInit = null);
 
 const initialState = {
   user: userInit,
   circle: circleInit,
   circleMembers: circleMembersInit,
-}
+};
 
 export const UserSlice = createSlice({
-  name: 'authUser',
+  name: "authUser",
   initialState,
   reducers: {
     authenticate: (state, action) => {
-      state.user = action.payload
+      state.user = action.payload;
       // add cart to localstorage
-      toLocalStorage('AuthUser', state.user)
+      toLocalStorage("AuthUser", state.user);
     },
     logout: (state) => {
       state.user = null;
-      localStorage.removeItem('AuthUser');
-      localStorage.removeItem('circle');
-      localStorage.removeItem('circleMembers');
+      localStorage.removeItem("AuthUser");
+      localStorage.removeItem("circle");
+      localStorage.removeItem("circleMembers");
     },
     circle: (state, action) => {
-      state.circle = action.payload
-      toLocalStorage('circle', state.circle);
+      state.circle = action.payload;
+      toLocalStorage("circle", state.circle);
     },
     addCirclemMembers: (state, action) => {
       state.circleMembers = action.payload;
-      toLocalStorage('circleMembers', state.circleMembers)
+      toLocalStorage("circleMembers", state.circleMembers);
     },
     desolveCircle: (state, action) => {
-      state.circle = null
-      state.circleMembers = null
-      localStorage.removeItem('circle');
-      localStorage.removeItem('circleMembers');
-    }
-
+      state.circle = null;
+      state.circleMembers = null;
+      localStorage.removeItem("circle");
+      localStorage.removeItem("circleMembers");
+    },
   },
-})
+});
 
 function toLocalStorage(store, user) {
   if (user === null) {
@@ -72,5 +74,11 @@ function toLocalStorage(store, user) {
 }
 
 // Action creators are generated for each case reducer function
-export const { authenticate, logout, circle, addCirclemMembers, desolveCircle } = UserSlice.actions
-export default UserSlice.reducer
+export const {
+  authenticate,
+  logout,
+  circle,
+  addCirclemMembers,
+  desolveCircle,
+} = UserSlice.actions;
+export default UserSlice.reducer;
