@@ -42,7 +42,7 @@ export default function FLinkCard() {
     <div className="mt-3">
       <div className="row align-items-start">
         <div className="col-md-10 offset-md-1">
-          <div className={`card rounded-3 bg-light p-4 ${sec_del_info.is_active ? "" : ""}`}>
+          <div className={`card rounded-3 bg-light p-4`}>
             {error === false ? (
               <>
                 <div className="row">
