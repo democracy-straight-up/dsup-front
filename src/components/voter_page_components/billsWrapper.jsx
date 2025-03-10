@@ -14,10 +14,9 @@ export default function BillsWrapper({ setMessage }) {
   useEffect(() => {
     let header = { Authorization: `Bearer ${AuthUser.token.access}` };
     axios
-      .get(
-        `${window.location.protocol}//${baseURL}/bill/bills/?page=${currentPage}`,
-        { headers: header }
-      )
+      .get(`${window.location.protocol}//${baseURL}/bill/bills/?page=${currentPage}`, {
+        headers: header,
+      })
       .then((response) => {
         setBills(response.data);
       })
@@ -32,7 +31,7 @@ export default function BillsWrapper({ setMessage }) {
 
   return (
     <>
-      <h1 className="header-semibold" style={{ marginBottom: "1%" }}>
+      <h1 className="header-semibold mt-4" style={{ marginBottom: "1%" }}>
         List of Bills
       </h1>
       <Table striped bordered hover responsive>
@@ -77,9 +76,7 @@ export default function BillsWrapper({ setMessage }) {
                 ""
               )}
 
-              <span className="btn btn-success mx-1 p-0 px-3">
-                {currentPage}
-              </span>
+              <span className="btn btn-success mx-1 p-0 px-3">{currentPage}</span>
 
               {bills?.next ? (
                 <span
