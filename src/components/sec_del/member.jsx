@@ -97,7 +97,6 @@ export default function Member({
       JSON.stringify({
         action: "dissolve",
         payload: {
-          voter: AuthUser.username,
           member: member?.id,
         },
       })

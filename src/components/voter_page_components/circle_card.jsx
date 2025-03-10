@@ -41,7 +41,7 @@ export default function CircleCard() {
     <div className="mt-3">
       <div className="row align-items-start">
         <div className="col-md-10 offset-md-1">
-          <div className="card rounded-3 bg-light p-4">
+          <div className={`card rounded-3 bg-light p-4 ${!circleInfo?.is_active ? "" : ""}`}>
             {error === false ? (
               <>
                 <div className="row">
@@ -49,7 +49,9 @@ export default function CircleCard() {
                     <h1 className="fs-3 m-0 text-center">
                       Circle-{circleInfo?.district?.code}-{circleInfo?.code}
                     </h1>
-                    <div className="d-flex justify-content-between  border-bottom border-1">
+                    <div
+                      className="d-flex justify-content-between mx-auto border-bottom border-1"
+                      style={{ maxWidth: AuthUser.users.userType === 1 ? "60%" : "90%" }}>
                       <p className="m-0">Status: {circleInfo?.is_active ? "Active" : "Inactive"}</p>
                       <p className="m-0">members: {circleInfo?.member_count}</p>
                     </div>

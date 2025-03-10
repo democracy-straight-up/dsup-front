@@ -91,8 +91,9 @@ function SecondDelegatePage() {
     if (msg.action === "invite_key") {
       dispatch(sec_del(msg.f_link));
     }
-    if (msg.action === "dissolve") {
-      console.log("dissolve action: ", msg);
+    if (msg.action === "dissolve" && msg.status === "success") {
+      alert("removed done!! taking you back to voger page");
+      navigate("/voter-page");
     }
   };
 

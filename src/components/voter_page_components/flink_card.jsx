@@ -42,7 +42,7 @@ export default function FLinkCard() {
     <div className="mt-3">
       <div className="row align-items-start">
         <div className="col-md-10 offset-md-1">
-          <div className="card rounded-3 bg-light p-4">
+          <div className={`card rounded-3 bg-light p-4 ${sec_del_info.is_active ? "" : ""}`}>
             {error === false ? (
               <>
                 <div className="row">
@@ -50,7 +50,9 @@ export default function FLinkCard() {
                     <h1 className="fs-3 m-0 text-center">
                       F-Link-{sec_del_info?.district?.code}-{sec_del_info?.code}
                     </h1>
-                    <div className="d-flex justify-content-between  border-bottom border-1">
+                    <div
+                      style={{ maxWidth: "90%" }}
+                      className="d-flex justify-content-between mx-auto border-bottom border-1">
                       <p className="m-0">
                         Status: {sec_del_info?.is_active ? "Active" : "Inactive"}
                       </p>
