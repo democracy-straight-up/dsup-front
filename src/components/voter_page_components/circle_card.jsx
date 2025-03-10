@@ -1,14 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { baseURL } from "../../store/conf";
-import { circle } from "../../store/userSlice";
+import { circle, authenticate, sec_del } from "../../store/userSlice";
 
 export default function CircleCard() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const circleInfo = useSelector((state) => state.AuthUser.circle);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -35,6 +36,42 @@ export default function CircleCard() {
       .catch((err) => {
         alert("Failed to copy ");
       });
+  };
+
+  const handleCreate = () => {
+    if (AuthUser?.token.access.length > 0) {
+      // console.log("ceating a circle...")
+      // constructing to request to create the first link
+      let header = { Authorization: `Bearer ${AuthUser.token.access}` };
+      const url = `${window.location.protocol}//${baseURL}/api/second-delegate/`;
+      const param = {
+        user: AuthUser.username,
+        district: AuthUser.users.district.code,
+      };
+
+      axios
+        .post(url, param, { headers: header })
+        .then((response) => {
+          if (response.status === 200) {
+            // if the request was a succcess, set the sec_del state so that we need it in the next page (sec_del housekeeping page)
+            dispatch(sec_del(response.data));
+
+            // set the userType to 2 without requesting new data from the server.
+            let u = { ...AuthUser.users };
+            let userType = 2;
+            let users = { ...u, userType };
+            dispatch(authenticate({ ...AuthUser, users }));
+
+            //   after successfull operation of creating, settign datas and users, take the voter to first link page
+            navigate("/first-link-page");
+          } else {
+            console.log("something went wrong:", response);
+          }
+        })
+        .catch((error) => {
+          console.log("something is not right!.", error);
+        });
+    }
   };
 
   return (
@@ -149,7 +186,7 @@ export default function CircleCard() {
                 <div className="row">
                   {AuthUser.users.userType === 1 ? (
                     <div className="d-flex flex-sm-column flex-md-row justify-content-evenly mt-4 ">
-                      <Link to="/" className="py-1 text-nowrap text-dark">
+                      <Link to="#" onClick={handleCreate} className="py-1 text-nowrap text-dark">
                         Create F-Link
                       </Link>
                       <Link to="/join-sec-del" className="py-1 text-nowrap  text-dark">
