@@ -1,12 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import {
-  circle,
-  desolveCircle,
-  authenticate,
-  addCirclemMembers,
-} from "../../store/userSlice.js";
+import { circle, desolveCircle, authenticate, addCirclemMembers } from "../../store/userSlice.js";
 import Member from "./member.jsx";
 import Candidate from "./candidate.jsx";
 import axios from "axios";
@@ -82,7 +77,7 @@ function HouseKeeping() {
       dispatch(desolveCircle());
       // set the userType to 0 and reset AuthUser
       let u = { ...AuthUser };
-      u.userType = 0;
+      u.userType = "U0D0";
       dispatch(authenticate(u));
       // navigate back to voter page
       navigate("/voter-page");
@@ -91,14 +86,8 @@ function HouseKeeping() {
     if (data.status === "success") {
       // on each members and candidate changes, check if the auth user is inside the list!
       // if not, redirect to the voter page.
-      if (
-        !data.member_list?.find(
-          (member) => member.user.username === AuthUser.username
-        )
-      ) {
-        setErr(
-          "You have been removed fron this circle. Taking you back to your voter page."
-        );
+      if (!data.member_list?.find((member) => member.user.username === AuthUser.username)) {
+        setErr("You have been removed fron this circle. Taking you back to your voter page.");
         navigate("/voter-page");
       }
       /**
@@ -106,19 +95,14 @@ function HouseKeeping() {
        * and set Iam_delegate to true based on AuthUser and is_delegate
        */
       setIam_delegate(
-        data.member_list?.find(
-          (member) => member.user.username === AuthUser.username
-        )?.is_delegate
+        data.member_list?.find((member) => member.user.username === AuthUser.username)?.is_delegate
       );
       setIam_member(
-        data.member_list?.find(
-          (member) => member.user.username === AuthUser.username
-        )?.is_member
+        data.member_list?.find((member) => member.user.username === AuthUser.username)?.is_member
       );
       setIam_candidate(
-        data.member_list?.find(
-          (member) => member.user.username === AuthUser.username
-        )?.is_member == false
+        data.member_list?.find((member) => member.user.username === AuthUser.username)?.is_member ==
+          false
       );
 
       /** set the fDel, candidate list and memebers list on each new message.
@@ -130,11 +114,7 @@ function HouseKeeping() {
       setCandidate(data.member_list?.filter((member) => !member.is_member));
 
       // this is circle members list is only for global state to use elsewhere.
-      dispatch(
-        addCirclemMembers(
-          data.member_list?.filter((member) => member.is_member)
-        )
-      );
+      dispatch(addCirclemMembers(data.member_list?.filter((member) => member.is_member)));
     }
     if (data.status === "error") {
       /** if the auth user is the same as user on error message:
@@ -211,9 +191,7 @@ function HouseKeeping() {
           <h3 className="text-center">
             Circle {circleInfo?.district.code}-{circleInfo?.code}
           </h3>
-          <h4 className="text-center">
-            Invitation Key: {circleInfo?.invitation_code}
-          </h4>
+          <h4 className="text-center">Invitation Key: {circleInfo?.invitation_code}</h4>
 
           {fDel?.user?.username === AuthUser?.username ? (
             <button
@@ -223,9 +201,7 @@ function HouseKeeping() {
             </button>
           ) : null}
 
-          {circleInfo?.is_active ? (
-            <p className="text-center">Circle Status: ACTIVE!</p>
-          ) : null}
+          {circleInfo?.is_active ? <p className="text-center">Circle Status: ACTIVE!</p> : null}
         </div>
         <div className="col-sm-12 col-md-3"></div>
       </div>
@@ -240,11 +216,7 @@ function HouseKeeping() {
                   <th className="fw-bold">Put forward as First Delegate</th>
                 </>
               ) : null}
-              {Iam_delegate ? (
-                <th className="fw-bold">Remove Member</th>
-              ) : (
-                <th></th>
-              )}
+              {Iam_delegate ? <th className="fw-bold">Remove Member</th> : <th></th>}
             </tr>
           </thead>
           <tbody>
@@ -278,13 +250,9 @@ function HouseKeeping() {
               <th className="fw-bold">#</th>
               <th className="fw-bold">Candidate Name</th>
               {Iam_delegate || Iam_member ? (
-                <th className="fw-bold">
-                  Do you want this candidate to be a member?
-                </th>
+                <th className="fw-bold">Do you want this candidate to be a member?</th>
               ) : null}
-              {Iam_delegate ? (
-                <th className="fw-bold">Remove Candidate</th>
-              ) : null}
+              {Iam_delegate ? <th className="fw-bold">Remove Candidate</th> : null}
             </tr>
           </thead>
           <tbody>

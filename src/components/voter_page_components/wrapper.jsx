@@ -5,15 +5,15 @@ import FLinkWrapper from "./f_link_wrapper";
 import VoterCard from "./voter_card";
 
 const UserCardSwitch = (AuthUser) => {
-  switch (AuthUser.users?.userType) {
-    case 0:
+  switch (AuthUser.users?.userType.substring(0, 2)) {
+    case "U0":
       return <VoterCard />;
-    case 1:
+    case "U1":
       return <CircleCard />;
-    case 2:
+    case "U2":
       return <FLinkWrapper />;
-    case 3:
-      console.log("case sec del.");
+    case "U3":
+      console.log("case s del.");
       return;
     default:
       console.log("default case here...");

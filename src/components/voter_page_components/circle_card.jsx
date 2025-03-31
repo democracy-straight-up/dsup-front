@@ -58,7 +58,7 @@ export default function CircleCard() {
 
             // set the userType to 2 without requesting new data from the server.
             let u = { ...AuthUser.users };
-            let userType = 2;
+            let userType = "U2D2";
             let users = { ...u, userType };
             dispatch(authenticate({ ...AuthUser, users }));
 
@@ -88,9 +88,11 @@ export default function CircleCard() {
                     </h1>
                     <div
                       className="d-flex justify-content-between mx-auto border-bottom border-1"
-                      style={{ maxWidth: AuthUser.users.userType === 1 ? "60%" : "90%" }}>
+                      style={{
+                        maxWidth: AuthUser.users.userType.substring(0, 2) === "U1" ? "60%" : "90%",
+                      }}>
                       <p className="m-0">Status: {circleInfo?.is_active ? "Active" : "Inactive"}</p>
-                      <p className="m-0">members: {circleInfo?.member_count}</p>
+                      <p className="m-0">Members: {circleInfo?.member_count}</p>
                     </div>
                     <h1 className="fs-3 fw-light">Invitation Key</h1>
                     <div className="row">
@@ -184,7 +186,7 @@ export default function CircleCard() {
                 </div>
 
                 <div className="row">
-                  {AuthUser.users.userType === 1 ? (
+                  {AuthUser.users.userType === "U1D1" ? (
                     <div className="d-flex flex-sm-column flex-md-row justify-content-evenly mt-4 ">
                       <Link to="#" onClick={handleCreate} className="py-1 text-nowrap text-dark">
                         Create F-Link

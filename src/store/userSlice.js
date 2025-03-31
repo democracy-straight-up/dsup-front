@@ -5,9 +5,7 @@ function getLocalStorageItem(key) {
   try {
     return JSON.parse(item);
   } catch (e) {
-    console.error(
-      "Error parsing data from localStorage. some local storage is not loaed well"
-    );
+    console.error("Error parsing data from localStorage. some local storage is not loaed well");
     return null;
   }
 }
@@ -27,9 +25,7 @@ userLocal ? (userInit = userLocal) : (userInit = null);
 circleLocal ? (circleInit = circleLocal) : (circleInit = null);
 sec_delLocal ? (sec_delInit = sec_delLocal) : (sec_delInit = null);
 
-circleMembersLocal
-  ? (circleMembersInit = circleMembersLocal)
-  : (circleMembersInit = null);
+circleMembersLocal ? (circleMembersInit = circleMembersLocal) : (circleMembersInit = null);
 
 const initialState = {
   user: userInit,
@@ -76,6 +72,7 @@ export const UserSlice = createSlice({
 
 function toLocalStorage(store, user) {
   if (user === null) {
+    console.log("removing from local storage fof circle");
     localStorage.removeItem(store);
   } else {
     localStorage.setItem(store, JSON.stringify(user));
@@ -83,12 +80,6 @@ function toLocalStorage(store, user) {
 }
 
 // Action creators are generated for each case reducer function
-export const {
-  authenticate,
-  logout,
-  circle,
-  sec_del,
-  addCirclemMembers,
-  desolveCircle,
-} = UserSlice.actions;
+export const { authenticate, logout, circle, sec_del, addCirclemMembers, desolveCircle } =
+  UserSlice.actions;
 export default UserSlice.reducer;

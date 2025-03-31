@@ -30,7 +30,7 @@ export default function VoterCard() {
           } else if (response.status === 200) {
             dispatch(circle(response.data));
             let u = { ...AuthUser };
-            u.userType = 1;
+            u.userType = "U1D1";
             dispatch(authenticate(u));
             setMessage({
               type: "alert alert-success",

@@ -3,12 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import {
-  authenticate,
-  circle,
-  addCirclemMembers,
-  desolveCircle,
-} from "../../store/userSlice.js";
+import { authenticate, circle, addCirclemMembers, desolveCircle } from "../../store/userSlice.js";
 import Member from "./member.jsx";
 
 function HouseKeeping() {
@@ -104,7 +99,7 @@ function HouseKeeping() {
               dispatch(desolveCircle());
               // set the userType to 0 and reset AuthUser
               let u = { ...AuthUser };
-              u.userType = 0;
+              u.userType = "U0D0";
               dispatch(authenticate(u));
               // navigate back to voter page
               navigate("/voter-page");
@@ -117,7 +112,7 @@ function HouseKeeping() {
             // check if the data.data.done is the username of the logged in user
             if (data.data.done === AuthUser.username) {
               let u = { ...AuthUser };
-              u.userType = 0;
+              u.userType = "U0D0";
               dispatch(authenticate(u));
               // navigate back to voter page
               navigate("/voter-page");
@@ -165,10 +160,7 @@ function HouseKeeping() {
   // check if the user logged in is delegate.
   useEffect(() => {
     if (members) {
-      if (
-        members[0]?.user.username === AuthUser?.username &&
-        members[0].is_delegate
-      ) {
+      if (members[0]?.user.username === AuthUser?.username && members[0].is_delegate) {
         setIs_delegate(true);
       } else {
         setIs_delegate(false);
@@ -354,11 +346,7 @@ function HouseKeeping() {
 
   return (
     <div className="container">
-      <Modal
-        show={showModel}
-        onHide={() => handleModelClose()}
-        backdrop="static"
-        keyboard={false}>
+      <Modal show={showModel} onHide={() => handleModelClose()} backdrop="static" keyboard={false}>
         <Modal.Body> {modelContent} </Modal.Body>
         <Modal.Footer>
           {act === "dessolveCircle" ? (
@@ -391,9 +379,7 @@ function HouseKeeping() {
           )}
           {act === "voteOut" ? (
             <>
-              <Button
-                variant="danger"
-                onClick={() => handleVoteOut(removeMember)}>
+              <Button variant="danger" onClick={() => handleVoteOut(removeMember)}>
                 {" "}
                 Yes{" "}
               </Button>
@@ -423,9 +409,7 @@ function HouseKeeping() {
             Circle: {circleInfo?.code} District: {circleInfo?.district.code}
           </h3>
 
-          <h4 className="text-center">
-            Invitation Key: {circleInfo?.invitation_code}
-          </h4>
+          <h4 className="text-center">Invitation Key: {circleInfo?.invitation_code}</h4>
           {Is_delegate ? (
             <button
               className="d-block mx-auto my-2 btn btn-success text-center"
@@ -433,9 +417,7 @@ function HouseKeeping() {
               Generate new key
             </button>
           ) : null}
-          {circleInfo?.is_active ? (
-            <p className="text-center">Circle Status: ACTIVE!</p>
-          ) : null}
+          {circleInfo?.is_active ? <p className="text-center">Circle Status: ACTIVE!</p> : null}
         </div>
         <div className="col-sm-12 col-md-3"></div>
       </div>
@@ -446,9 +428,7 @@ function HouseKeeping() {
               <th>#</th>
               <th>Member Name</th>
               <th>Do you want this voter to be a member?</th>
-              <th>
-                {circleInfo?.is_active ? "Total Vote Out" : "Total Voted"}{" "}
-              </th>
+              <th>{circleInfo?.is_active ? "Total Vote Out" : "Total Voted"} </th>
               {/* if the Circle is not active, do not show these two column */}
               {circleInfo?.is_active ? (
                 <>
@@ -468,9 +448,7 @@ function HouseKeeping() {
                     <td>{String(index + 1).padStart(2, "0")}</td>
                     <td>
                       {member?.user.users.legalName}{" "}
-                      {member.is_delegate ? (
-                        <span className="badge bg-primary">F-Del</span>
-                      ) : null}{" "}
+                      {member.is_delegate ? <span className="badge bg-primary">F-Del</span> : null}{" "}
                     </td>
                     <td>
                       {circleInfo?.is_active ? (
@@ -562,9 +540,7 @@ function HouseKeeping() {
                       type="checkbox"
                       className="form-check-input"
                       checked={showModel}
-                      onChange={() =>
-                        handleModelShow("removemember", candidate[0].id)
-                      }
+                      onChange={() => handleModelShow("removemember", candidate[0].id)}
                     />
                   ) : null}
                 </td>
@@ -588,14 +564,11 @@ function HouseKeeping() {
           <>
             {candidate?.length === 0 ? (
               <p>
-                There are no Member Candidates. Invite voters in your district
-                to join by giving them a Circle Invitation Key.
+                There are no Member Candidates. Invite voters in your district to join by giving
+                them a Circle Invitation Key.
               </p>
             ) : (
-              <p>
-                There is a Member Candidate awaiting a majority vote of existing
-                members.
-              </p>
+              <p>There is a Member Candidate awaiting a majority vote of existing members.</p>
             )}
             {members?.length >= 3 ? (
               ""
@@ -603,14 +576,13 @@ function HouseKeeping() {
               <>
                 <p>Once you generate a new key, the old one will not work.</p>
                 <p>
-                  The creator of this Circle has been automatically made First
-                  Delegate. To elect a different First Delegate, hold an
-                  election. Elections can be held when you have six or more
-                  members.{" "}
+                  The creator of this Circle has been automatically made First Delegate. To elect a
+                  different First Delegate, hold an election. Elections can be held when you have
+                  six or more members.{" "}
                 </p>
                 <p>
-                  Only the F-Del can dissolve a Circle, and may only do so when
-                  they are the only member left.
+                  Only the F-Del can dissolve a Circle, and may only do so when they are the only
+                  member left.
                 </p>
               </>
             )}{" "}
@@ -620,33 +592,27 @@ function HouseKeeping() {
         candidate !== undefined ? (
           is_candidate ? (
             <>
+              <p> You are a Member Candidate awaiting a majority vote of existing members.</p>
               <p>
                 {" "}
-                You are a Member Candidate awaiting a majority vote of existing
-                members.
+                You can wait to see if you are voted in, or you can contact the F-Del of this Circle
+                IRL to discuss being voted in.
               </p>
               <p>
                 {" "}
-                You can wait to see if you are voted in, or you can contact the
-                F-Del of this Circle IRL to discuss being voted in.
+                If you shouldn’t be trying to join this Circle for any reason, the F-Del can remove
+                you as a member candidate. After that happens, you will not be able to attempt to
+                join this Circle unless you are given a new Invitation Key. Ask your F-Del IRL.
               </p>
               <p>
                 {" "}
-                If you shouldn’t be trying to join this Circle for any reason,
-                the F-Del can remove you as a member candidate. After that
-                happens, you will not be able to attempt to join this Circle
-                unless you are given a new Invitation Key. Ask your F-Del IRL.
+                The creator of this Circle has been automatically made First Delegate. To elect a
+                different First Delegate, your Circle can hold an election. Elections can be held
+                when you have six or more members.
               </p>
               <p>
-                {" "}
-                The creator of this Circle has been automatically made First
-                Delegate. To elect a different First Delegate, your Circle can
-                hold an election. Elections can be held when you have six or
-                more members.
-              </p>
-              <p>
-                Only the F-Del can dissolve a Circle, and may only do so when
-                they are the only member left.
+                Only the F-Del can dissolve a Circle, and may only do so when they are the only
+                member left.
               </p>
             </>
           ) : (
@@ -655,51 +621,43 @@ function HouseKeeping() {
               {candidate[0] ? (
                 <p>
                   {" "}
-                  There is a Member Candidate awaiting a majority vote of
-                  existing members. Check the Yes box next to their name to vote
-                  them in. A running total of member votes for this candidate
-                  will appear in the Total column. When a Candidate receives a
-                  majority of the votes of existing members, they will
-                  automatically become a Member, and the voting will be
-                  ‘forgotten’ by the database.{" "}
+                  There is a Member Candidate awaiting a majority vote of existing members. Check
+                  the Yes box next to their name to vote them in. A running total of member votes
+                  for this candidate will appear in the Total column. When a Candidate receives a
+                  majority of the votes of existing members, they will automatically become a
+                  Member, and the voting will be ‘forgotten’ by the database.{" "}
                 </p>
               ) : (
                 ""
               )}
               <p>
-                If you want someone to join this Circle, give them the CIK. Make
-                sure it is the most recent (currently valid) CIK generated by
-                the F-Del. If you encounter any problems, please contact the
-                F-Del In Real Life, or ElseWhere On The Internet.
+                If you want someone to join this Circle, give them the CIK. Make sure it is the most
+                recent (currently valid) CIK generated by the F-Del. If you encounter any problems,
+                please contact the F-Del In Real Life, or ElseWhere On The Internet.
               </p>
-              <p>
-                Until this Circle becomes active, you can be removed by the
-                F-Del at any time.{" "}
-              </p>
+              <p>Until this Circle becomes active, you can be removed by the F-Del at any time. </p>
               <span>
                 After this Circle becomes active, you can only be removed by:
                 <ol>
                   <li>
                     {" "}
-                    Unchecking the Yes box next to ‘Would you like to remain in
-                    this Circle’{" "}
+                    Unchecking the Yes box next to ‘Would you like to remain in this Circle’{" "}
                   </li>
                   <li> Being voted out by a majority of existing members. </li>
                 </ol>
               </span>
               <p>
-                Once a member is removed from a specific Circle, they cannot
-                attempt to rejoin it without a new Circle Invitation Key.
+                Once a member is removed from a specific Circle, they cannot attempt to rejoin it
+                without a new Circle Invitation Key.
               </p>
               <p>
-                The creator of this Circle has been automatically made First
-                Delegate. To elect a different First Delegate, your Circle can
-                hold an election. Elections can be held when you have six or
-                more members.
+                The creator of this Circle has been automatically made First Delegate. To elect a
+                different First Delegate, your Circle can hold an election. Elections can be held
+                when you have six or more members.
               </p>
               <p>
-                Only the F-Del can dissolve a Circle, and may only do so when
-                they are the only member left.
+                Only the F-Del can dissolve a Circle, and may only do so when they are the only
+                member left.
               </p>
             </>
           )

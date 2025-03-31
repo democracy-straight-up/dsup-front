@@ -75,8 +75,9 @@ function VoterPage() {
               if (response.status === 200) {
                 let token = AuthUser.token;
                 dispatch(authenticate({ ...response.data.user, token }));
-                if (response.data.user.users.userType === 1) {
-                  dispatch(circle(response.data.circle));
+                if (response.data.user.users.userType.substring(0, 2) === "U1") {
+                  console.log("user is a circle member");
+                  // dispatch(circle(response.data.circle));
                 }
               } else {
                 setMessage({
@@ -113,7 +114,7 @@ function VoterPage() {
 
   // get the detials of f_link if the f_link (sec_del) state is not found
   useEffect(() => {
-    if (sec_del.code === undefined && AuthUser?.users?.userType === 2) {
+    if (sec_del.code === undefined && AuthUser?.users?.userType.substring(0, 2) === "U2") {
       // get the f_link details.
       let header = { Authorization: `Bearer ${AuthUser.token.access}` };
       const url = `${window.location.protocol}//${baseURL}/api/second-delegate/get_f_link_by_user/`;
@@ -124,7 +125,6 @@ function VoterPage() {
       axios
         .post(url, param, { headers: header })
         .then((response) => {
-          console.log("get the f link: ", response.data);
           dispatch(sec_del(response.data));
         })
         .catch((error) => {

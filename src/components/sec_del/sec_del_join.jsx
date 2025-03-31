@@ -81,7 +81,7 @@ function JoinSecDel() {
             setFLink(response.data[0].sec_del);
 
             let u = { ...AuthUser.users };
-            let userType = 2;
+            let userType = "U2D1";
             let users = { ...u, userType };
             dispatch(authenticate({ ...AuthUser, users }));
             setMessage({
@@ -126,7 +126,7 @@ function JoinSecDel() {
 
             // set the userType to 2 without requesting new data from the server.
             let u = { ...AuthUser.users };
-            let userType = 2;
+            let userType = "U2D2";
             let users = { ...u, userType };
             dispatch(authenticate({ ...AuthUser, users }));
             setMessage({
@@ -154,7 +154,7 @@ function JoinSecDel() {
       <div className="row">
         <div className="col-sm-12 col-md-3"></div>
         <div className="col-sm-12 col-md-6 mt-3">
-          <h1 className="text-center">Join a F-Link {AuthUser.userType}</h1>
+          <h1 className="text-center">Join a F-Link</h1>
           <div className="">
             <h4 className="text-left">You must have an Invitation Key to join a F-Link.</h4>
             <p className="text-left">
