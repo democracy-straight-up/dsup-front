@@ -47,6 +47,7 @@ export const UserSlice = createSlice({
       state.user = null;
       localStorage.removeItem("AuthUser");
       localStorage.removeItem("circle");
+      localStorage.removeItem("sec_del");
       localStorage.removeItem("circleMembers");
     },
     circle: (state, action) => {
