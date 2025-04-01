@@ -1,6 +1,5 @@
 // import logo from './logo.svg';
 import React from "react";
-
 import logo from "./CYS-Logo.png";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -16,6 +15,7 @@ function Home() {
       const decodedToken = jwtDecode(AuthUser.token.refresh);
       if (decodedToken.exp < Date.now() / 1000) {
         // Token has expired
+        alert("Your session has expired. Please log in again.");
         return true;
       }
       return false;
@@ -44,16 +44,10 @@ function Home() {
 
         <div className="col-sm-12 col-md-8 col-lg-8">
           <div className="text-center mt-5">
-            <h2 className="my-4">
-              Welcome to the Claim Your Seat Voting Portal
-            </h2>
-            <h3 className="my-4">
-              Where the will of the people becomes the law of the land.
-            </h3>
+            <h2 className="my-4">Welcome to the Claim Your Seat Voting Portal</h2>
+            <h3 className="my-4">Where the will of the people becomes the law of the land.</h3>
             <div className="text-center">
-              <h4 className="text-secondary m-4">
-                Start voting directly on federal legislation
-              </h4>
+              <h4 className="text-secondary m-4">Start voting directly on federal legislation</h4>
               <div className="row">
                 {isRefreshTokenExpired() === true ? (
                   <div className="row">

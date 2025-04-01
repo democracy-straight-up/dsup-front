@@ -5,20 +5,12 @@ import { baseURL } from "../../store/conf.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Button } from "react-bootstrap";
 
-const Member = ({
-  member,
-  index,
-  chatSocket,
-  dissolve,
-  err,
-  circleInfo,
-  Iam_delegate,
-}) => {
+const Member = ({ member, index, chatSocket, dissolve, err, circleInfo, Iam_delegate }) => {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const [voted_out, setVoted_out] = useState(false);
   const [put_forward, setPut_forward] = useState(false);
   const [clicked, setClicked] = useState(false); //check the member that clicked
-
+  const [rm, setRm] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   const handleInputChange = () => {
@@ -48,16 +40,21 @@ const Member = ({
       )
       .then((response) => {
         // checking whether the auth user has voted for this candidate
+        let voted = false;
         response.data.map((res) => {
           if (res.voter == AuthUser?.id) {
-            setVoted_out(true);
+            voted = true;
           }
         });
+        // first assign a deferent value so the UI takes new update and then assign the actaull value.
+        // this is a trick for the Ui only.
+        setVoted_out(!voted);
+        setVoted_out(voted);
       })
       .catch((err) => console.log(err));
-  }, [clicked]);
+  }, [rm]);
 
-  // checking if the member voted for gelegation.
+  // checking if the member voted for delegate.
   useEffect(() => {
     /** Check for the AuthUser if he/she vote for delegation  */
     const putForwardURL = `${window.location.protocol}//${baseURL}/api/circle-put-forward-list/`;
@@ -102,6 +99,20 @@ const Member = ({
         },
       })
     );
+    setRm(!rm);
+  };
+  const RemoveVoteOut = () => {
+    /** send the vote to the server */
+    chatSocket.send(
+      JSON.stringify({
+        action: "undo_vote_out",
+        payload: {
+          voter: AuthUser.username,
+          member: member?.id,
+        },
+      })
+    );
+    setRm(!rm);
   };
 
   const removeCircle = () => {
@@ -185,7 +196,6 @@ const Member = ({
         ) : circleInfo?.is_active === true ? (
           // if the user vote out this member
           <td>
-            {" "}
             Yes
             {!voted_out ? (
               <input
@@ -194,7 +204,14 @@ const Member = ({
                 type="checkbox"
                 className="form-check-input mx-2"
               />
-            ) : null}
+            ) : (
+              <input
+                checked={voted_out}
+                type="checkbox"
+                className="form-check-input mx-2"
+                onChange={() => RemoveVoteOut()}
+              />
+            )}
             <span className="alert alert-primary p-0 px-2 mx-2">
               {member?.count_vote_out} votes
             </span>
@@ -222,8 +239,7 @@ const Member = ({
           <Modal.Title>Dissolve Circle</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          This action will dissolve this Circle permanently, do you want to
-          proceed?
+          This action will dissolve this Circle permanently, do you want to proceed?
         </Modal.Body>
         <Modal.Footer className="border-0">
           <Button variant="secondary" onClick={handleCloseModal}>

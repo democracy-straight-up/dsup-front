@@ -69,6 +69,7 @@ function HouseKeeping() {
      */
     // if the new data being received is invitation key change,
     // update the circle global state and return nothing to stop the function
+
     if (data.action === "invitationKey") {
       dispatch(circle(data.circle));
       return;
@@ -283,13 +284,7 @@ function HouseKeeping() {
       </div>
 
       {/* status messages */}
-      <Status
-        Iam_delegate={Iam_delegate}
-        Iam_member={Iam_member}
-        Iam_candidate={Iam_candidate}
-        circleInfo={circleInfo}
-        candidate={candidate}
-        members={members}></Status>
+      <Status></Status>
     </div>
   );
 }
