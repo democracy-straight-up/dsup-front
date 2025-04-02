@@ -11,6 +11,7 @@ function HouseKeeping() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const circleInfo = useSelector((state) => state.AuthUser.circle);
   const [err, setErr] = useState("");
+  let timout_id = null;
   const [connectionErr, setConnectionErr] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -26,6 +27,9 @@ function HouseKeeping() {
   const [candidate, setCandidate] = useState("");
   const [members, setMembers] = useState("");
   const [Iam_candidate, setIam_candidate] = useState(false);
+  const [actionDone, setActionDone] = useState({});
+  const [vote_outs, setVote_outs] = useState([]);
+  const [put_forwards, setPut_forwards] = useState([]);
 
   let ws_schame = window.location.protocol === "https:" ? "wss" : "ws";
   const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${circleInfo?.code}/${AuthUser.username}`;
@@ -58,7 +62,7 @@ function HouseKeeping() {
   // Function to update the error state and schedule the reset
   useEffect(() => {
     // Schedule the reset after 5000 milliseconds (5 seconds)
-    setTimeout(() => {
+    timout_id = setTimeout(() => {
       setErr("");
     }, 10000);
   }, [err]);
@@ -69,6 +73,8 @@ function HouseKeeping() {
      */
     // if the new data being received is invitation key change,
     // update the circle global state and return nothing to stop the function
+    // keep the action being done and send it to child compoments
+    setActionDone(data.action);
 
     if (data.action === "invitationKey") {
       dispatch(circle(data.circle));
@@ -87,9 +93,20 @@ function HouseKeeping() {
     if (data.status === "success") {
       // on each members and candidate changes, check if the auth user is inside the list!
       // if not, redirect to the voter page.
+
       if (!data.member_list?.find((member) => member.user.username === AuthUser.username)) {
         setErr("You have been removed fron this circle. Taking you back to your voter page.");
         navigate("/voter-page");
+      }
+
+      // set the vote_outs and put_forwards. the first load of the socket data has a init action type.
+      if (data?.action === "init") {
+        if (data?.vote_outs.length > 0) {
+          setVote_outs(data.vote_outs);
+        }
+        if (data.put_forwards.length > 0) {
+          setPut_forwards(data.put_forwards);
+        }
       }
       /**
        * set Iam_candidate or Iam_member to true based on AuthUser and is_member
@@ -155,10 +172,11 @@ function HouseKeeping() {
        */
       setMembers("");
       setCandidate("");
+      setVote_outs([]);
+      setPut_forwards([]);
       clearTimeout();
       setFDel("");
-      // return () => { clearTimeout(resetTimeout); };
-      console.log("closing the connection");
+      clearTimeout(timout_id);
     };
   }, []);
 
@@ -228,6 +246,9 @@ function HouseKeeping() {
             {members?.length > 0
               ? members?.map((member, index) => (
                   <Member
+                    actionDone={actionDone}
+                    vote_outs={vote_outs}
+                    put_forwards={put_forwards}
                     key={index}
                     dissolve={dissolve}
                     index={index}

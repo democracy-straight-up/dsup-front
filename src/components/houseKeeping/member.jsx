@@ -1,16 +1,23 @@
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { baseURL } from "../../store/conf.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Button } from "react-bootstrap";
 
-const Member = ({ member, index, chatSocket, dissolve, err, circleInfo, Iam_delegate }) => {
+const Member = ({
+  member,
+  vote_outs,
+  put_forwards,
+  index,
+  chatSocket,
+  dissolve,
+  err,
+  circleInfo,
+  actionDone,
+  Iam_delegate,
+}) => {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const [voted_out, setVoted_out] = useState(false);
   const [put_forward, setPut_forward] = useState(false);
-  const [clicked, setClicked] = useState(false); //check the member that clicked
-  const [rm, setRm] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   const handleInputChange = () => {
@@ -18,62 +25,57 @@ const Member = ({ member, index, chatSocket, dissolve, err, circleInfo, Iam_dele
     setShowModal(true);
   };
 
+  useEffect(() => {
+    switch (actionDone?.action) {
+      case "vote_out":
+        if (actionDone?.instance.candidate === member?.id && actionDone?.user.id === AuthUser?.id) {
+          setVoted_out(true);
+        }
+        break;
+      case "undo_vote_out":
+        if (actionDone?.instance.candidate === member?.id && actionDone?.user.id === AuthUser?.id) {
+          setVoted_out(false);
+        }
+        break;
+      case "put_forward":
+        if (actionDone?.instance.recipient === member?.id && actionDone?.user.id === AuthUser?.id) {
+          setPut_forward(true);
+        }
+        break;
+      case "undo_put_forward":
+        if (actionDone?.instance.recipient === member?.id && actionDone?.user.id === AuthUser?.id) {
+          setPut_forward(false);
+        }
+        break;
+      default:
+        console.log();
+    }
+  }, [actionDone]);
+
+  useEffect(() => {
+    // go through the vote_outs and put_forwards and check if the member is in the list
+    // if the member is in the list then set the value to true.
+    vote_outs.map((vote_out) => {
+      if (vote_out.candidate === member?.id && vote_out.voter === AuthUser?.id) {
+        setVoted_out(true);
+      }
+    });
+    put_forwards.map((put_forward) => {
+      if (put_forward.recipient === member?.id && put_forward?.voter === AuthUser?.id) {
+        setPut_forward(true);
+      }
+    });
+  }, []);
+
   //   if there is any error, hide the model show
   useEffect(() => {
     setShowModal(false);
   }, [err]);
+
   const handleCloseModal = () => {
     // Close the modal without performing the action
-
     setShowModal(false);
   };
-
-  // checking if the member voted out for the member
-  useEffect(() => {
-    /** Check for the AuthUser if he/she voted in for this candidate */
-    const Url = `${window.location.protocol}//${baseURL}/api/circle-vote-out-list/`;
-    axios
-      .get(
-        Url,
-        { params: { member: member?.id } },
-        { headers: { Authorization: `Bearer ${AuthUser.token.access}` } }
-      )
-      .then((response) => {
-        // checking whether the auth user has voted for this candidate
-        let voted = false;
-        response.data.map((res) => {
-          if (res.voter == AuthUser?.id) {
-            voted = true;
-          }
-        });
-        // first assign a deferent value so the UI takes new update and then assign the actaull value.
-        // this is a trick for the Ui only.
-        setVoted_out(!voted);
-        setVoted_out(voted);
-      })
-      .catch((err) => console.log(err));
-  }, [rm]);
-
-  // checking if the member voted for delegate.
-  useEffect(() => {
-    /** Check for the AuthUser if he/she vote for delegation  */
-    const putForwardURL = `${window.location.protocol}//${baseURL}/api/circle-put-forward-list/`;
-    axios
-      .get(
-        putForwardURL,
-        { params: { member: member?.id } },
-        { headers: { Authorization: `Bearer ${AuthUser.token.access}` } }
-      )
-      .then((response) => {
-        // checking whether the auth user has voted for delegation.
-        response.data.map((res) => {
-          if (res.voter == AuthUser?.id) {
-            setPut_forward(true);
-          }
-        });
-      })
-      .catch((err) => console.log(err));
-  }, [clicked]);
 
   const removeMember = () => {
     /** send the vote to the server */
@@ -99,7 +101,6 @@ const Member = ({ member, index, chatSocket, dissolve, err, circleInfo, Iam_dele
         },
       })
     );
-    setRm(!rm);
   };
   const RemoveVoteOut = () => {
     /** send the vote to the server */
@@ -112,7 +113,6 @@ const Member = ({ member, index, chatSocket, dissolve, err, circleInfo, Iam_dele
         },
       })
     );
-    setRm(!rm);
   };
 
   const removeCircle = () => {
@@ -139,7 +139,19 @@ const Member = ({ member, index, chatSocket, dissolve, err, circleInfo, Iam_dele
         },
       })
     );
-    setClicked(!clicked);
+  };
+
+  const undo_putForward = () => {
+    /** send the vote to the server */
+    chatSocket.send(
+      JSON.stringify({
+        action: "undo_putForward",
+        payload: {
+          voter: AuthUser.username,
+          member: member?.id,
+        },
+      })
+    );
   };
 
   return (
@@ -159,12 +171,21 @@ const Member = ({ member, index, chatSocket, dissolve, err, circleInfo, Iam_dele
             {/* ckeck if the member is auth user so that he/she can not vote for his own delegation  */}
             <th className="fw-bold">
               Yes
-              <input
-                type="checkbox"
-                checked={put_forward}
-                onChange={() => putForward()}
-                className="form-check-input mx-2"
-              />
+              {!put_forward ? (
+                <input
+                  type="checkbox"
+                  checked={put_forward}
+                  onChange={() => putForward()}
+                  className="form-check-input mx-2"
+                />
+              ) : (
+                <input
+                  type="checkbox"
+                  checked={put_forward}
+                  onChange={() => undo_putForward()}
+                  className="form-check-input mx-2"
+                />
+              )}
               <span className="alert alert-primary p-0 px-2 mx-2">
                 {member?.count_put_forward} votes
               </span>
@@ -186,7 +207,7 @@ const Member = ({ member, index, chatSocket, dissolve, err, circleInfo, Iam_dele
                 Dissolve This Circle {dissolve} ?
                 <input
                   type="checkbox"
-                  checked={clicked}
+                  checked={showModal}
                   onChange={() => handleInputChange()}
                   className="form-check-input mx-2"
                 />
