@@ -100,7 +100,6 @@ function JoinSecDel() {
   };
 
   const handleCreate = () => {
-    console.log("creating first link and adding the member...");
     if (AuthUser?.token.access.length > 0) {
       // console.log("ceating a circle...")
       // constructing to request to create the first link
@@ -114,7 +113,6 @@ function JoinSecDel() {
       axios
         .post(url, param, { headers: header })
         .then((response) => {
-          console.log("res: ", response);
           if (response.status === 400) {
             setMessage({
               msg: response.data.message,
@@ -124,17 +122,17 @@ function JoinSecDel() {
             // if the request was a succcess, set the sec_del state so that we need it in the next page (sec_del housekeeping page)
             dispatch(sec_del(response.data));
 
-            // set the userType to 2 without requesting new data from the server.
             let u = { ...AuthUser.users };
             let userType = "U2D2";
             let users = { ...u, userType };
             dispatch(authenticate({ ...AuthUser, users }));
+
             setMessage({
               type: "alert alert-success",
               msg: "sec del created.",
             });
 
-            //   after successfull operation of creating, settign datas and users, take the voter to first link page
+            // after successfull operation of creating, settign datas and users, take the voter to first link page
             navigate("/first-link-page");
           } else {
             console.log("something went wrong:", response);
