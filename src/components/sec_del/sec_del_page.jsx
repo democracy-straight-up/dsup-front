@@ -4,20 +4,14 @@ import { useNavigate } from "react-router-dom";
 import Member from "./member.jsx";
 import Candidate from "./candidate.jsx";
 import { sec_del } from "../../store/userSlice.js";
-
 import Status from "./status_message.jsx";
 
 function SecondDelegatePage() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const first_link = useSelector((state) => state.AuthUser.sec_del);
-  const [err, setErr] = useState("");
-  const [connectionErr, setConnectionErr] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  /** We have fDEl object which contains the details of FDel.
-   * Iam_delegate is true if the auth user is a delegate.
-   * Iam_member is true of the auth user is a member
-   */
+  const [err, setErr] = useState("");
   const [Iam_delegate, setIam_delegate] = useState(false);
   const [Iam_member, setIam_member] = useState(false);
   const [dissolve, setDissolve] = useState(false);
@@ -25,9 +19,81 @@ function SecondDelegatePage() {
   const [members, setMembers] = useState("");
   const [Iam_candidate, setIam_candidate] = useState(false);
 
-  let ws_schame = window.location.protocol === "https:" ? "wss" : "ws";
-  const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/sec-del/${first_link?.code}/${AuthUser.username}`;
-  const chatSocket = new WebSocket(url);
+  const [con_closed, setCon_closed] = useState(true);
+  const [countdown, setCountdown] = useState(5);
+  const [firstAttempt, setFirstAttempt] = useState(true);
+
+  const ws_schame = window.location.protocol === "https:" ? "wss" : "ws";
+  const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/sec-del/${first_link?.code}/${AuthUser?.username}`;
+  let chatSocket = new WebSocket(url);
+
+  useEffect(() => {
+    let countdownInterval;
+    let reconnectTimeout;
+
+    if (con_closed && !firstAttempt) {
+      // Start the countdown only after the first connection attempt fails
+      setErr(`Reconnecting in ${countdown}`);
+      countdownInterval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev > 1) {
+            return prev - 1;
+          } else {
+            clearInterval(countdownInterval); // Stop the countdown
+            setErr("Connecting...");
+            return 0;
+          }
+        });
+      }, 1000);
+
+      // Attempt to reconnect after the countdown ends
+      reconnectTimeout = setTimeout(() => {
+        tryReconnect();
+      }, 5000);
+    } else if (firstAttempt) {
+      // On first load, try to connect immediately
+      tryReconnect();
+    }
+
+    // Cleanup intervals and timeouts
+    return () => {
+      clearInterval(countdownInterval);
+      clearTimeout(reconnectTimeout);
+    };
+  }, [con_closed, countdown, firstAttempt]);
+
+  const tryReconnect = () => {
+    chatSocket = new WebSocket(url);
+
+    chatSocket.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      /**
+       * all the messages that comes from this end point is the same.
+       * it contains members
+       */
+      action_lists(data);
+    };
+
+    chatSocket.onopen = () => {
+      console.log("WebSocket connected!");
+      setCon_closed(false); // Stop reconnection attempts
+      setErr(""); // Clear the message
+      setFirstAttempt(false); // Mark the first attempt as completed
+    };
+
+    chatSocket.onclose = () => {
+      console.log("WebSocket disconnected!");
+      setCon_closed(true); // Trigger reconnection
+      setCountdown(5); // Reset the countdown
+    };
+
+    chatSocket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      setCon_closed(true); // Keep trying to reconnect
+      setCountdown(5); // Reset the countdown
+      setFirstAttempt(false); // Mark the first attempt as completed
+    };
+  };
 
   useEffect(() => {
     // on each member change, check if the Circle has one member.
@@ -41,7 +107,7 @@ function SecondDelegatePage() {
 
     // set the iam_delegate and iam_member based on the members list
     if (members.length > 0) {
-      const member = members.find((member) => member.user.username === AuthUser.username);
+      const member = members.find((member) => member.user.username === AuthUser?.username);
       if (member) {
         if (member.is_delegate) {
           setIam_delegate(true);
@@ -58,15 +124,6 @@ function SecondDelegatePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candidate, members]);
 
-  // Function to update the error state and schedule the reset
-  useEffect(() => {
-    // Schedule the reset after 5000 milliseconds (5 seconds)
-    setTimeout(() => {
-      setErr("");
-    }, 10000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [err]);
-
   const action_lists = (msg) => {
     // add the members and candidates on their states.
     if (msg.action === "member_listing") {
@@ -82,7 +139,7 @@ function SecondDelegatePage() {
       }
 
       // check the msg.member_list to AuthUser.username, if not found, redirect to voter page
-      const member = msg.member_list.find((member) => member.user.username === AuthUser.username);
+      const member = msg.member_list.find((member) => member.user.username === AuthUser?.username);
       if (member === undefined) {
         navigate("/voter-page");
       }
@@ -94,37 +151,6 @@ function SecondDelegatePage() {
       navigate("/voter-page");
     }
   };
-
-  //   connect to websocket on load and get data
-  useEffect(() => {
-    /** This is the functions that receives all the messages from server */
-    chatSocket.onmessage = function (e) {
-      const data = JSON.parse(e.data);
-      /**
-       * all the messages that comes from this end point is the same.
-       * it contains members
-       */
-      console.log("data from server: ", data);
-      action_lists(data);
-    };
-
-    // what happens on closing the connection
-    chatSocket.onclose = (e) => {
-      setConnectionErr("live connection is closed. Please refresh your page!");
-    };
-
-    // close the connection on page leave. cleanup function
-    return () => {
-      /**
-       * 1. close the connection
-       * 2. clear the states
-       * 3. terminate any functions in running or in background
-       */
-      setMembers("");
-      setCandidate("");
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // update or change the circle invitation key
   const invitationKey = () => {
@@ -141,18 +167,8 @@ function SecondDelegatePage() {
       <div className="row">
         <div className="col-sm-12 col-md-3"></div>
         <div className="col-sm-12 col-md-6 mt-3">
-          <div className="row">
-            {err ? (
-              <div className="alert alert-danger" role="alert">
-                {err}
-              </div>
-            ) : null}
-            {connectionErr ? (
-              <div className="alert alert-danger" role="alert">
-                {connectionErr}
-              </div>
-            ) : null}
-          </div>
+          <div className="row ">{err && <p className="text-danger text-center">{err}</p>}</div>
+
           <h1 className="text-center">Housekeeping Page</h1>
           <h3 className="text-center">
             First Link No: {first_link?.code} &nbsp;&nbsp; District:

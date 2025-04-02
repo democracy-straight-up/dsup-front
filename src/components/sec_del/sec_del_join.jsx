@@ -29,7 +29,7 @@ function JoinSecDel() {
         if (data.status === "success") {
           console.log("closing the connection and redirecting to the first link page");
           chatSocket.close();
-          // navigate("/first-link-page");
+          navigate("/first-link-page");
         }
         console.log("data from server: ", data);
       };

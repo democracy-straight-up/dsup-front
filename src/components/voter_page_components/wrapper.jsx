@@ -5,7 +5,7 @@ import FLinkWrapper from "./f_link_wrapper";
 import VoterCard from "./voter_card";
 
 const UserCardSwitch = (AuthUser) => {
-  switch (AuthUser.users?.userType.substring(0, 2)) {
+  switch (AuthUser?.users?.userType.substring(0, 2)) {
     case "U0":
       return <VoterCard />;
       break;

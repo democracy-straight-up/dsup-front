@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-export default function Candidate({
-  chatSocket,
-  index,
-  AuthUser,
-  Iam_delegate,
-  candidate,
-}) {
+export default function Candidate({ chatSocket, index, AuthUser, Iam_delegate, candidate }) {
   const [voted, setVoted] = useState(false);
 
   const VoteIn = () => {
@@ -39,7 +33,6 @@ export default function Candidate({
   }, [candidate.id]);
 
   const removeCadidate = () => {
-    console.log("candidate: ", candidate);
     chatSocket.send(
       JSON.stringify({
         action: "remove_candidate",
@@ -65,9 +58,7 @@ export default function Candidate({
               className="form-check-input mx-3"
             />
           ) : null}
-          <span className="alert alert-primary p-0 px-2">
-            {candidate?.vote_in_count} votes
-          </span>
+          <span className="alert alert-primary p-0 px-2">{candidate?.vote_in_count} votes</span>
         </td>
       ) : (
         <td></td>
