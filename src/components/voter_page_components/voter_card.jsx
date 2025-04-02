@@ -29,9 +29,16 @@ export default function VoterCard() {
             });
           } else if (response.status === 200) {
             dispatch(circle(response.data));
-            let u = { ...AuthUser };
-            u.userType = "U1D1";
-            dispatch(authenticate(u));
+            let updated_user = {
+              ...AuthUser,
+              users: {
+                ...AuthUser.users,
+                userType: "U1D1",
+              },
+            };
+
+            // u.users.userType = "U1D1";
+            dispatch(authenticate(updated_user));
             setMessage({
               type: "alert alert-success",
               msg: "circle created.",
