@@ -8,15 +8,19 @@ const UserCardSwitch = (AuthUser) => {
   switch (AuthUser.users?.userType.substring(0, 2)) {
     case "U0":
       return <VoterCard />;
+      break;
     case "U1":
       return <CircleCard />;
+      break;
     case "U2":
       return <FLinkWrapper />;
+      break;
     case "U3":
       console.log("case s del.");
       return;
+      break;
     default:
-      console.log("default case here...");
+      console.log("");
       return;
   }
 };

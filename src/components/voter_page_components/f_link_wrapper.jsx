@@ -13,16 +13,3 @@ export default function FLinkWrapper() {
     </div>
   );
 }
-
-// // <div className=" ">
-// {
-//   /* <div className="row">
-//         <div className="col-sm-12 col-md-10 offset-md-1 "> */
-// }
-// {
-//   /* </div>
-//       </div> */
-// }
-// {
-//   /* </div> */
-// }

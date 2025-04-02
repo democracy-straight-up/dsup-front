@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { baseURL } from "../../store/conf";
-import { circle, sec_del } from "../../store/userSlice";
+import { sec_del } from "../../store/userSlice";
 
 export default function FLinkCard() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
@@ -12,14 +12,13 @@ export default function FLinkCard() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    // get the circle info
+    // get the fLink info
     const url = `${window.location.protocol}//${baseURL}/api/second-delegate/get_f_link_by_user/`;
     let header = { Authorization: `Bearer ${AuthUser?.token.access}` };
     axios
       .post(url, { user: AuthUser.username }, { headers: header })
       .then((res) => {
         dispatch(sec_del(res.data));
-        console.log("res: ", res);
       })
       .catch((err) => {
         setError(true);

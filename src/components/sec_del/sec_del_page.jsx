@@ -70,7 +70,6 @@ function SecondDelegatePage() {
   const action_lists = (msg) => {
     // add the members and candidates on their states.
     if (msg.action === "member_listing") {
-      console.log("member listing update: ", msg);
       if (msg.member_list) {
         // set the members and candidates
         // setSec_del(msg.member_list[0]?.first_link);

@@ -29,7 +29,7 @@ export default function UserCard() {
                     />
                   </svg>
                 </h1>
-                <p className="m-0">{AuthUser.users?.verificationScore}/7</p>
+                <p className="m-0">{AuthUser?.users?.verificationScore}/7</p>
               </div>
               <div className="col-sm-12 col-md-4 p-1">
                 <h1 className="fs-4 m-0">
