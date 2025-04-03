@@ -14,12 +14,14 @@ function SecondDelegatePage() {
   const [err, setErr] = useState("");
   const [Iam_delegate, setIam_delegate] = useState(false);
   const [Iam_member, setIam_member] = useState(false);
+  const [Iam_candidate, setIam_candidate] = useState(false);
   const [dissolve, setDissolve] = useState(false);
   const [candidate, setCandidate] = useState("");
   const [members, setMembers] = useState("");
   const [vote_ins, setVote_ins] = useState([]);
-  const [Iam_candidate, setIam_candidate] = useState(false);
   const [actionDone, setActionDone] = useState({});
+  const [vote_outs, setVote_outs] = useState([]);
+  const [put_forwards, setPut_forwards] = useState([]);
 
   const [con_closed, setCon_closed] = useState(true);
   const [countdown, setCountdown] = useState(5);
@@ -32,10 +34,13 @@ function SecondDelegatePage() {
   useEffect(() => {
     let countdownInterval;
     let reconnectTimeout;
+    console.log("onsid ethe effect");
 
     if (con_closed && !firstAttempt) {
       // Start the countdown only after the first connection attempt fails
+      console.log("consed and not first");
       setErr(`Reconnecting in ${countdown}`);
+
       countdownInterval = setInterval(() => {
         setCountdown((prev) => {
           if (prev > 1) {
@@ -47,13 +52,14 @@ function SecondDelegatePage() {
           }
         });
       }, 1000);
-
+      console.log("here on the middle");
       // Attempt to reconnect after the countdown ends
       reconnectTimeout = setTimeout(() => {
         tryReconnect();
       }, 5000);
     } else if (firstAttempt) {
       // On first load, try to connect immediately
+      console.log("on else if of reconnn ");
       tryReconnect();
     }
 
@@ -105,8 +111,14 @@ function SecondDelegatePage() {
       setDissolve(false);
     }
 
-    // check if the authuser is not
-
+    // check if the authuser is a candidate member of fLink.
+    // we need this on candidate view
+    if (candidate?.length > 0) {
+      console.log("");
+      if (candidate?.some((obj) => obj.user.username === AuthUser?.username)) {
+        setIam_candidate(true);
+      }
+    }
     // set the iam_delegate and iam_member based on the members list
     if (members.length > 0) {
       const member = members.find((member) => member.user.username === AuthUser?.username);
@@ -129,6 +141,7 @@ function SecondDelegatePage() {
   const action_lists = (msg) => {
     // add the members and candidates on their states.
     setActionDone(msg.action);
+
     if (msg.status === "success") {
       if (msg.member_list) {
         // set the members and candidates
@@ -151,10 +164,16 @@ function SecondDelegatePage() {
         if (msg?.vote_ins.length > 0) {
           setVote_ins(msg.vote_ins);
         }
+        if (msg?.vote_outs?.length > 0) {
+          setVote_outs(msg.vote_outs);
+        }
+        if (msg.put_forwards?.length > 0) {
+          setPut_forwards(msg.put_forwards);
+        }
       }
     }
-    if (msg.action === "invite_key") {
-      dispatch(sec_del(msg.f_link));
+    if (msg.action === "invitationKey") {
+      dispatch(sec_del(msg.sec_del));
     }
     if (msg.action === "dissolve" && msg.status === "success") {
       navigate("/voter-page");
@@ -163,12 +182,16 @@ function SecondDelegatePage() {
 
   // update or change the circle invitation key
   const invitationKey = () => {
-    chatSocket.send(
-      JSON.stringify({
-        action: "invitationKey",
-        payload: { f_link: first_link.code },
-      })
-    );
+    if (chatSocket.readyState === WebSocket.OPEN) {
+      chatSocket.send(
+        JSON.stringify({
+          action: "invitationKey",
+          payload: { f_link: first_link.code },
+        })
+      );
+    } else {
+      console.log("chat socket is connecting ...");
+    }
   };
 
   return (
@@ -208,9 +231,9 @@ function SecondDelegatePage() {
                   <th className="fw-bold">Put forward as First Delegate</th>
                 </>
               ) : null}
-              {Iam_delegate ? (
+              {Iam_delegate || Iam_member ? (
                 <th className="fw-bold">
-                  {dissolve === true ? "Dissolve First Link? " : "Remove Member"}
+                  {dissolve === true ? "Dissolve First Link? " : "Remove Member?"}
                 </th>
               ) : (
                 <th></th>
@@ -225,9 +248,13 @@ function SecondDelegatePage() {
             {members?.length > 0
               ? members?.map((member, index) => (
                   <Member
+                    actionDone={actionDone}
+                    vote_outs={vote_outs}
+                    put_forwards={put_forwards}
                     key={index}
                     dissolve={dissolve}
                     index={index}
+                    Iam_member={Iam_member}
                     circleInfo={first_link}
                     member={member}
                     Iam_delegate={Iam_delegate}
@@ -267,6 +294,7 @@ function SecondDelegatePage() {
                   chatSocket={chatSocket}
                   key={index}
                   index={index}
+                  Iam_member={Iam_member}
                   Iam_delegate={Iam_delegate}
                   candidate={cand}></Candidate>
               ))

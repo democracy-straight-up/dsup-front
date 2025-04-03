@@ -11,15 +11,16 @@ export default function Member({
   chatSocket,
   dissolve,
   err,
+  Iam_member,
+  actionDone,
+  vote_outs,
+  put_forwards,
   circleInfo,
   Iam_delegate,
 }) {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const [voted_out, setVoted_out] = useState(false);
-  const [vote_out_count, setVote_out_count] = useState(member.vote_outs);
   const [put_forward, setPut_forward] = useState(false);
-  const [put_farward_count, setPut_farward_count] = useState(member?.put_farward?.length);
-  const [clicked, setClicked] = useState(false); //check the member that clicked
   const [showModal, setShowModal] = useState(false);
 
   const handleInputChange = () => {
@@ -27,34 +28,47 @@ export default function Member({
     setShowModal(true);
   };
 
-  // check for the voted_out
   useEffect(() => {
-    const vote_instance = member.vote_outs.find((vote) =>
-      vote.startsWith(`Voter: ${AuthUser.username}`)
-    );
+    switch (actionDone?.action) {
+      case "vote_out":
+        if (actionDone?.instance.candidate === member?.id && actionDone?.user.id === AuthUser?.id) {
+          setVoted_out(true);
+        }
+        break;
+      case "undo_vote_out":
+        if (actionDone?.instance.candidate === member?.id && actionDone?.user.id === AuthUser?.id) {
+          setVoted_out(false);
+        }
+        break;
+      case "put_forward":
+        if (actionDone?.instance.candidate === member?.id && actionDone?.user.id === AuthUser?.id) {
+          setPut_forward(true);
+        }
+        break;
+      case "undo_put_forward":
+        if (actionDone?.instance.candidate === member?.id && actionDone?.user.id === AuthUser?.id) {
+          setPut_forward(false);
+        }
+        break;
+      default:
+        console.log();
+    }
+  }, [actionDone]);
 
-    if (vote_instance) {
-      const voter_username = vote_instance.match(/Voter: (\w+)/)[1];
-      if (voter_username === AuthUser.username) {
+  useEffect(() => {
+    // go through the vote_outs and put_forwards and check if the member is in the list
+    // if the member is in the list then set the value to true.
+    vote_outs.map((vote_out) => {
+      if (vote_out.candidate === member?.id && vote_out.voter === AuthUser?.id) {
         setVoted_out(true);
       }
-    }
-
-    const putF_instance = member.put_farward.find((dl) =>
-      dl.startsWith(`Voter: ${AuthUser.username}`)
-    );
-
-    if (putF_instance) {
-      const dele = putF_instance.match(/Voter: (\w+)/)[1];
-      if (dele === AuthUser.username) {
+    });
+    put_forwards.map((put_forward) => {
+      if (put_forward.candidate === member?.id && put_forward?.voter === AuthUser?.id) {
         setPut_forward(true);
       }
-    }
-
-    // set the vote_out_count for the member
-    setVote_out_count(member.vote_outs.length);
-    setPut_farward_count(member.put_farward?.length);
-  }, [member]);
+    });
+  }, []);
 
   //   if there is any error, hide the model show
   useEffect(() => {
@@ -71,7 +85,10 @@ export default function Member({
     chatSocket.send(
       JSON.stringify({
         action: "remove_candidate",
-        candidate: member.id,
+        payload: {
+          remover: AuthUser.username,
+          candidate: member?.id,
+        },
       })
     );
   };
@@ -87,8 +104,18 @@ export default function Member({
         },
       })
     );
-    //set voted out to true
-    setVoted_out(true);
+  };
+  const RemoveVoteOut = () => {
+    /** send the vote to the server */
+    chatSocket.send(
+      JSON.stringify({
+        action: "undo_vote_out",
+        payload: {
+          voter: AuthUser.username,
+          member: member?.id,
+        },
+      })
+    );
   };
 
   const removeCircle = () => {
@@ -97,6 +124,7 @@ export default function Member({
       JSON.stringify({
         action: "dissolve",
         payload: {
+          voter: AuthUser.username,
           member: member?.id,
         },
       })
@@ -116,12 +144,24 @@ export default function Member({
     );
   };
 
+  const undo_putForward = () => {
+    /** send the vote to the server */
+    chatSocket.send(
+      JSON.stringify({
+        action: "undo_putForward",
+        payload: {
+          voter: AuthUser.username,
+          member: member?.id,
+        },
+      })
+    );
+  };
+
   return (
     <>
       <tr>
-        <td>{index + 1}</td>
-        <td>
-          {" "}
+        <td className="text-center">{index + 1}</td>
+        <td className="align-middle">
           {member?.user?.users?.legalName}
           {member?.is_delegate ? (
             <span className="alert alert-success p-0 px-2 mx-2">F-Del</span>
@@ -131,23 +171,33 @@ export default function Member({
         {circleInfo?.is_active ? (
           <>
             {/* ckeck if the member is auth user so that he/she can not vote for his own delegation  */}
-            <th className="fw-bold">
-              Yes
+            <th className="fw-normal align-middle py-3">
               {!put_forward ? (
                 <input
                   type="checkbox"
                   checked={put_forward}
+                  style={{ width: "30px", height: "30px" }}
                   onChange={() => putForward()}
-                  className="form-check-input mx-2"
+                  className="sm:m-3 form-check-input mx-3 mt-0 pt-0 mb-2"
                 />
-              ) : null}
-              <span className="alert alert-primary p-0 px-2 mx-2">
-                {put_farward_count > 0 ? put_farward_count : ""} votes
+              ) : (
+                <input
+                  type="checkbox"
+                  checked={put_forward}
+                  style={{ width: "30px", height: "30px" }}
+                  onChange={() => undo_putForward()}
+                  className="sm:m-3 form-check-input mx-3 mt-0 pt-0 mb-2"
+                />
+              )}
+
+              {/* <p className="py-2"> */}
+              <span className="alert alert-primary text-nowrap p-1 px-2">
+                {member?.count_put_forward} votes
               </span>
+              {/* </p> */}
             </th>
           </>
         ) : null}
-
         {/* if the circle is not active
              and the member is delegate
              then can he remove the member.
@@ -155,7 +205,7 @@ export default function Member({
 
         {/* you can not not remove yourself. */}
         {member?.user?.username === AuthUser.username ? (
-          <td>
+          <td className="align-middle py-3">
             {/* check if the circle is dissolvable.  */}
 
             {dissolve === true ? (
@@ -163,31 +213,43 @@ export default function Member({
                 Dissolve This Circle {dissolve} ?
                 <input
                   type="checkbox"
-                  checked={clicked}
+                  checked={showModal}
                   onChange={() => handleInputChange()}
-                  className="form-check-input mx-2"
+                  className="sm:m-3 form-check-input mx-3 mt-0 pt-0 mb-2"
                 />
               </>
             ) : null}
           </td>
         ) : circleInfo?.is_active === true ? (
           // if the user vote out this member
-          <td>
-            Yes
+          <td className="align-middle py-3">
             {!voted_out ? (
               <input
                 checked={voted_out}
                 onChange={() => voteOut()}
                 type="checkbox"
-                className="form-check-input mx-2"
+                style={{ width: "30px", height: "30px" }}
+                className="sm:m-3 form-check-input mx-3 mt-0 pt-0 mb-2"
               />
-            ) : null}
-            <span className="alert alert-primary p-0 px-2 mx-2">{vote_out_count} votes</span>
+            ) : (
+              <input
+                checked={voted_out}
+                type="checkbox"
+                style={{ width: "30px", height: "30px" }}
+                className="sm:m-3 form-check-input mx-3 mt-0 pt-0 mb-2"
+                onChange={() => RemoveVoteOut()}
+              />
+            )}
+            {/* <p className="py-2"> */}
+            <span className=" alert alert-primary text-nowrap p-1 px-2">
+              {member?.count_vote_out} votes
+            </span>
+            {/* </p> */}
           </td>
         ) : (
           // if the circle is not active and the auth user is the delegate.
           // then he can remove the members.
-          <td>
+          <td className="align-middle py-3">
             {Iam_delegate ? (
               <>
                 <span> Yes </span>
@@ -195,13 +257,15 @@ export default function Member({
                   checked={false}
                   onChange={() => removeMember()}
                   type="checkbox"
-                  className="form-check-input mx-2"
+                  style={{ width: "30px", height: "30px" }}
+                  className="sm:m-3 form-check-input mx-3 mt-0 pt-0 mb-2"
                 />
               </>
             ) : null}
           </td>
         )}
       </tr>
+
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header className="border-0" closeButton>
           <Modal.Title>Dissolve Circle</Modal.Title>

@@ -7,6 +7,7 @@ export default function Candidate({
   vote_ins,
   actionDone,
   Iam_delegate,
+  Iam_member,
   candidate,
 }) {
   const AuthUser = useSelector((state) => state.AuthUser.user);
@@ -63,7 +64,7 @@ export default function Candidate({
       <td>{index + 1}</td>
       <td>{candidate?.user?.users?.legalName}</td>
 
-      {AuthUser.username !== candidate.user.username ? (
+      {Iam_member ? (
         <td>
           {!voted_in && (
             <>
@@ -85,7 +86,7 @@ export default function Candidate({
           {voted_in && (
             <span>
               {candidate.count_vote_in > "1" ? (
-                <p>You and {candidate?.count_vote_in} have voted. </p>
+                <p>You and {candidate?.count_vote_in - 1} other have voted. </p>
               ) : (
                 <p>You have voted.</p>
               )}
