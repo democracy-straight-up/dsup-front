@@ -1,36 +1,53 @@
+import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-export default function Candidate({ chatSocket, index, AuthUser, Iam_delegate, candidate }) {
-  const [voted, setVoted] = useState(false);
+
+export default function Candidate({
+  chatSocket,
+  index,
+  vote_ins,
+  actionDone,
+  Iam_delegate,
+  candidate,
+}) {
+  const AuthUser = useSelector((state) => state.AuthUser.user);
+  const [voted_in, setVoted_in] = useState(false);
+
+  useEffect(() => {
+    switch (actionDone?.action) {
+      case "vote_in":
+        if (
+          actionDone?.instance.candidate === candidate?.id &&
+          actionDone?.user.id === AuthUser?.id
+        ) {
+          setVoted_in(true);
+        }
+        break;
+      default:
+        console.log();
+    }
+  }, [actionDone]);
+
+  useEffect(() => {
+    // go through the vote_outs and put_forwards and check if the member is in the list
+    // if the member is in the list then set the value to true.
+    vote_ins?.map((vote) => {
+      if (vote.candidate === candidate?.id && vote.voter === AuthUser?.id) {
+        setVoted_in(true);
+      }
+    });
+  }, []);
 
   const VoteIn = () => {
-    console.log("voting in...");
     chatSocket.send(
       JSON.stringify({
         action: "vote_in",
-        candidate: candidate.id,
+        payload: {
+          voter: AuthUser?.username,
+          candidate: candidate.id,
+        },
       })
     );
-    console.log("voted in... saving the vote counts to the local storage");
-    // add this vote instance to the voted list to the local stroge
-    let voted = JSON.parse(localStorage.getItem("voted"));
-    if (!voted) {
-      voted = [];
-    }
-    voted.push(candidate.id);
-    localStorage.setItem("voted", JSON.stringify(voted));
-    setVoted(true);
-    console.log("voted in... saved the vote counts to the local storage");
   };
-
-  // on render check if the user has voted
-  useEffect(() => {
-    let voted = JSON.parse(localStorage.getItem("voted"));
-    if (voted) {
-      if (voted.includes(candidate.id)) {
-        setVoted(true);
-      }
-    }
-  }, [candidate.id]);
 
   const removeCadidate = () => {
     chatSocket.send(
@@ -39,7 +56,6 @@ export default function Candidate({ chatSocket, index, AuthUser, Iam_delegate, c
         candidate: candidate.id,
       })
     );
-    console.log("voted in... saving the vote counts to the local storage");
   };
 
   return (
@@ -49,16 +65,32 @@ export default function Candidate({ chatSocket, index, AuthUser, Iam_delegate, c
 
       {AuthUser.username !== candidate.user.username ? (
         <td>
-          <span className="mx-2">Yes</span>
-          {!voted ? (
-            <input
-              type="checkbox"
-              checked={voted}
-              onChange={() => VoteIn()}
-              className="form-check-input mx-3"
-            />
-          ) : null}
-          <span className="alert alert-primary p-0 px-2">{candidate?.vote_in_count} votes</span>
+          {!voted_in && (
+            <>
+              <div className="col">
+                <span className="">Yes</span>
+                <input
+                  checked={voted_in}
+                  type="checkbox"
+                  className="form-check-input mx-2 "
+                  onChange={() => VoteIn()}
+                />
+              </div>
+
+              <span className="alert alert-primary p-0 px-2">
+                Total Votes: {candidate?.count_vote_in}
+              </span>
+            </>
+          )}
+          {voted_in && (
+            <span>
+              {candidate.count_vote_in > "1" ? (
+                <p>You and {candidate?.count_vote_in} have voted. </p>
+              ) : (
+                <p>You have voted.</p>
+              )}
+            </span>
+          )}
         </td>
       ) : (
         <td></td>
@@ -67,13 +99,17 @@ export default function Candidate({ chatSocket, index, AuthUser, Iam_delegate, c
       {/* check if the auth user is delegate to this circle */}
       {Iam_delegate ? (
         <td>
-          Yes
-          <input
-            type="checkbox"
-            checked={false}
-            onChange={() => removeCadidate()}
-            className="form-check-input mx-2"
-          />
+          {!voted_in && (
+            <>
+              Yes
+              <input
+                type="checkbox"
+                checked={false}
+                onChange={() => removeCadidate()}
+                className="form-check-input mx-2"
+              />
+            </>
+          )}
         </td>
       ) : (
         <td></td>

@@ -17,7 +17,9 @@ function SecondDelegatePage() {
   const [dissolve, setDissolve] = useState(false);
   const [candidate, setCandidate] = useState("");
   const [members, setMembers] = useState("");
+  const [vote_ins, setVote_ins] = useState([]);
   const [Iam_candidate, setIam_candidate] = useState(false);
+  const [actionDone, setActionDone] = useState({});
 
   const [con_closed, setCon_closed] = useState(true);
   const [countdown, setCountdown] = useState(5);
@@ -126,7 +128,8 @@ function SecondDelegatePage() {
 
   const action_lists = (msg) => {
     // add the members and candidates on their states.
-    if (msg.action === "member_listing") {
+    setActionDone(msg.action);
+    if (msg.status === "success") {
       if (msg.member_list) {
         // set the members and candidates
         // setSec_del(msg.member_list[0]?.first_link);
@@ -142,6 +145,12 @@ function SecondDelegatePage() {
       const member = msg.member_list.find((member) => member.user.username === AuthUser?.username);
       if (member === undefined) {
         navigate("/voter-page");
+      }
+
+      if (msg?.action === "init") {
+        if (msg?.vote_ins.length > 0) {
+          setVote_ins(msg.vote_ins);
+        }
       }
     }
     if (msg.action === "invite_key") {
@@ -253,10 +262,11 @@ function SecondDelegatePage() {
             {candidate?.length > 0 ? (
               candidate?.map((cand, index) => (
                 <Candidate
+                  actionDone={actionDone}
+                  vote_ins={vote_ins}
                   chatSocket={chatSocket}
                   key={index}
                   index={index}
-                  AuthUser={AuthUser}
                   Iam_delegate={Iam_delegate}
                   candidate={cand}></Candidate>
               ))
