@@ -67,7 +67,7 @@ function SecondDelegatePage() {
     };
 
     chatSocket.onmessage = (e) => {
-      console.log("Message received:");
+      console.log("Message received!");
       try {
         const data = JSON.parse(e.data);
         // !!! IMPLEMENT THIS FUNCTION !!!
@@ -147,6 +147,10 @@ function SecondDelegatePage() {
   const action_lists = (msg) => {
     // add the members and candidates on their states.
     setActionDone(msg.action);
+    if (msg.action === "dissolve" && msg.status === "success") {
+      navigate("/voter-page");
+      return;
+    }
 
     if (msg.status === "success") {
       if (msg.member_list) {
@@ -180,9 +184,6 @@ function SecondDelegatePage() {
     }
     if (msg.action === "invitationKey") {
       dispatch(sec_del(msg.sec_del));
-    }
-    if (msg.action === "dissolve" && msg.status === "success") {
-      navigate("/voter-page");
     }
   };
 
