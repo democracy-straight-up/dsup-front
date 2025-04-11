@@ -82,7 +82,8 @@ export default function Candidate({
                 <input
                   checked={voted_in}
                   type="checkbox"
-                  className="form-check-input mx-2 "
+                  style={{ width: "30px", height: "30px" }}
+                  className="sm:m-3 form-check-input mx-3 mt-0 pt-0 mb-2"
                   onChange={() => VoteIn()}
                 />
               </div>

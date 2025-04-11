@@ -188,12 +188,20 @@ export default function CircleCard() {
                 <div className="row">
                   {AuthUser.users.userType === "U1D1" ? (
                     <div className="d-flex flex-sm-column flex-md-row justify-content-evenly mt-4 ">
-                      <Link to="#" onClick={handleCreate} className="py-1 text-nowrap text-dark">
-                        Create F-Link
-                      </Link>
-                      <Link to="/join-sec-del" className="py-1 text-nowrap  text-dark">
-                        Join F-Link
-                      </Link>
+                      {circleInfo.is_active && (
+                        <>
+                          <Link
+                            to="#"
+                            onClick={handleCreate}
+                            className="py-1 text-nowrap text-dark">
+                            Create F-Link
+                          </Link>
+                          {}
+                          <Link to="/join-sec-del" className="py-1 text-nowrap  text-dark">
+                            Join F-Link
+                          </Link>
+                        </>
+                      )}
                     </div>
                   ) : (
                     <div style={{ height: "3.5rem", display: "block" }}></div>

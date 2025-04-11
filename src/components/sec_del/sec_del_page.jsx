@@ -67,7 +67,7 @@ function SecondDelegatePage() {
     };
 
     chatSocket.onmessage = (e) => {
-      console.log("Message received!");
+      console.log("Message received!", e);
       try {
         const data = JSON.parse(e.data);
         // !!! IMPLEMENT THIS FUNCTION !!!

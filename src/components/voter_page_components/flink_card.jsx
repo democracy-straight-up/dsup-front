@@ -152,12 +152,16 @@ export default function FLinkCard() {
                 <div className="row">
                   {AuthUser.users.userType === "U2D2" ? (
                     <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
-                      <Link to="#" className="p-1 text-nowrap text-dark">
-                        Create S-Link
-                      </Link>
-                      <Link to="/join-S-Link" className="p-1 text-nowrap  text-dark">
-                        Join S-Link
-                      </Link>
+                      {sec_del_info?.is_active && (
+                        <>
+                          <Link to="#" className="p-1 text-nowrap text-dark">
+                            Create S-Link
+                          </Link>
+                          <Link to="/join-S-Link" className="p-1 text-nowrap  text-dark">
+                            Join S-Link
+                          </Link>
+                        </>
+                      )}
                     </div>
                   ) : (
                     <div style={{ height: "3.5rem", display: "block" }}></div>
