@@ -39,24 +39,33 @@ export default function Candidate({
   }, []);
 
   const VoteIn = () => {
-    chatSocket.send(
-      JSON.stringify({
-        action: "vote_in",
-        payload: {
-          voter: AuthUser?.username,
-          candidate: candidate.id,
-        },
-      })
-    );
+    if (chatSocket.readyState === WebSocket.OPEN) {
+      chatSocket.send(
+        JSON.stringify({
+          action: "vote_in",
+          payload: {
+            voter: AuthUser?.username,
+            candidate: candidate.id,
+          },
+        })
+      );
+    } else {
+      console.log("chat socket is connecting ...");
+    }
   };
 
   const removeCadidate = () => {
-    chatSocket.send(
-      JSON.stringify({
-        action: "remove_candidate",
-        candidate: candidate.id,
-      })
-    );
+    if (chatSocket.readyState === WebSocket.OPEN) {
+      chatSocket.send(
+        JSON.stringify({
+          action: "remove_candidate",
+          remover: AuthUser?.username,
+          candidate: candidate.id,
+        })
+      );
+    } else {
+      console.log("chat socket is connecting ...");
+    }
   };
 
   return (
