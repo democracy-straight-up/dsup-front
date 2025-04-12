@@ -186,9 +186,9 @@ export default function CircleCard() {
                 </div>
 
                 <div className="row">
-                  {AuthUser.users.userType === "U1D1" ? (
+                  {AuthUser?.users.userType === "U1D1" ? (
                     <div className="d-flex flex-sm-column flex-md-row justify-content-evenly mt-4 ">
-                      {circleInfo.is_active && (
+                      {circleInfo?.is_active && (
                         <>
                           <Link
                             to="#"

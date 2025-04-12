@@ -16,7 +16,7 @@ function SecondDelegatePage() {
   const [Iam_member, setIam_member] = useState(false);
   const [Iam_candidate, setIam_candidate] = useState(false);
   const [dissolve, setDissolve] = useState(false);
-  const [candidate, setCandidate] = useState("");
+  const [candidates, setCandidates] = useState([]);
   const [members, setMembers] = useState("");
   const [vote_ins, setVote_ins] = useState([]);
   const [actionDone, setActionDone] = useState({});
@@ -67,13 +67,12 @@ function SecondDelegatePage() {
     };
 
     chatSocket.onmessage = (e) => {
-      console.log("Message received!", e);
       try {
         const data = JSON.parse(e.data);
+        console.log("Parsed message data:");
         // !!! IMPLEMENT THIS FUNCTION !!!
         // action_lists(data);
         action_lists(data);
-        // Example: setMembers(data.members); setCandidate(data.candidate); etc.
       } catch (error) {
         console.error("Failed to parse message data:", error);
       }
@@ -111,39 +110,6 @@ function SecondDelegatePage() {
     // Dependencies: The effect should re-run if connection details change, or if we need to trigger a reconnect attempt
   }, [code, username, baseUrl, ws_scheme, isConnecting]); // isConnecting is added to trigger reconnects
 
-  useEffect(() => {
-    // on each member change, check if the Circle has one member.
-    if (members.length <= 1 && candidate.length === 0) {
-      setDissolve(true);
-    } else {
-      setDissolve(false);
-    }
-
-    // check if the authuser is a candidate member of fLink.
-    // we need this on candidate view
-    if (candidate?.length > 0) {
-      console.log("");
-      if (candidate?.some((obj) => obj.user.username === AuthUser?.username)) {
-        setIam_candidate(true);
-      }
-    }
-    // set the iam_delegate and iam_member based on the members list
-    if (members.length > 0) {
-      const member = members.find((member) => member.user.username === AuthUser?.username);
-      if (member) {
-        if (member.is_delegate) {
-          setIam_delegate(true);
-        } else {
-          setIam_delegate(false);
-        }
-
-        if (member.is_member) {
-          setIam_member(true);
-        }
-      }
-    }
-  }, [candidate, members]);
-
   const action_lists = (msg) => {
     // add the members and candidates on their states.
     setActionDone(msg.action);
@@ -158,16 +124,44 @@ function SecondDelegatePage() {
         // setSec_del(msg.member_list[0]?.first_link);
         dispatch(sec_del(msg.member_list[0]?.sec_del));
 
+        // on each member change, check if the Circle has one member.
+        if (msg.member_list.length <= 1) {
+          setDissolve(true);
+          console.log("eligible to Dissolve the first link...");
+        } else {
+          setDissolve(false);
+        }
+
+        // set the Iam_delegate and Iam_member based on the members list
+        const instance = msg?.member_list?.find(
+          (member) => member.user.username === AuthUser?.username
+        );
+        // check the msg.member_list to AuthUser.username, if not found, redirect to voter page
+        if (instance === undefined) {
+          navigate("/voter-page");
+        }
+
+        if (instance.is_delegate && instance.is_member) {
+          setIam_member(false);
+          setIam_candidate(false);
+          setIam_delegate(true);
+          console.log("i am delegate...");
+        } else if (instance.is_member && !instance.is_delegate) {
+          setIam_delegate(false);
+          setIam_candidate(false);
+          setIam_member(true);
+          console.log("i am member...");
+        } else if (!instance.is_member && !instance.is_delegate) {
+          setIam_delegate(false);
+          setIam_member(false);
+          setIam_candidate(true);
+          console.log("i am candidate...");
+        }
+
         const membersList = msg.member_list.filter((member) => member.is_member);
         const candidatesList = msg.member_list.filter((member) => !member.is_member);
         setMembers(membersList);
-        setCandidate(candidatesList);
-      }
-
-      // check the msg.member_list to AuthUser.username, if not found, redirect to voter page
-      const member = msg.member_list.find((member) => member.user.username === AuthUser?.username);
-      if (member === undefined) {
-        navigate("/voter-page");
+        setCandidates(candidatesList.length > 0 ? [candidatesList[0]] : []);
       }
 
       if (msg?.action === "init") {
@@ -328,8 +322,8 @@ function SecondDelegatePage() {
              * check if the candidate list is greater than 0
              *
              */}
-            {candidate?.length > 0 ? (
-              candidate?.map((cand, index) => (
+            {candidates?.length > 0 ? (
+              candidates?.map((cand, index) => (
                 <Candidate
                   actionDone={actionDone}
                   vote_ins={vote_ins}
@@ -355,8 +349,9 @@ function SecondDelegatePage() {
       <Status
         Iam_candidate={Iam_candidate}
         Iam_delegate={Iam_delegate}
+        Iam_member={Iam_member}
         circleInfo={first_link}
-        candidate={candidate}
+        candidates={candidates}
         members={members}></Status>
     </div>
   );

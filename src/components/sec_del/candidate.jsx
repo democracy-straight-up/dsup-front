@@ -70,10 +70,12 @@ export default function Candidate({
 
   return (
     <tr>
-      <td>{index + 1}</td>
+      <td>
+        {index + 1} - {candidate.id}
+      </td>
       <td>{candidate?.user?.users?.legalName}</td>
 
-      {Iam_member ? (
+      {Iam_member || Iam_delegate ? (
         <td>
           {!voted_in && (
             <>
