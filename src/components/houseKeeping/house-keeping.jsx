@@ -27,6 +27,7 @@ function HouseKeeping() {
   const [members, setMembers] = useState("");
   const [Iam_candidate, setIam_candidate] = useState(false);
   const [actionDone, setActionDone] = useState({});
+  const [vote_ins, setVote_ins] = useState([]);
   const [vote_outs, setVote_outs] = useState([]);
   const [put_forwards, setPut_forwards] = useState([]);
 
@@ -76,7 +77,6 @@ function HouseKeeping() {
     chatSocket.onmessage = (e) => {
       try {
         const data = JSON.parse(e.data);
-        console.log("Parsed message data:", data);
         // !!! IMPLEMENT THIS FUNCTION !!!
         // action_lists(data);
         MembersFilter(data);
@@ -183,15 +183,18 @@ function HouseKeeping() {
         navigate("/voter-page");
       }
 
-      // set the vote_outs and put_forwards. the first load of the socket data has a init action type.
       if (data?.action === "init") {
-        if (data?.vote_outs.length > 0) {
+        if (data?.vote_ins.length > 0) {
+          setVote_ins(data.vote_ins);
+        }
+        if (data?.vote_outs?.length > 0) {
           setVote_outs(data.vote_outs);
         }
-        if (data.put_forwards.length > 0) {
+        if (data.put_forwards?.length > 0) {
           setPut_forwards(data.put_forwards);
         }
       }
+
       /**
        * set Iam_candidate or Iam_member to true based on AuthUser and is_member
        * and set Iam_delegate to true based on AuthUser and is_delegate
@@ -365,6 +368,8 @@ function HouseKeeping() {
                   Iam_member={Iam_member}
                   Iam_delegate={Iam_delegate}
                   candidate={cand}
+                  actionDone={actionDone}
+                  vote_ins={vote_ins}
                   fDel={fDel}></Candidate>
               ))
             ) : (

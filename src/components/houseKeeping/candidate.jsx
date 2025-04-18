@@ -1,34 +1,43 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
-import { baseURL } from "../../store/conf.js";
 
-const Candidate = ({ candidate, index, chatSocket, fDel, Iam_member, Iam_delegate }) => {
-  const [voted, setVoted] = useState(false);
+const Candidate = ({
+  candidate,
+  index,
+  chatSocket,
+  actionDone,
+  vote_ins,
+  Iam_member,
+  Iam_delegate,
+}) => {
   const AuthUser = useSelector((state) => state.AuthUser.user);
+  const [voted_in, setVoted_in] = useState(false);
 
   useEffect(() => {
-    /** Check for the AuthUser if he/she voted in for this candidate */
-    const Url = `${window.location.protocol}//${baseURL}/api/circle-vote-in-list/`;
-    console.log("checking for the vote_in status");
-    axios
-      .get(
-        Url,
-        { params: { candidate: candidate.id } },
-        { headers: { Authorization: `Bearer ${AuthUser.token.access}` } }
-      )
-      .then((response) => {
-        // checking whether the auth user has voted for this candidate
-        console.log("got vote_in status: ", response.data);
-        response.data.map((res) => {
-          if (res.voter == AuthUser.id) {
-            setVoted(true);
-            console.log("user has voted for this candidate");
-          }
-        });
-      })
-      .catch((err) => console.log("error getting the vote_in status: ", err));
-  }, [voted]);
+    switch (actionDone?.action) {
+      case "vote_in":
+        if (
+          actionDone?.instance.recipient === candidate?.id &&
+          actionDone?.user.id === AuthUser?.id
+        ) {
+          setVoted_in(true);
+        }
+        break;
+      default:
+        console.log();
+    }
+  }, [actionDone]);
+
+  useEffect(() => {
+    // go through the vote_outs and put_forwards and check if the member is in the list
+    // if the member is in the list then set the value to true.
+
+    vote_ins?.map((vote) => {
+      if (vote.recipient === candidate?.id && vote.voter === AuthUser?.id) {
+        setVoted_in(true);
+      }
+    });
+  }, []);
 
   const VoteIn = () => {
     /** send the vote to the server */
@@ -41,7 +50,6 @@ const Candidate = ({ candidate, index, chatSocket, fDel, Iam_member, Iam_delegat
         },
       })
     );
-    setVoted(!voted);
   };
 
   const removeCadidate = () => {
@@ -64,17 +72,32 @@ const Candidate = ({ candidate, index, chatSocket, fDel, Iam_member, Iam_delegat
 
       {Iam_delegate || Iam_member ? (
         <td>
-          {" "}
-          <span className="mx-2">Yes</span>
-          {!voted ? (
-            <input
-              type="checkbox"
-              checked={voted}
-              onChange={() => VoteIn()}
-              className="form-check-input mx-3"
-            />
-          ) : null}
-          <span className="alert alert-primary p-0 px-2">{candidate?.count_vote_in} votes</span>
+          {!voted_in && (
+            <>
+              <div className="col">
+                <span className="">Yes</span>
+                <input
+                  checked={voted_in}
+                  type="checkbox"
+                  className="sm:m-3 form-check-input mx-3 mt-0 pt-0 mb-2"
+                  onChange={() => VoteIn()}
+                />
+              </div>
+
+              <span className="alert alert-primary p-0 px-2">
+                Total Votes: {candidate?.count_vote_in}
+              </span>
+            </>
+          )}
+          {voted_in && (
+            <span>
+              {candidate.count_vote_in > "1" ? (
+                <p>You and {candidate?.count_vote_in - 1} other have voted. </p>
+              ) : (
+                <p>You have voted.</p>
+              )}
+            </span>
+          )}
         </td>
       ) : null}
 

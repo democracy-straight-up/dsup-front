@@ -145,17 +145,14 @@ function SecondDelegatePage() {
           setIam_member(false);
           setIam_candidate(false);
           setIam_delegate(true);
-          console.log("i am delegate...");
         } else if (instance.is_member && !instance.is_delegate) {
           setIam_delegate(false);
           setIam_candidate(false);
           setIam_member(true);
-          console.log("i am member...");
         } else if (!instance.is_member && !instance.is_delegate) {
           setIam_delegate(false);
           setIam_member(false);
           setIam_candidate(true);
-          console.log("i am candidate...");
         }
 
         const membersList = msg.member_list.filter((member) => member.is_member);
