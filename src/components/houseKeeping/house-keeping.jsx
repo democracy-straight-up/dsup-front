@@ -384,7 +384,13 @@ function HouseKeeping() {
       </div>
 
       {/* status messages */}
-      <Status></Status>
+      <Status
+        Iam_candidate={Iam_candidate}
+        Iam_delegate={Iam_delegate}
+        Iam_member={Iam_member}
+        circleInfo={circleInfo}
+        candidates={candidate}
+      />
     </div>
   );
 }
