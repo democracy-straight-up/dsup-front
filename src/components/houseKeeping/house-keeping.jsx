@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { circle, desolveCircle, authenticate, addCirclemMembers } from "../../store/userSlice.js";
 import Member from "./member.jsx";
 import Candidate from "./candidate.jsx";
@@ -11,7 +11,6 @@ function HouseKeeping() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const circleInfo = useSelector((state) => state.AuthUser.circle);
   const [err, setErr] = useState("");
-  let timout_id = null;
   const [connectionErr, setConnectionErr] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -28,12 +27,97 @@ function HouseKeeping() {
   const [members, setMembers] = useState("");
   const [Iam_candidate, setIam_candidate] = useState(false);
   const [actionDone, setActionDone] = useState({});
+  const [vote_ins, setVote_ins] = useState([]);
   const [vote_outs, setVote_outs] = useState([]);
   const [put_forwards, setPut_forwards] = useState([]);
 
-  let ws_schame = window.location.protocol === "https:" ? "wss" : "ws";
-  const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${circleInfo?.code}/${AuthUser.username}`;
-  const chatSocket = new WebSocket(url);
+  const [isConnecting, setIsConnecting] = useState(false); // Track connection attempt state
+  const [isConnected, setIsConnected] = useState(false); // Track connection status
+  // Use useRef to hold the WebSocket instance
+  const socketRef = useRef(null);
+  const reconnectTimerRef = useRef(null); // To hold reconnect timeout ID
+
+  // Define connection parameters - ensure they only trigger effect when they change
+  const code = circleInfo?.code;
+  const username = AuthUser?.username;
+  const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+
+  // Effect for WebSocket connection management
+  useEffect(() => {
+    // Only attempt connection if we have the necessary details and aren't already connected/connecting
+    if (!code || !username || !baseUrl || isConnected || isConnecting) {
+      // Optional: set an error if connection can't be attempted due to missing info
+      if (!code || !username || !baseUrl) {
+        setErr("Missing connection details.");
+      }
+      return;
+    }
+
+    const url = `${ws_scheme}://${baseUrl}/circle/${circleInfo?.code}/${AuthUser?.username}`;
+    setIsConnecting(true);
+    setErr("Connecting...");
+
+    // Create the WebSocket instance
+    const chatSocket = new WebSocket(url);
+    socketRef.current = chatSocket; // Store it in the ref
+
+    chatSocket.onopen = () => {
+      setIsConnected(true);
+      setIsConnecting(false);
+      setErr(""); // Clear connection status message
+      // Clear any previous reconnect timer if connection succeeds
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
+      // Reset reconnect attempts logic if needed here
+    };
+
+    chatSocket.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        // !!! IMPLEMENT THIS FUNCTION !!!
+        // action_lists(data);
+        MembersFilter(data);
+      } catch (error) {
+        console.error("Failed to parse message data:", error);
+      }
+    };
+
+    chatSocket.onerror = (error) => {
+      // Don't set connecting false here, let onclose handle final state
+      setErr("WebSocket error occurred.");
+      // Note: onclose will usually be called immediately after onerror
+    };
+
+    chatSocket.onclose = (event) => {
+      setIsConnected(false);
+      setIsConnecting(true);
+      // socketRef.current = null; // Clear the ref
+      // Prevent reconnect loops if the closure was clean/intended or essential params are missing
+      if (!code || !username || !baseUrl || event.wasClean) {
+        setErr("Disconnected. Connection closed cleanly.");
+        return;
+      }
+
+      setErr("Disconnected. Attempting to reconnect in 5 seconds...");
+      // Simple reconnect delay
+      if (!reconnectTimerRef.current) {
+        // Avoid setting multiple timers
+        reconnectTimerRef.current = setTimeout(() => {
+          setIsConnecting(true); // Trigger the effect again by changing state
+          reconnectTimerRef.current = null; // Clear timer ID
+        }, 5000);
+      }
+    };
+
+    // Dependencies: The effect should re-run if connection details change, or if we need to trigger a reconnect attempt
+  }, [code, username, baseUrl, ws_scheme, isConnecting]); // isConnecting is added to trigger reconnects
+
+  // let ws_schame = window.location.protocol === "https:" ? "wss" : "ws";
+  // const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${circleInfo?.code}/${AuthUser?.username}`;
+  // const chatSocket = new WebSocket(url);
 
   useEffect(() => {
     // on each member change, check if the Circle has one member.
@@ -60,12 +144,12 @@ function HouseKeeping() {
   }, [members]);
 
   // Function to update the error state and schedule the reset
-  useEffect(() => {
-    // Schedule the reset after 5000 milliseconds (5 seconds)
-    timout_id = setTimeout(() => {
-      setErr("");
-    }, 10000);
-  }, [err]);
+  // useEffect(() => {
+  //   // Schedule the reset after 5000 milliseconds (5 seconds)
+  //   timout_id = setTimeout(() => {
+  //     setErr("");
+  //   }, 10000);
+  // }, [err]);
 
   const MembersFilter = (data) => {
     /** This function gets called on each message being sent from server
@@ -99,15 +183,18 @@ function HouseKeeping() {
         navigate("/voter-page");
       }
 
-      // set the vote_outs and put_forwards. the first load of the socket data has a init action type.
       if (data?.action === "init") {
-        if (data?.vote_outs.length > 0) {
+        if (data?.vote_ins.length > 0) {
+          setVote_ins(data.vote_ins);
+        }
+        if (data?.vote_outs?.length > 0) {
           setVote_outs(data.vote_outs);
         }
-        if (data.put_forwards.length > 0) {
+        if (data.put_forwards?.length > 0) {
           setPut_forwards(data.put_forwards);
         }
       }
+
       /**
        * set Iam_candidate or Iam_member to true based on AuthUser and is_member
        * and set Iam_delegate to true based on AuthUser and is_delegate
@@ -144,51 +231,41 @@ function HouseKeeping() {
     }
   };
 
-  useEffect(() => {
-    /** This is the functions that receives all the messages from server */
-    chatSocket.onmessage = function (e) {
-      const data = JSON.parse(e.data);
-      /**
-       * all the messages that comes from this end point is the same.
-       * it contains circle members
-       * make a function that gets the data and saperate the candidates and members
-       * adds the candidates and members to their states.
-       */
-      // console.log("got new message: ", data)
-      MembersFilter(data);
-    };
-
-    // what happens on closing the connection
-    chatSocket.onclose = (e) => {
-      setConnectionErr("live connection is closed. Please refresh your page!");
-    };
-
-    // close the connection on page leave. cleanup function
-    return () => {
-      /**
-       * 1. close the connection
-       * 2. clear the states
-       * 3. terminate any functions in running or in background
-       */
-      setMembers("");
-      setCandidate("");
-      setVote_outs([]);
-      setPut_forwards([]);
-      clearTimeout();
-      setFDel("");
-      clearTimeout(timout_id);
-    };
-  }, []);
-
   // update or change the circle invitation key
   const invitationKey = () => {
-    chatSocket.send(
-      JSON.stringify({
-        action: "invitationKey",
-        payload: { circle: circleInfo.code },
-      })
-    );
+    // 1. !! MOST IMPORTANT CHECK !!: Ensure the socket reference actually exists.
+    //    If the ref is null, we definitely cannot send.
+    if (!socketRef.current) {
+      setErr("Cannot send: Connection is not available."); // Update UI feedback
+      return; // Exit early - cannot proceed
+    }
+
+    // 2. Now that we know socketRef.current exists, check its readyState.
+    if (socketRef.current.readyState === WebSocket.OPEN) {
+      // 3. Check if the required payload data (`first_link.code`) exists
+      const circleCode = circleInfo?.code;
+
+      if (circleCode) {
+        try {
+          // 4. Send the message
+          socketRef.current.send(
+            JSON.stringify({
+              action: "invitationKey",
+              payload: { circle: circleCode },
+            })
+          );
+          // setErr(""); // Optional: Clear error state on success
+        } catch (error) {
+          setErr("Error sending message. Please try again.");
+        }
+      } else {
+        setErr("Cannot send invitation: Required data is missing.");
+      }
+    } else {
+      setErr("Cannot send: Connection is not ready (State: " + socketRef.current.readyState + ").");
+    }
   };
+
   return (
     <div className="container">
       <div className="row">
@@ -254,7 +331,7 @@ function HouseKeeping() {
                     index={index}
                     circleInfo={circleInfo}
                     member={member}
-                    chatSocket={chatSocket}
+                    chatSocket={socketRef?.current}
                     err={err}
                     Iam_member={Iam_member}
                     Iam_delegate={Iam_delegate}
@@ -285,12 +362,14 @@ function HouseKeeping() {
             {candidate?.length > 0 ? (
               candidate?.map((cand, index) => (
                 <Candidate
-                  chatSocket={chatSocket}
+                  chatSocket={socketRef?.current}
                   key={index}
                   index={index}
                   Iam_member={Iam_member}
                   Iam_delegate={Iam_delegate}
                   candidate={cand}
+                  actionDone={actionDone}
+                  vote_ins={vote_ins}
                   fDel={fDel}></Candidate>
               ))
             ) : (

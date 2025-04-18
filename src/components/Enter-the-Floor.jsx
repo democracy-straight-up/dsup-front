@@ -86,6 +86,7 @@ function EnterTheFloor() {
       // generate the token here.
       const TokenUrl = `${window.location.protocol}//${baseURL}/api/token/`;
       const token_params = { username: entry_code.toUpperCase(), password: password };
+
       axios
         .post(TokenUrl, token_params)
         .then((response) => {
