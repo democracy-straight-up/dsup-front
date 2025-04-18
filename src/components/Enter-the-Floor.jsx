@@ -93,7 +93,6 @@ function EnterTheFloor() {
           if (response.status === 200) {
             setToken(response.data);
             setLogin(true);
-            console.log("responseL: ", response.data);
           } else {
             setErr("User not Found.");
           }

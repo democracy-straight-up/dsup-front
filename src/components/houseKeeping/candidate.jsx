@@ -3,20 +3,14 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { baseURL } from "../../store/conf.js";
 
-const Candidate = ({
-  candidate,
-  index,
-  chatSocket,
-  fDel,
-  Iam_member,
-  Iam_delegate,
-}) => {
+const Candidate = ({ candidate, index, chatSocket, fDel, Iam_member, Iam_delegate }) => {
   const [voted, setVoted] = useState(false);
   const AuthUser = useSelector((state) => state.AuthUser.user);
 
   useEffect(() => {
     /** Check for the AuthUser if he/she voted in for this candidate */
     const Url = `${window.location.protocol}//${baseURL}/api/circle-vote-in-list/`;
+    console.log("checking for the vote_in status");
     axios
       .get(
         Url,
@@ -25,14 +19,16 @@ const Candidate = ({
       )
       .then((response) => {
         // checking whether the auth user has voted for this candidate
+        console.log("got vote_in status: ", response.data);
         response.data.map((res) => {
           if (res.voter == AuthUser.id) {
             setVoted(true);
+            console.log("user has voted for this candidate");
           }
         });
       })
-      .catch((err) => console.log(err));
-  });
+      .catch((err) => console.log("error getting the vote_in status: ", err));
+  }, [voted]);
 
   const VoteIn = () => {
     /** send the vote to the server */
@@ -45,6 +41,7 @@ const Candidate = ({
         },
       })
     );
+    setVoted(!voted);
   };
 
   const removeCadidate = () => {
@@ -77,9 +74,7 @@ const Candidate = ({
               className="form-check-input mx-3"
             />
           ) : null}
-          <span className="alert alert-primary p-0 px-2">
-            {candidate?.count_vote_in} votes
-          </span>
+          <span className="alert alert-primary p-0 px-2">{candidate?.count_vote_in} votes</span>
         </td>
       ) : null}
 
