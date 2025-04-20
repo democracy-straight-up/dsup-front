@@ -1,14 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { baseURL } from "../../store/conf";
-import { sec_del } from "../../store/userSlice";
+import { sec_del, moda, authenticate } from "../../store/userSlice";
 
 export default function FLinkCard() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const sec_del_info = useSelector((state) => state.AuthUser.sec_del);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -37,11 +38,47 @@ export default function FLinkCard() {
       });
   };
 
+  const handleCreate = () => {
+    if (AuthUser?.token.access.length > 0) {
+      // console.log("ceating a circle...")
+      // constructing to request to create the first link
+      let header = { Authorization: `Bearer ${AuthUser.token.access}` };
+      const url = `${window.location.protocol}//${baseURL}/api/moda/moda/`;
+      const param = {
+        user: AuthUser.username,
+        district: AuthUser.users.district.code,
+      };
+
+      axios
+        .post(url, param, { headers: header })
+        .then((response) => {
+          if (response.status === 200) {
+            // if the request was a succcess, set the sec_del state so that we need it in the next page (sec_del housekeeping page)
+            dispatch(moda(response.data));
+
+            // set the userType to 2 without requesting new data from the server.
+            let u = { ...AuthUser.users };
+            let userType = "U3D3";
+            let users = { ...u, userType };
+            dispatch(authenticate({ ...AuthUser, users }));
+
+            //   after successfull operation of creating, settign datas and users, take the voter to first link page
+            navigate("/s-link-page");
+          } else {
+            console.log("something went wrong:", response);
+          }
+        })
+        .catch((error) => {
+          console.log("something is not right!.", error);
+        });
+    }
+  };
+
   return (
     <div className="mt-3">
-      <div className="row align-items-start">
-        <div className="col-md-10 offset-md-1">
-          <div className={`card rounded-3 bg-light p-4`}>
+      <div className="">
+        <div className="mx-2">
+          <div className={`card rounded-3 bg-light p-4 m-0`}>
             {error === false ? (
               <>
                 <div className="row">
@@ -154,10 +191,10 @@ export default function FLinkCard() {
                     <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
                       {sec_del_info?.is_active && (
                         <>
-                          <Link to="#" className="p-1 text-nowrap text-dark">
+                          <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
                             Create S-Link
                           </Link>
-                          <Link to="/join-S-Link" className="p-1 text-nowrap  text-dark">
+                          <Link to="/join-s-link" className="p-1 text-nowrap  text-dark">
                             Join S-Link
                           </Link>
                         </>

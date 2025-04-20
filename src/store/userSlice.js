@@ -14,16 +14,19 @@ function getLocalStorageItem(key) {
 const userLocal = getLocalStorageItem("AuthUser");
 const circleLocal = getLocalStorageItem("circle");
 const sec_delLocal = getLocalStorageItem("sec_del");
+const modaLocal = getLocalStorageItem("moda");
 const circleMembersLocal = getLocalStorageItem("circleMembers");
 
 let userInit = null;
 let circleInit = null;
 let sec_delInit = null;
+let modaInit = null;
 let circleMembersInit = null;
 
 userLocal ? (userInit = userLocal) : (userInit = null);
 circleLocal ? (circleInit = circleLocal) : (circleInit = null);
 sec_delLocal ? (sec_delInit = sec_delLocal) : (sec_delInit = null);
+modaLocal ? (modaInit = modaLocal) : (modaInit = null);
 
 circleMembersLocal ? (circleMembersInit = circleMembersLocal) : (circleMembersInit = null);
 
@@ -31,6 +34,7 @@ const initialState = {
   user: userInit,
   circle: circleInit,
   sec_del: sec_delInit,
+  moda: modaInit,
   circleMembers: circleMembersInit,
 };
 
@@ -48,6 +52,7 @@ export const UserSlice = createSlice({
       localStorage.removeItem("AuthUser");
       localStorage.removeItem("circle");
       localStorage.removeItem("sec_del");
+      localStorage.removeItem("moda");
       localStorage.removeItem("circleMembers");
     },
     circle: (state, action) => {
@@ -57,6 +62,10 @@ export const UserSlice = createSlice({
     sec_del: (state, action) => {
       state.sec_del = action.payload;
       toLocalStorage("sec_del", state.sec_del);
+    },
+    moda: (state, action) => {
+      state.moda = action.payload;
+      toLocalStorage("moda", state.moda);
     },
     addCirclemMembers: (state, action) => {
       state.circleMembers = action.payload;
@@ -81,6 +90,6 @@ function toLocalStorage(store, user) {
 }
 
 // Action creators are generated for each case reducer function
-export const { authenticate, logout, circle, sec_del, addCirclemMembers, desolveCircle } =
+export const { authenticate, logout, circle, sec_del, moda, addCirclemMembers, desolveCircle } =
   UserSlice.actions;
 export default UserSlice.reducer;
