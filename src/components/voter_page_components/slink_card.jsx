@@ -1,25 +1,24 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { baseURL } from "../../store/conf";
-import { circle, authenticate, sec_del } from "../../store/userSlice";
+import { moda } from "../../store/userSlice";
 
-export default function CircleCard() {
+export default function SLinkCard() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
-  const circleInfo = useSelector((state) => state.AuthUser.circle);
+  const moda_info = useSelector((state) => state.AuthUser.moda);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    // get the circle info
-    const url = `${window.location.protocol}//${baseURL}/api/get-circle/get_circle_by_user/`;
+    // get the fLink info
+    const url = `${window.location.protocol}//${baseURL}/api/moda/moda/get_s_link_by_user/`;
     let header = { Authorization: `Bearer ${AuthUser?.token.access}` };
     axios
-      .post(url, { user: AuthUser.username }, { headers: header })
+      .post(url, { user: AuthUser?.username }, { headers: header })
       .then((res) => {
-        dispatch(circle(res.data));
+        dispatch(moda(res.data));
       })
       .catch((err) => {
         setError(true);
@@ -38,61 +37,23 @@ export default function CircleCard() {
       });
   };
 
-  const handleCreate = () => {
-    if (AuthUser?.token.access.length > 0) {
-      // console.log("ceating a circle...")
-      // constructing to request to create the first link
-      let header = { Authorization: `Bearer ${AuthUser.token.access}` };
-      const url = `${window.location.protocol}//${baseURL}/api/second-delegate/`;
-      const param = {
-        user: AuthUser.username,
-        district: AuthUser.users.district.code,
-      };
-
-      axios
-        .post(url, param, { headers: header })
-        .then((response) => {
-          if (response.status === 200) {
-            // if the request was a succcess, set the sec_del state so that we need it in the next page (sec_del housekeeping page)
-            dispatch(sec_del(response.data));
-
-            // set the userType to 2 without requesting new data from the server.
-            let u = { ...AuthUser.users };
-            let userType = "U2D2";
-            let users = { ...u, userType };
-            dispatch(authenticate({ ...AuthUser, users }));
-
-            //   after successfull operation of creating, settign datas and users, take the voter to first link page
-            navigate("/first-link-page");
-          } else {
-            console.log("something went wrong:", response);
-          }
-        })
-        .catch((error) => {
-          console.log("something is not right!.", error);
-        });
-    }
-  };
-
   return (
-    <div className="mt-3">
+    <div className="mt-3 ">
       <div className="">
-        <div className="px-2">
-          <div className={`card rounded-3 bg-light p-4 ${!circleInfo?.is_active ? "" : ""}`}>
+        <div className="mx-2">
+          <div className={`card rounded-3 bg-light p-4`}>
             {error === false ? (
               <>
                 <div className="row">
                   <div className=" text-center">
                     <h1 className="fs-3 m-0 text-center">
-                      Circle-{circleInfo?.district?.code}-{circleInfo?.code}
+                      S-Link-{moda_info?.district?.code}-{moda_info?.code}
                     </h1>
                     <div
-                      className="d-flex justify-content-between mx-auto border-bottom border-1"
-                      style={{
-                        maxWidth: AuthUser.users.userType.substring(0, 2) === "U1" ? "60%" : "90%",
-                      }}>
-                      <p className="m-0">Status: {circleInfo?.is_active ? "Active" : "Inactive"}</p>
-                      <p className="m-0">Members: {circleInfo?.member_count}</p>
+                      style={{ maxWidth: "90%" }}
+                      className="d-flex justify-content-between mx-auto border-bottom border-1">
+                      <p className="m-0">Status: {moda_info?.is_active ? "Active" : "Inactive"}</p>
+                      <p className="m-0">Members: {moda_info?.member_count}</p>
                     </div>
                     <h1 className="fs-3 fw-light">Invitation Key</h1>
                     <div className="row">
@@ -100,11 +61,11 @@ export default function CircleCard() {
                         <p
                           className="fw-light font-monospace m-0"
                           style={{ letterSpacing: ".3rem" }}>
-                          {circleInfo?.invitation_code}
+                          {moda_info?.invitation_key}
                         </p>
                         &nbsp; &nbsp;
                         <button
-                          onClick={() => CopyInviteKey(circleInfo?.invitation_code)}
+                          onClick={() => CopyInviteKey(moda_info?.invitation_key)}
                           className="m-0 p-0 border-0 bg-transparent">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -124,8 +85,8 @@ export default function CircleCard() {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="d-flex flex-sm-column flex-md-row justify-content-around  flex-wrap mt-3 ">
-                    <Link to="/house-keeping-page" className=" p-1 text-nowrap fw-light text-dark">
+                  <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-3">
+                    <Link to="/s-link-page" className="p-1 text-nowrap fw-light text-dark">
                       Housekeeping Page &nbsp;
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -136,7 +97,7 @@ export default function CircleCard() {
                         <path d="M12.47 10.47a.75.75 0 1 0 1.06 1.06l7.72-7.72v3.534a.75.75 0 0 0 1.5 0V2a.75.75 0 0 0-.75-.75h-5.344a.75.75 0 0 0 0 1.5h3.533z" />
                       </svg>
                     </Link>
-                    <Link to="/member-contact" className=" p-1 text-nowrap fw-light text-dark">
+                    <Link to="/s-link-contact" className="p-1 text-nowrap fw-light text-dark">
                       Member Contact Page &nbsp;
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -147,8 +108,7 @@ export default function CircleCard() {
                         <path d="M12.47 10.47a.75.75 0 1 0 1.06 1.06l7.72-7.72v3.534a.75.75 0 0 0 1.5 0V2a.75.75 0 0 0-.75-.75h-5.344a.75.75 0 0 0 0 1.5h3.533z" />
                       </svg>
                     </Link>
-
-                    <Link to="/voter-page" className="p-1 text-nowrap fw-light text-dark">
+                    <Link to="/voter-settings" className="p-1 text-nowrap fw-light text-dark">
                       Voter Settings &nbsp;
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -159,7 +119,9 @@ export default function CircleCard() {
                         <path d="M12.47 10.47a.75.75 0 1 0 1.06 1.06l7.72-7.72v3.534a.75.75 0 0 0 1.5 0V2a.75.75 0 0 0-.75-.75h-5.344a.75.75 0 0 0 0 1.5h3.533z" />
                       </svg>
                     </Link>
-                    <Link to="/circle-back-n-forth" className="p-1 text-nowrap fw-light text-dark">
+                    <Link
+                      to="/s-link-back-and-forth"
+                      className="p-1 text-nowrap fw-light text-dark">
                       Back And Forth &nbsp;
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -171,7 +133,7 @@ export default function CircleCard() {
                       </svg>
                     </Link>
 
-                    <Link to="/meetings-and-minutes" className="p-1 text-nowrap fw-light text-dark">
+                    <Link to="/s-link-minutes" className="p-1 text-nowrap fw-light text-dark">
                       Meetings & Minutes &nbsp;
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -186,19 +148,15 @@ export default function CircleCard() {
                 </div>
 
                 <div className="row">
-                  {AuthUser?.users.userType === "U1D1" ? (
-                    <div className="d-flex flex-sm-column flex-md-row justify-content-evenly mt-4 ">
-                      {circleInfo?.is_active && (
+                  {AuthUser.users.userType === "U2D2" ? (
+                    <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
+                      {moda_info?.is_active && (
                         <>
-                          <Link
-                            to="#"
-                            onClick={handleCreate}
-                            className="py-1 text-nowrap text-dark">
-                            Create F-Link
+                          <Link to="#" className="p-1 text-nowrap text-dark">
+                            Create
                           </Link>
-                          {}
-                          <Link to="/join-sec-del" className="py-1 text-nowrap  text-dark">
-                            Join F-Link
+                          <Link to="/join-t-link" className="p-1 text-nowrap  text-dark">
+                            Join
                           </Link>
                         </>
                       )}

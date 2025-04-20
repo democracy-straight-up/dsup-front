@@ -4,7 +4,7 @@ export default function UserCard() {
   return (
     <div className="container">
       <div className="row align-items-start">
-        <div className="col-md-10 offset-md-1 ">
+        <div className="col-md-8 offset-md-2 ">
           <div className="card rounded-3 bg-light">
             <div className="row text-center m-0">
               <div className="col-sm-12 col-md-4  p-1">

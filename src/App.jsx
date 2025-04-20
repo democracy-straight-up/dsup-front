@@ -24,7 +24,8 @@ import HouseKeeping from "./components/houseKeeping/house-keeping.jsx";
 import JoinSecDel from "./components/sec_del/sec_del_join.jsx";
 
 import SecondDelegatePage from "./components/sec_del/sec_del_page.jsx";
-
+import ModaPage from "./components/moda/moda_page.jsx";
+import JoinModa from "./components/moda/moda_join.jsx";
 // const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join.jsx"));
 
 function App() {
@@ -132,6 +133,28 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/join-s-link"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <JoinModa />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/s-link-page"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <ModaPage />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/circle-back-n-forth"
           element={
