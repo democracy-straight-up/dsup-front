@@ -20,10 +20,6 @@ export default function Member({
   const [put_forward, setPut_forward] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  console.log("member: ", member);
-  console.log("vote_outs: ", vote_outs);
-  console.log("put_forwards: ", put_forwards);
-
   const handleInputChange = () => {
     // Open the modal when the input value changes
     setShowModal(true);
@@ -86,10 +82,8 @@ export default function Member({
     chatSocket.send(
       JSON.stringify({
         action: "remove_candidate",
-        payload: {
-          remover: AuthUser.username,
-          candidate: member?.id,
-        },
+        remover: AuthUser.username,
+        candidate: member?.id,
       })
     );
   };

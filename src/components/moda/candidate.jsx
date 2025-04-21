@@ -36,7 +36,7 @@ export default function Candidate({
         setVoted_in(true);
       }
     });
-  }, []);
+  }, [candidate]);
 
   const VoteIn = () => {
     if (chatSocket.readyState === WebSocket.OPEN) {
@@ -70,9 +70,7 @@ export default function Candidate({
 
   return (
     <tr>
-      <td>
-        {index + 1} - {candidate.id}
-      </td>
+      <td>{index + 1}</td>
       <td>{candidate?.user?.users?.legalName}</td>
 
       {Iam_member || Iam_delegate ? (
