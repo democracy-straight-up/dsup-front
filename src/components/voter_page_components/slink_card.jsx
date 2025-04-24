@@ -47,7 +47,7 @@ export default function SLinkCard() {
                 <div className="row">
                   <div className=" text-center">
                     <h1 className="fs-3 m-0 text-center">
-                      S-Link-{moda_info?.district?.code}-{moda_info?.code}
+                      Sec-Link-{moda_info?.district?.code}-{moda_info?.code}
                     </h1>
                     <div
                       style={{ maxWidth: "90%" }}
