@@ -26,7 +26,6 @@ function Header() {
       }
       return decodedToken.exp < currentTime;
     } catch (error) {
-      console.log(error);
       return true;
     }
   };
@@ -34,7 +33,7 @@ function Header() {
   useEffect(() => {
     if (isTokenExpired()) {
       dispatch(logout());
-      navigate("/enter-the-floor");
+      navigate("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

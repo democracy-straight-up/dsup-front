@@ -15,7 +15,6 @@ function Home() {
       const decodedToken = jwtDecode(AuthUser.token.refresh);
       if (decodedToken.exp < Date.now() / 1000) {
         // Token has expired
-        alert("Your session has expired. Please log in again.");
         return true;
       }
       return false;
