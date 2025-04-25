@@ -13,7 +13,7 @@ export default function UserCard() {
               </div>
               <div className="col-sm-12 col-md-4 user-card-middle-border p-1">
                 <h1 className="fs-4 m-0">
-                  Verification Score&nbsp;
+                  Connection Score&nbsp;
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="16"
@@ -29,7 +29,10 @@ export default function UserCard() {
                     />
                   </svg>
                 </h1>
-                <p className="m-0">{AuthUser?.users?.verificationScore}/7</p>
+                <p className="m-0">
+                  {String(+AuthUser?.users?.userType[1] + +"1").padStart(2, "0")}/
+                  {String(6).padStart(2, "0")}
+                </p>
               </div>
               <div className="col-sm-12 col-md-4 p-1">
                 <h1 className="fs-4 m-0">
