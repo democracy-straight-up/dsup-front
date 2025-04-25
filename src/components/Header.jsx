@@ -43,7 +43,7 @@ function Header() {
     <nav className="navbar navbar-expand-lg bg-light">
       <div className="container">
         <Link to="/" className="navbar-brand fw-bold fs-4">
-          Dsup
+          DSUp
         </Link>
         <button
           className="navbar-toggler"
