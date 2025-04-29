@@ -60,7 +60,6 @@ function Home() {
                         <Link
                           to="/claim-your-seat"
                           className="btn btn-md btn-primary m-3 text-decoration-none">
-                          {" "}
                           Claim Your Seat
                         </Link>
                       </OverlayTrigger>
@@ -69,7 +68,6 @@ function Home() {
                       <Link
                         to="/enter-the-floor"
                         className="btn btn-md btn-primary m-3 text-decoration-none">
-                        {" "}
                         Enter The Floor
                       </Link>
                     </div>
