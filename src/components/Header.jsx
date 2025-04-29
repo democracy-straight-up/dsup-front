@@ -30,13 +30,13 @@ function Header() {
     }
   };
 
-  useEffect(() => {
-    if (isTokenExpired()) {
-      dispatch(logout());
-      navigate("/");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   if (isTokenExpired()) {
+  //     dispatch(logout());
+  //     navigate("/");
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <nav className="navbar navbar-expand-lg bg-light">
