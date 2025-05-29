@@ -4,7 +4,7 @@ import axios from "axios";
 import { baseURL } from "../store/conf";
 import { authenticate } from "../store/userSlice";
 import { Container } from "react-bootstrap";
-
+import { Link } from "react-router-dom";
 import BillsWrapper from "./voter_page_components/billsWrapper";
 import UserCard from "./voter_page_components/user_card";
 import Wrapper from "./voter_page_components/wrapper";
@@ -68,8 +68,12 @@ function VoterPage() {
       <Container>
         <UserCard />
         <br />
-        <div className="row text-center ">
-          <h1 className="fs-3">Chain Of Delegation</h1>
+        <div className="row text-center">
+          <div>
+            <Link to="/help/chain-of-delegation" className="fs-3 text-dark">
+              Chain Of Delegation
+            </Link>
+          </div>
         </div>
         <ChainOfDelegate />
       </Container>
