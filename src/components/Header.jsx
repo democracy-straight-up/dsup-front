@@ -22,7 +22,7 @@ function Header() {
       const currentTime = Math.floor(Date.now() / 1000);
       const decodedToken = jwtDecode(AuthUser?.token?.access);
       if (!decodedToken || !decodedToken.exp) {
-        throw new Error("Invalid token: missing field. ");
+        throw new Error("Invalid token: missing field.");
       }
       return decodedToken.exp < currentTime;
     } catch (error) {

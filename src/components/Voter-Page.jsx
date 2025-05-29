@@ -8,6 +8,7 @@ import { Container } from "react-bootstrap";
 import BillsWrapper from "./voter_page_components/billsWrapper";
 import UserCard from "./voter_page_components/user_card";
 import Wrapper from "./voter_page_components/wrapper";
+import ChainOfDelegate from "./voter_page_components/chain_delegate";
 
 function VoterPage() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
@@ -66,6 +67,7 @@ function VoterPage() {
       </div>
       <Container>
         <UserCard />
+        <ChainOfDelegate />
       </Container>
       <Container>
         <Wrapper />
