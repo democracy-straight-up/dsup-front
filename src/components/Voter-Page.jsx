@@ -67,6 +67,10 @@ function VoterPage() {
       </div>
       <Container>
         <UserCard />
+        <br />
+        <div className="row text-center ">
+          <h1 className="fs-3">Chain Of Delegation</h1>
+        </div>
         <ChainOfDelegate />
       </Container>
       <Container>
