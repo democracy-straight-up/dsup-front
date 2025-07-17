@@ -206,7 +206,7 @@ function App() {
         />
         {/* <Route path="/search" element={<><Header/><SearchFeature/><Footer/></>}/> */}
         <Route
-          path="/bill/:billId"
+          path="/bill/:id"
           element={
             <>
               <Header />
