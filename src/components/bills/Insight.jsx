@@ -64,7 +64,7 @@ function Insight() {
         );
       case "firstdel":
         return (
-          <div className="container-fluid p-4">
+          <div className="container-fluid  p-4">
             <h4>First Delegate Notes</h4>
             <p>First delegate notes will be displayed here...</p>
           </div>
@@ -170,9 +170,9 @@ function Insight() {
       </div>
 
       {/* the tabs container */}
-      <div className="row  mt-3">
-        <ul className="nav nav-tabs  nav-fill">
-          <li className="nav-item">
+      <div className="row mt-3">
+        <ul className="nav nav-tabs d-flex justify-content-center w-100">
+          <li className="nav-item flex-fill text-center">
             <a
               className={`nav-link ${activeTab === "summary" ? "active" : ""}`}
               href="#"
@@ -183,7 +183,7 @@ function Insight() {
               Summary
             </a>
           </li>
-          <li className="nav-item ">
+          <li className="nav-item flex-fill text-center">
             <a
               className={`nav-link ${activeTab === "text" ? "active" : ""}`}
               href="#"
@@ -194,7 +194,7 @@ function Insight() {
               Text
             </a>
           </li>
-          <li className="nav-item">
+          <li className="nav-item flex-fill text-center">
             <a
               className={`nav-link ${activeTab === "mynotes" ? "active" : ""}`}
               href="#"
@@ -205,7 +205,7 @@ function Insight() {
               My Notes
             </a>
           </li>
-          <li className="nav-item">
+          <li className="nav-item flex-fill text-center">
             <a
               className={`nav-link ${activeTab === "firstdel" ? "active" : ""}`}
               href="#"
@@ -216,7 +216,7 @@ function Insight() {
               First Delegate Notes
             </a>
           </li>
-          <li className="nav-item">
+          <li className="nav-item flex-fill text-center">
             <a
               className={`nav-link ${activeTab === "seconddel" ? "active" : ""}`}
               href="#"
@@ -227,7 +227,7 @@ function Insight() {
               Second Delegate Notes
             </a>
           </li>
-          <li className="nav-item">
+          <li className="nav-item flex-fill text-center">
             <a
               className={`nav-link ${activeTab === "moda" ? "active" : ""}`}
               href="#"
@@ -238,7 +238,7 @@ function Insight() {
               MoDa Notes
             </a>
           </li>
-          <li className="nav-item">
+          <li className="nav-item flex-fill text-center">
             <a
               className={`nav-link ${activeTab === "holc" ? "active" : ""}`}
               href="#"
@@ -249,7 +249,7 @@ function Insight() {
               HoLC Notes
             </a>
           </li>
-          <li className="nav-item">
+          <li className="nav-item flex-fill text-center">
             <a
               className={`nav-link ${activeTab === "houserep" ? "active" : ""}`}
               href="#"
