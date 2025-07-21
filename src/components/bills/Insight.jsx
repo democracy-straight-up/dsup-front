@@ -160,7 +160,7 @@ function Insight() {
                   <span className="fw-semibold">Committees:</span> &nbsp; committees comes here
                 </p>
                 <p className=" text-nowrap fw-light text-dark">
-                  <span className="fw-semibold">committees Meetings:</span> &nbsp;{" "}
+                  <span className="fw-semibold">Committees Meetings:</span> &nbsp;{" "}
                   {bill?.created_at}
                 </p>
               </div>
