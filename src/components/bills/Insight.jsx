@@ -33,7 +33,7 @@ function Insight() {
         // setErr("Something went wrong. Check your inputs and try again.");
         console.log(error);
       });
-  }, []);
+  }, [id]);
 
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
