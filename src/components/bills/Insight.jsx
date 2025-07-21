@@ -121,7 +121,7 @@ function Insight() {
         </div>
       </div>
       {/* add all the content here */}
-      <div className="contianer">
+      <div className="container">
         <div className="row text-center">
           <h1>Bill Details</h1>
         </div>
