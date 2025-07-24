@@ -143,7 +143,7 @@ function Insight() {
                 </p>
                 <p className=" text-nowrap fw-light text-dark">
                   <span className="fw-semibold">When Introduced:</span>&nbsp;{" "}
-                  {bill?.created_at
+                  {bill?.introduced_date
                     ? (() => {
                         const date = new Date(bill.created_at);
                         const mm = String(date.getMonth() + 1).padStart(2, "0");
@@ -154,14 +154,26 @@ function Insight() {
                     : ""}
                 </p>
                 <p className=" text-nowrap fw-light text-dark">
-                  <span className="fw-semibold">Sponsors:</span>&nbsp; sponsors comes here...
+                  <span className="fw-semibold">Sponsors:</span>&nbsp;{bill?.sponsors}
                 </p>
                 <p className=" text-nowrap fw-light text-dark">
-                  <span className="fw-semibold">Committees:</span> &nbsp; committees comes here
+                  <span className="fw-semibold">Committees:</span> &nbsp; {bill?.committees}
                 </p>
                 <p className=" text-nowrap fw-light text-dark">
-                  <span className="fw-semibold">committees Meetings:</span> &nbsp;{" "}
-                  {bill?.created_at}
+                  <span className="fw-semibold">Committees Meetings:</span> &nbsp;{" "}
+                  {bill?.committee_meeting
+                    ? (() => {
+                        const date = new Date(bill.committee_meeting);
+                        return date.toLocaleString("en-US", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          hour12: true,
+                        });
+                      })()
+                    : ""}
                 </p>
               </div>
             </div>
