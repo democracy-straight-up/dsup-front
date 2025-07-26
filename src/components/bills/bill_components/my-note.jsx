@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import NoteItem from "./note_item";
-import { baseURL } from "../../../store/conf";
+import { authenticatedFetch } from "../../../store/api";
 
 export default function MyNote({ bill, AuthUser }) {
   const [notes, setNotes] = useState([]);
@@ -23,17 +23,21 @@ export default function MyNote({ bill, AuthUser }) {
   const fetchNotes = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${window.location.protocol}//${baseURL}/bill/bill-user-notes/`);
+      const response = await authenticatedFetch(
+        `/bill/bill-user-notes/?bill_id=${bill.id}`,
+        {},
+        AuthUser
+      );
+
       if (response.ok) {
         const data = await response.json();
-        // Filter notes for current user and bill
-        const userBillNotes =
-          data.results?.filter(
-            (note) => note.user?.id === AuthUser?.id && note.bill?.id === bill?.id
-          ) || [];
-        setNotes(userBillNotes);
+        console.log("list of notes", data);
+        setNotes(data.results || []);
       } else {
-        console.error("Failed to fetch notes");
+        console.error("Failed to fetch notes", response.status);
+        if (response.status === 401) {
+          console.error("Authentication required");
+        }
       }
     } catch (error) {
       console.error("Error fetching notes:", error);
@@ -50,19 +54,16 @@ export default function MyNote({ bill, AuthUser }) {
 
     setIsAdding(true);
     try {
-      const response = await fetch(
-        `${window.location.protocol}//${baseURL}/bill/bill-user-notes/`,
+      const response = await authenticatedFetch(
+        `/bill/bill-user-notes/`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
-            user_id: AuthUser.id,
             bill_id: bill.id,
             note: newNote,
           }),
-        }
+        },
+        AuthUser
       );
 
       if (response.ok) {
@@ -84,21 +85,20 @@ export default function MyNote({ bill, AuthUser }) {
 
   const handleUpdateNote = async (noteId, updatedNoteText) => {
     try {
-      const response = await fetch(
-        `${window.location.protocol}//${baseURL}/bill/bill-user-notes/${noteId}/`,
+      const response = await authenticatedFetch(
+        `/bill/bill-user-notes/${noteId}/`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             note: updatedNoteText,
           }),
-        }
+        },
+        AuthUser
       );
 
       if (response.ok) {
         const updatedNote = await response.json();
+        console.log("updated note", updatedNote);
         setNotes((prevNotes) => prevNotes.map((note) => (note.id === noteId ? updatedNote : note)));
       } else {
         throw new Error("Failed to update note");
@@ -111,11 +111,12 @@ export default function MyNote({ bill, AuthUser }) {
 
   const handleDeleteNote = async (noteId) => {
     try {
-      const response = await fetch(
-        `${window.location.protocol}//${baseURL}/bill/bill-user-notes/${noteId}/`,
+      const response = await authenticatedFetch(
+        `/bill/bill-user-notes/${noteId}/`,
         {
           method: "DELETE",
-        }
+        },
+        AuthUser
       );
       if (response.ok) {
         setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
