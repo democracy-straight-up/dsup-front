@@ -1,15 +1,13 @@
-import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import { baseURL } from "../store/conf.js";
+import { baseURL } from "../store/conf";
 import { Eye, EyeSlash } from "react-bootstrap-icons";
 // import Tooltip from "react-bootstrap/Tooltip";
 // import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 export const GenPass = function (length) {
-  const charset =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
   const lowerCase = "abcdefghijklmnopqrstuvwxyz";
   const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
@@ -19,9 +17,7 @@ export const GenPass = function (length) {
   password.push(lowerCase.charAt(Math.floor(Math.random() * lowerCase.length)));
   password.push(upperCase.charAt(Math.floor(Math.random() * upperCase.length)));
   password.push(numbers.charAt(Math.floor(Math.random() * numbers.length)));
-  password.push(
-    specialChars.charAt(Math.floor(Math.random() * specialChars.length))
-  );
+  password.push(specialChars.charAt(Math.floor(Math.random() * specialChars.length)));
 
   for (let i = 4; i < length; i++) {
     password.push(charset.charAt(Math.floor(Math.random() * charset.length)));
@@ -56,24 +52,20 @@ function ClaimYourSeat() {
 
   const handleCheck = (e) => {
     //check weather the district is listed
-    axios
-      .get(`${window.location.protocol}//${baseURL}/api/districts/`)
-      .then(function (response) {
-        const is_listed_districts = response.data.find(
-          (i) => i.code === district.toUpperCase()
-        );
-        if (is_listed_districts) {
-          // set the border of district input green
-          setDistrict_OK(false);
+    axios.get(`${window.location.protocol}//${baseURL}/api/districts/`).then(function (response) {
+      const is_listed_districts = response.data.find((i) => i.code === district.toUpperCase());
+      if (is_listed_districts) {
+        // set the border of district input green
+        setDistrict_OK(false);
+      } else {
+        // set the border of the district input red and show help text
+        if (e.target.value.length > 0) {
+          setDistrict_OK(true);
         } else {
-          // set the border of the district input red and show help text
-          if (e.target.value.length > 0) {
-            setDistrict_OK(true);
-          } else {
-            setDistrict_OK(false);
-          }
+          setDistrict_OK(false);
         }
-      }); //endof then function
+      }
+    }); //endof then function
   };
 
   const handleCheckLegalName = (e) => {
@@ -155,14 +147,10 @@ function ClaimYourSeat() {
       });
   };
   const changePassType = () => {
-    passwordType === "password"
-      ? setPasswordType("")
-      : setPasswordType("password");
+    passwordType === "password" ? setPasswordType("") : setPasswordType("password");
   };
   const changePassTypeConfirm = () => {
-    passwordTypeConf === "password"
-      ? setPasswordTypeConf("")
-      : setPasswordTypeConf("password");
+    passwordTypeConf === "password" ? setPasswordTypeConf("") : setPasswordTypeConf("password");
   };
 
   const generatePass = (e) => {
@@ -201,8 +189,8 @@ function ClaimYourSeat() {
         <h1>Enter The Floor</h1>
         <p>
           {" "}
-          If you've already claimed your seat, you can enter the floor of your
-          Directly-connected Legislature (DcL).
+          If you've already claimed your seat, you can enter the floor of your Directly-connected
+          Legislature (DcL).
         </p>
         <Link className="btn btn-lg btn-primary m-3" to="/enter-the-floor">
           Enter The Floor
@@ -219,9 +207,8 @@ function ClaimYourSeat() {
         <div className="row d-flex justify-content-center">
           <div className="col col-sm-12 col-md-6" id="big-font">
             <span>
-              Enter your district as your two-letter state postal code followed
-              by a two-digit number. For instance, the third district in Alabama
-              would be AL03.
+              Enter your district as your two-letter state postal code followed by a two-digit
+              number. For instance, the third district in Alabama would be AL03.
             </span>
             <span className="red-airstrike ">*</span>
             <br />
@@ -238,10 +225,7 @@ function ClaimYourSeat() {
               placeholder="Enter your 4-digit district code"
             />
             {District_OK ? (
-              <p className="p-0 text-danger">
-                {" "}
-                Please enter a valid district code.{" "}
-              </p>
+              <p className="p-0 text-danger"> Please enter a valid district code. </p>
             ) : (
               ""
             )}
@@ -252,9 +236,9 @@ function ClaimYourSeat() {
             <br />
             <br />
             <span>
-              Use your name as it appears on your voter registration card. If
-              you don't know exactly, use your name as it would normally appear
-              on legal documents, in the order you would use for your signature.
+              Use your name as it appears on your voter registration card. If you don't know
+              exactly, use your name as it would normally appear on legal documents, in the order
+              you would use for your signature.
             </span>{" "}
             <span className="red-airstrike ">*</span>
             <br />
@@ -268,10 +252,7 @@ function ClaimYourSeat() {
               placeholder="Enter your full legal name "
             />
             {is_formErr ? (
-              <p className="m-0 text-danger">
-                {" "}
-                {formErr?.legalName ? formErr?.legalName[0] : ""}
-              </p>
+              <p className="m-0 text-danger"> {formErr?.legalName ? formErr?.legalName[0] : ""}</p>
             ) : (
               ""
             )}
@@ -283,9 +264,9 @@ function ClaimYourSeat() {
             <br />
             <span>
               {" "}
-              This email address will only be used to confirm your registration.
-              Once you join a Circle, all further communications from the
-              project will go through your First Delegate.
+              This email address will only be used to confirm your registration. Once you join a
+              Circle, all further communications from the project will go through your First
+              Delegate.
             </span>
             <span className="red-airstrike ">*</span>
             <br />
@@ -298,18 +279,14 @@ function ClaimYourSeat() {
               placeholder="Enter your email address"
             />
             {is_formErr ? (
-              <p className="m-0 text-danger">
-                {" "}
-                {formErr?.email ? "Email already taken" : ""}
-              </p>
+              <p className="m-0 text-danger"> {formErr?.email ? "Email already taken" : ""}</p>
             ) : (
               ""
             )}
             <br />
             <span>
-              Use the address that appears on your voter registration card. If
-              you don't know exactly, use your address as you would write it if
-              sending a letter.
+              Use the address that appears on your voter registration card. If you don't know
+              exactly, use your address as you would write it if sending a letter.
             </span>{" "}
             <span className="red-airstrike ">*</span>
             <br />
@@ -332,9 +309,7 @@ function ClaimYourSeat() {
               ""
             )}
             <br />
-            <button
-              className="btn btn-primary my-2"
-              onClick={(e) => generatePass(e)}>
+            <button className="btn btn-primary my-2" onClick={(e) => generatePass(e)}>
               Generate password
             </button>
             <div className="input-group mb-3 border rounded">
@@ -380,10 +355,7 @@ function ClaimYourSeat() {
               />
               <div className=" p-1 px-2 bg-white rounded">
                 {passwordTypeConf === "password" ? (
-                  <EyeSlash
-                    size="30"
-                    onClick={(e) => changePassTypeConfirm()}
-                  />
+                  <EyeSlash size="30" onClick={(e) => changePassTypeConfirm()} />
                 ) : (
                   <Eye size="30" onClick={(e) => changePassTypeConfirm()} />
                 )}
@@ -397,9 +369,7 @@ function ClaimYourSeat() {
             <div className="row">
               <div className="col">
                 {is_formErr ? (
-                  <div className="alert alert-danger">
-                    Error submiting the form
-                  </div>
+                  <div className="alert alert-danger">Error submiting the form</div>
                 ) : (
                   ""
                 )}

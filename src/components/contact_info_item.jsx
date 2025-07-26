@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { baseURL } from "../store/conf.js";
+import { baseURL } from "../store/conf";
 import axios from "axios";
 
 export default function ContactInfoItem({ index, isDelegate, member }) {

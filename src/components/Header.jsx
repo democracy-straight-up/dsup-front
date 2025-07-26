@@ -1,42 +1,35 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../store/userSlice.js";
+import { useAuth } from "../hooks/useAuth";
 import Dropdown from "react-bootstrap/Dropdown";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import jwtDecode from "jwt-decode";
 
 function Header() {
-  const AuthUser = useSelector((state) => state.AuthUser.user);
-  const dispatch = useDispatch();
+  const { AuthUser, handleLogout, isTokenExpired, refreshToken } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/enter-the-floor");
-  };
-
-  // this is where we track the expiry date of token and if so, take the voter to reenter their
-  const isTokenExpired = () => {
-    try {
-      const currentTime = Math.floor(Date.now() / 1000);
-      const decodedToken = jwtDecode(AuthUser?.token?.access);
-      if (!decodedToken || !decodedToken.exp) {
-        throw new Error("Invalid token: missing field.");
+  // Auto-refresh token when access token is expired but refresh token is still valid
+  useEffect(() => {
+    const handleTokenRefresh = async () => {
+      if (
+        AuthUser &&
+        isTokenExpired(AuthUser.token?.access) &&
+        !isTokenExpired(AuthUser.token?.refresh)
+      ) {
+        const refreshSuccess = await refreshToken();
+        if (!refreshSuccess) {
+          navigate("/enter-the-floor");
+        }
+      } else if (AuthUser && isTokenExpired(AuthUser.token?.refresh)) {
+        // Both tokens expired, logout
+        handleLogout();
       }
-      return decodedToken.exp < currentTime;
-    } catch (error) {
-      return true;
-    }
-  };
+    };
 
-  // useEffect(() => {
-  //   if (isTokenExpired()) {
-  //     dispatch(logout());
-  //     navigate("/");
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+    if (AuthUser) {
+      handleTokenRefresh();
+    }
+  }, [AuthUser, isTokenExpired, refreshToken, handleLogout, navigate]);
 
   return (
     <nav className="navbar navbar-expand-lg bg-light">

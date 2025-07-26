@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
-import ContactInfoItem from "./contact_info_item.jsx";
+import ContactInfoItem from "./contact_info_item";
 import { useEffect, useState } from "react";
-import { baseURL } from "../store/conf.js";
+import { baseURL } from "../store/conf";
 import axios from "axios";
 import { Suspense } from "react";
 

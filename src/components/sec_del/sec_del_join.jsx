@@ -2,8 +2,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { authenticate, sec_del } from "../../store/userSlice.js";
-import { baseURL } from "../../store/conf.js";
+import { authenticate, sec_del } from "../../store/userSlice";
+import { baseURL } from "../../store/conf";
 
 function JoinSecDel() {
   const AuthUser = useSelector((state) => state.AuthUser.user);

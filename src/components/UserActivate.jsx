@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
-import { baseURL } from "../store/conf.js";
+import { baseURL } from "../store/conf";
 
 function UserActivate() {
   // get the uid and token
