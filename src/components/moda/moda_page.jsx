@@ -1,10 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Member from "./member.jsx";
-import Candidate from "./candidate.jsx";
-import { moda } from "../../store/userSlice.js";
-import Status from "./status_message.jsx";
+import Member from "./member";
+import Candidate from "./candidate";
+import { moda } from "../../store/userSlice";
+import Status from "./status_message";
 
 function ModaPage() {
   const AuthUser = useSelector((state) => state.AuthUser.user);

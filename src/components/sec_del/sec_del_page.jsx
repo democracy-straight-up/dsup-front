@@ -1,10 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Member from "./member.jsx";
-import Candidate from "./candidate.jsx";
-import { sec_del } from "../../store/userSlice.js";
-import Status from "./status_message.jsx";
+import Member from "./member";
+import Candidate from "./candidate";
+import { sec_del } from "../../store/userSlice";
+import Status from "./status_message";
 
 function SecondDelegatePage() {
   const AuthUser = useSelector((state) => state.AuthUser.user);

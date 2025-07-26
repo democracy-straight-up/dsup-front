@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { retrieveBillsSuccess } from "../store/billSlice"; // Import the fetchBills action
+// import { retrieveBillsSuccess } from "../store/billSlice"; // Import the fetchBills action
 import { authenticate } from "../store/userSlice";
 import axios from "axios";
 import { baseURL } from "../store/conf";

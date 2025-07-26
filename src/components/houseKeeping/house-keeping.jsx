@@ -1,11 +1,11 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { circle, desolveCircle, authenticate, addCirclemMembers } from "../../store/userSlice.js";
-import Member from "./member.jsx";
-import Candidate from "./candidate.jsx";
+import { circle, desolveCircle, authenticate, addCirclemMembers } from "../../store/userSlice";
+import Member from "./member";
+import Candidate from "./candidate";
 import axios from "axios";
-import Status from "./statusMessages.jsx";
+import Status from "./statusMessages";
 
 function HouseKeeping() {
   const AuthUser = useSelector((state) => state.AuthUser.user);

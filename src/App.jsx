@@ -26,7 +26,7 @@ import JoinSecDel from "./components/sec_del/sec_del_join";
 import SecondDelegatePage from "./components/sec_del/sec_del_page";
 import ModaPage from "./components/moda/moda_page";
 import JoinModa from "./components/moda/moda_join";
-// const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join.jsx"));
+// const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join"));
 
 function App() {
   return (
