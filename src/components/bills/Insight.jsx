@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { baseURL } from "../../store/conf";
+import MyNote from "./bill_components/my-note";
 // ** READ BELOW **
 
 // this is a sample page for the bill page, it is not connected to the backend
@@ -56,12 +57,7 @@ function Insight() {
           </div>
         );
       case "mynotes":
-        return (
-          <div className="container-fluid p-4">
-            <h4>My Notes</h4>
-            <p>Your personal notes about this bill will be displayed here...</p>
-          </div>
-        );
+        return <MyNote bill={bill} AuthUser={AuthUser} />;
       case "firstdel":
         return (
           <div className="container-fluid  p-4">
