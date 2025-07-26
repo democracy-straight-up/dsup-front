@@ -2,22 +2,20 @@
 import React from "react";
 import logo from "./CYS-Logo.png";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-
-import jwtDecode from "jwt-decode";
+import { useAuth } from "./hooks/useAuth";
 import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 function Home() {
-  const AuthUser = useSelector((state) => state.AuthUser.user);
+  const { AuthUser, isTokenExpired } = useAuth();
+
   const isRefreshTokenExpired = () => {
     try {
-      const decodedToken = jwtDecode(AuthUser.token.refresh);
-      if (decodedToken.exp < Date.now() / 1000) {
-        // Token has expired
+      // Check if AuthUser and token exist before accessing them
+      if (!AuthUser?.token?.refresh) {
         return true;
       }
-      return false;
+      return isTokenExpired(AuthUser.token.refresh);
     } catch (error) {
       // Failed to decode the token (e.g., invalid format)
       return true;

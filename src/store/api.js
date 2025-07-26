@@ -1,13 +1,19 @@
-import { baseURL } from "./conf.js";
+import { baseURL } from "./conf";
 
 /**
  * Makes an authenticated API request with automatic token handling
  * @param {string} endpoint - API endpoint (without base URL)
  * @param {Object} options - Fetch options
  * @param {Object} authUser - User object containing token information
+ * @param {Function} onTokenRefresh - Callback function to handle token refresh
  * @returns {Promise<Response>} - Fetch response
  */
-export const authenticatedFetch = async (endpoint, options = {}, authUser = null) => {
+export const authenticatedFetch = async (
+  endpoint,
+  options = {},
+  authUser = null,
+  onTokenRefresh = null
+) => {
   const url = `${window.location.protocol}//${baseURL}${endpoint}`;
 
   const defaultHeaders = {
@@ -30,11 +36,32 @@ export const authenticatedFetch = async (endpoint, options = {}, authUser = null
   try {
     const response = await fetch(url, fetchOptions);
 
-    // Handle 401 Unauthorized responses
-    if (response.status === 401) {
-      console.error("Authentication required or token expired");
-      // You could implement token refresh logic here
-      // or redirect to login page
+    // Handle 401 Unauthorized responses with automatic token refresh
+    if (response.status === 401 && authUser?.token?.refresh && onTokenRefresh) {
+      console.log("Access token expired, attempting to refresh...");
+
+      try {
+        const newTokenData = await refreshTokens(authUser.token.refresh);
+
+        // Call the token refresh callback to update the auth state
+        if (onTokenRefresh) {
+          onTokenRefresh(newTokenData);
+        }
+
+        // Retry the original request with the new token
+        const retryHeaders = {
+          ...fetchOptions.headers,
+          Authorization: `Bearer ${newTokenData.access}`,
+        };
+
+        return await fetch(url, {
+          ...fetchOptions,
+          headers: retryHeaders,
+        });
+      } catch (refreshError) {
+        console.error("Token refresh failed:", refreshError);
+        throw new Error("Authentication failed");
+      }
     }
 
     return response;

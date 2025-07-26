@@ -1,31 +1,31 @@
 // import { lazy } from "react";
 import { Routes, Route } from "react-router-dom";
-import SignUpConfirm from "./components/signUpConform.jsx";
-import ClaimYourSeat from "./components/Claim-Your-Seat.jsx";
-import Home from "./Home.jsx";
-import EnterTheFloor from "./components/Enter-the-Floor.jsx";
-import Header from "./components/Header.jsx";
-import Footer from "./components/Footer.jsx";
-import Error from "./components/Error.jsx";
-import VoterPage from "./components/Voter-Page.jsx";
-import ProtectedRoute from "./protectedRoutes.js";
-import JoinCircle from "./components/joinCircle.jsx";
-// import HouseKeeping from './components/houseKeeping/houseKeeping.jsx';
+import SignUpConfirm from "./components/signUpConform";
+import ClaimYourSeat from "./components/Claim-Your-Seat";
+import Home from "./Home";
+import EnterTheFloor from "./components/Enter-the-Floor";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Error from "./components/Error";
+import VoterPage from "./components/Voter-Page";
+import ProtectedRoute from "./protectedRoutes";
+import JoinCircle from "./components/joinCircle";
+// import HouseKeeping from './components/houseKeeping/houseKeeping';
 import UserActivate from "./components/UserActivate";
-import CircleBackNforth from "./components/CircleBackNforth.jsx";
-import SettingsPage from "./components/SettingsPage.jsx";
-// import SearchFeature from './components/SearchFeature.jsx';
-import Insight from "./components/bills/Insight.jsx";
-import MemberContactPage from "./components/MemberContactPage.jsx";
-import MeetingsAndMinutes from "./components/MeetingsAndMinutes.jsx";
-import RegistarationStatusVerfication from "./components/RegisterationStatusVerification.jsx";
-import HouseKeeping from "./components/houseKeeping/house-keeping.jsx";
+import CircleBackNforth from "./components/CircleBackNforth";
+import SettingsPage from "./components/SettingsPage";
+// import SearchFeature from './components/SearchFeature';
+import Insight from "./components/bills/Insight";
+import MemberContactPage from "./components/MemberContactPage";
+import MeetingsAndMinutes from "./components/MeetingsAndMinutes";
+import RegistarationStatusVerfication from "./components/RegisterationStatusVerification";
+import HouseKeeping from "./components/houseKeeping/house-keeping";
 
-import JoinSecDel from "./components/sec_del/sec_del_join.jsx";
+import JoinSecDel from "./components/sec_del/sec_del_join";
 
-import SecondDelegatePage from "./components/sec_del/sec_del_page.jsx";
-import ModaPage from "./components/moda/moda_page.jsx";
-import JoinModa from "./components/moda/moda_join.jsx";
+import SecondDelegatePage from "./components/sec_del/sec_del_page";
+import ModaPage from "./components/moda/moda_page";
+import JoinModa from "./components/moda/moda_join";
 // const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join.jsx"));
 
 function App() {
