@@ -68,9 +68,12 @@ function VoterPage() {
       <Container>
         <UserCard />
         <br />
-        <div className="row text-center">
+        <div className="row text-center pb-1">
           <div>
-            <Link to="/help/chain-of-delegation" className="fs-3 text-dark">
+            <Link
+              to="/help/chain-of-delegation"
+              className="fs-3 text-dark"
+              style={{ textDecorationThickness: "2px", textUnderlineOffset: "6px" }}>
               Chain Of Delegation
             </Link>
           </div>

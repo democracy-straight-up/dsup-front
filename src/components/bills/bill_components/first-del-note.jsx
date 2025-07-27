@@ -12,7 +12,25 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
   const [showAddForm, setShowAddForm] = useState(false);
 
   const { makeRequest } = useAuthenticatedFetch();
-  const { isFirstDelegate } = useChainOfDelegation();
+  const { isFirstDelegate, chainOfDelegation } = useChainOfDelegation();
+
+  // Get the display title based on user role
+  const getTitle = () => {
+    if (isFirstDelegate) {
+      return "My First Delegate Notes";
+    }
+    return "First Delegate Notes";
+  };
+
+  // Get the empty state message based on user role
+  const getEmptyMessage = () => {
+    if (isFirstDelegate) {
+      return "You haven't created any first delegate notes for this bill yet.";
+    }
+
+    const firstDelegateName = chainOfDelegation?.f_del?.users?.legalName || "your first delegate";
+    return `No first delegate notes available from ${firstDelegateName} for this bill yet.`;
+  };
 
   useEffect(() => {
     if (bill?.id) {
@@ -158,7 +176,9 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
   return (
     <div className="container-fluid p-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4>First Delegate Notes for Bill {bill?.number}</h4>
+        <h4>
+          {getTitle()} for Bill {bill?.number}
+        </h4>
         {isFirstDelegate && (
           <button className="btn btn-primary" onClick={() => setShowAddForm(!showAddForm)}>
             {showAddForm ? "Cancel" : "Add Note"}
@@ -169,7 +189,8 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
       {!isFirstDelegate && (
         <div className="alert alert-info" role="alert">
           <i className="bi bi-info-circle me-2"></i>
-          You can view first delegate notes, but only first delegates can add or modify them.
+          You are viewing notes from your first delegate. Only first delegates can add or modify
+          these notes.
         </div>
       )}
 
@@ -221,7 +242,7 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
       {notes.length === 0 ? (
         <div className="alert alert-secondary" role="alert">
           <i className="bi bi-journal-text me-2"></i>
-          No first delegate notes available for this bill yet.
+          {getEmptyMessage()}
           {isFirstDelegate && " Be the first to add a note!"}
         </div>
       ) : (

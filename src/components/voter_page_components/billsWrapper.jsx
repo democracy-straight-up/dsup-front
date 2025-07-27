@@ -34,15 +34,17 @@ export default function BillsWrapper({ setMessage }) {
       <h1 className="fs-3 mt-4 pl-4">List of Bills</h1>
       <Table striped bordered hover responsive>
         <thead>
-          <tr className="fw-normal bills-list-voter-page-header-row">
-            <th className="">Bill Number</th>
-            <th style={{ minWidth: "300px" }}>Short Title</th>
-            <th>Scheduled For Vote</th>
-            <th>Advisement</th>
-            <th>Your Vote</th>
-            <th>District Tally</th>
-            <th>National Tally</th>
-            <th>More...</th>
+          <tr className="fw-normal ">
+            <th className="fw-normal fs-5">Bill Number</th>
+            <th className="fw-normal fs-5" style={{ minWidth: "300px" }}>
+              Short Title
+            </th>
+            <th className="fw-semibold fs-5">Scheduled For Vote</th>
+            <th className="fw-semibold fs-5">Advisement</th>
+            <th className="fw-semibold fs-5">Your Vote</th>
+            <th className="fw-semibold fs-5">District Tally</th>
+            <th className="fw-semibold fs-5">National Tally</th>
+            <th className="fw-semibold fs-5">More...</th>
           </tr>
         </thead>
         <tbody>

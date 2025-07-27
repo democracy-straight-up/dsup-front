@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CloseButton } from "react-bootstrap";
 
 export default function NoteItem({
   note,
@@ -62,19 +63,20 @@ export default function NoteItem({
     });
   };
 
+  console.log("note", note);
   return (
     <div className="card mb-3 ">
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-start ">
           <div className="d-flex flex-column">
-            <small className="text-muted">
-              {noteType && <span className="badge bg-secondary me-2">{noteType}</span>}
-              Created by: {note.user?.users?.legalName || note.user?.username || "Unknown"} on{" "}
-              {formatDate(note.created_at)}
-              {/* {note.updated_at !== note.created_at && (
-                <span className="ms-2">(Updated: {formatDate(note.updated_at)})</span>
-              )} */}
-            </small>
+            <p className="text-muted">
+              {noteType && (
+                <span className="badge border border-primary rounded-pill text-primary me-2 fw-normal">
+                  {noteType}
+                </span>
+              )}
+              Add on {formatDate(note.created_at)}
+            </p>
           </div>
 
           {canEdit && (
@@ -82,11 +84,11 @@ export default function NoteItem({
               {!isEditing && (
                 <>
                   <button
-                    className="btn btn-outline-primary btn-sm"
+                    className="btn btn-outline-primary btn-sm px-3"
                     onClick={() => setEditingId(note.id)}
                     disabled={isDeleting}
                     title="Edit note">
-                    <i className="fas fa-edit"></i> Edit
+                    <i className="fas fa-edit"></i> Edit{" "}
                   </button>
                   <button
                     className="btn btn-outline-danger btn-sm"

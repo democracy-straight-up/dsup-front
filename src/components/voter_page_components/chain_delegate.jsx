@@ -4,22 +4,10 @@ import { useChainOfDelegation } from "../../hooks/useChainOfDelegation";
 
 export default function ChainOfDelegate() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
-  const { chainOfDelegation, fetchChainOfDelegation } = useChainOfDelegation();
+  const { chainOfDelegation } = useChainOfDelegation();
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const handleRefreshChain = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      await fetchChainOfDelegation();
-    } catch (error) {
-      setError("Failed to refresh delegation chain");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [loading] = useState(false);
+  const [error] = useState(null);
 
   return (
     <div className="container">
@@ -31,31 +19,6 @@ export default function ChainOfDelegate() {
             </div>
           )}
           <div className="card rounded-3 bg-light">
-            {AuthUser?.users?.userType !== "U0D0" && (
-              <div className="row">
-                <div className="col-12 p-2 text-end">
-                  <button
-                    className="btn btn-sm btn-outline-primary"
-                    onClick={handleRefreshChain}
-                    disabled={loading}>
-                    {loading ? (
-                      <>
-                        <span
-                          className="spinner-border spinner-border-sm me-1"
-                          role="status"
-                          aria-hidden="true"></span>
-                        Refreshing...
-                      </>
-                    ) : (
-                      <>
-                        <i className="bi bi-arrow-clockwise me-1"></i>
-                        Refresh
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
             <div className="row text-center m-0">
               <div className="col p-1">
                 <h1 className="fs-4 m-0">Voter</h1>
