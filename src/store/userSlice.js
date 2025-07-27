@@ -16,17 +16,22 @@ const circleLocal = getLocalStorageItem("circle");
 const sec_delLocal = getLocalStorageItem("sec_del");
 const modaLocal = getLocalStorageItem("moda");
 const circleMembersLocal = getLocalStorageItem("circleMembers");
+const chainOfDelegationLocal = getLocalStorageItem("chainOfDelegation");
 
 let userInit = null;
 let circleInit = null;
 let sec_delInit = null;
 let modaInit = null;
 let circleMembersInit = null;
+let chainOfDelegationInit = null;
 
 userLocal ? (userInit = userLocal) : (userInit = null);
 circleLocal ? (circleInit = circleLocal) : (circleInit = null);
 sec_delLocal ? (sec_delInit = sec_delLocal) : (sec_delInit = null);
 modaLocal ? (modaInit = modaLocal) : (modaInit = null);
+chainOfDelegationLocal
+  ? (chainOfDelegationInit = chainOfDelegationLocal)
+  : (chainOfDelegationInit = null);
 
 circleMembersLocal ? (circleMembersInit = circleMembersLocal) : (circleMembersInit = null);
 
@@ -36,6 +41,7 @@ const initialState = {
   sec_del: sec_delInit,
   moda: modaInit,
   circleMembers: circleMembersInit,
+  chainOfDelegation: chainOfDelegationInit,
 };
 
 export const UserSlice = createSlice({
@@ -49,11 +55,13 @@ export const UserSlice = createSlice({
     },
     logout: (state) => {
       state.user = null;
+      state.chainOfDelegation = null;
       localStorage.removeItem("AuthUser");
       localStorage.removeItem("circle");
       localStorage.removeItem("sec_del");
       localStorage.removeItem("moda");
       localStorage.removeItem("circleMembers");
+      localStorage.removeItem("chainOfDelegation");
     },
     circle: (state, action) => {
       state.circle = action.payload;
@@ -77,6 +85,10 @@ export const UserSlice = createSlice({
       localStorage.removeItem("circle");
       localStorage.removeItem("circleMembers");
     },
+    setChainOfDelegation: (state, action) => {
+      state.chainOfDelegation = action.payload;
+      toLocalStorage("chainOfDelegation", state.chainOfDelegation);
+    },
   },
 });
 
@@ -90,6 +102,14 @@ function toLocalStorage(store, user) {
 }
 
 // Action creators are generated for each case reducer function
-export const { authenticate, logout, circle, sec_del, moda, addCirclemMembers, desolveCircle } =
-  UserSlice.actions;
+export const {
+  authenticate,
+  logout,
+  circle,
+  sec_del,
+  moda,
+  addCirclemMembers,
+  desolveCircle,
+  setChainOfDelegation,
+} = UserSlice.actions;
 export default UserSlice.reducer;
