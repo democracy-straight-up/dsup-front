@@ -4,13 +4,10 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { baseURL } from "../../store/conf";
 import MyNote from "./bill_components/my-note";
-// ** READ BELOW **
-
-// this is a sample page for the bill page, it is not connected to the backend
-// currently, this is mimicking a situation where the person signed in is a regular user, and is not a first del or higher
-// the notes section is currently not connected to the backend, but it is a good example of how we can implement it
-// nothing will persist, and "add notes" buttons will have to be added and conditionally rendered later on, this
-// is a quick example and is hard coded and not meant to be a long term solution
+import FirstDelegateNote from "./bill_components/first-del-note";
+import SecondDelegateNote from "./bill_components/sec-del-note";
+import ModaNotes from "./bill_components/moda-note";
+import HolcNotes from "./bill_components/holc-notes";
 
 function Insight() {
   const { id } = useParams();
@@ -27,7 +24,6 @@ function Insight() {
       })
       .then((response) => {
         setBill(response.data);
-        console.log("bill", response.data);
       })
       .catch((error) => {
         setMessage({ type: "alert alert-danger", msg: "error getting bill." });
@@ -59,33 +55,13 @@ function Insight() {
       case "mynotes":
         return <MyNote bill={bill} AuthUser={AuthUser} />;
       case "firstdel":
-        return (
-          <div className="container-fluid  p-4">
-            <h4>First Delegate Notes</h4>
-            <p>First delegate notes will be displayed here...</p>
-          </div>
-        );
+        return <FirstDelegateNote bill={bill} AuthUser={AuthUser} />;
       case "seconddel":
-        return (
-          <div className="container-fluid p-4">
-            <h4>Second Delegate Notes</h4>
-            <p>Second delegate notes will be displayed here...</p>
-          </div>
-        );
+        return <SecondDelegateNote bill={bill} AuthUser={AuthUser} />;
       case "moda":
-        return (
-          <div className="container-fluid p-4">
-            <h4>MoDa Notes</h4>
-            <p>MoDa notes will be displayed here...</p>
-          </div>
-        );
+        return <ModaNotes bill={bill} AuthUser={AuthUser} />;
       case "holc":
-        return (
-          <div className="container-fluid p-4">
-            <h4>HoLC Notes</h4>
-            <p>HoLC notes will be displayed here...</p>
-          </div>
-        );
+        return <HolcNotes bill={bill} AuthUser={AuthUser} />;
       case "houserep":
         return (
           <div className="container-fluid p-4">

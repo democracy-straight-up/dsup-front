@@ -82,7 +82,7 @@ export default function CircleCard() {
             {error === false ? (
               <>
                 <div className="row">
-                  <div className=" text-center">
+                  <div className="text-center">
                     <h1 className="fs-3 m-0 text-center">
                       Circle-{circleInfo?.district?.code}-{circleInfo?.code}
                     </h1>

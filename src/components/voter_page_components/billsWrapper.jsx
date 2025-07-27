@@ -19,7 +19,6 @@ export default function BillsWrapper({ setMessage }) {
       })
       .then((response) => {
         setBills(response.data);
-        console.log("bills", response.data);
       })
       .catch((error) => {
         setMessage({ type: "alert alert-danger", msg: "error getting bills." });
@@ -32,13 +31,11 @@ export default function BillsWrapper({ setMessage }) {
 
   return (
     <>
-      <h1 className="header-semibold mt-4" style={{ marginBottom: "1%" }}>
-        List of Bills
-      </h1>
+      <h1 className="fs-3 mt-4 pl-4">List of Bills</h1>
       <Table striped bordered hover responsive>
         <thead>
-          <tr className="bills-list-voter-page-header-row">
-            <th>Bill Number</th>
+          <tr className="fw-normal bills-list-voter-page-header-row">
+            <th className="">Bill Number</th>
             <th style={{ minWidth: "300px" }}>Short Title</th>
             <th>Scheduled For Vote</th>
             <th>Advisement</th>
