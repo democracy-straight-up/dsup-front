@@ -110,6 +110,7 @@ export const useAuth = () => {
     // Both tokens are expired
     console.log("Both tokens expired, user needs to login again");
     return false;
+
   };
 
   return {
