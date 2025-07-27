@@ -1,35 +1,10 @@
-import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import Dropdown from "react-bootstrap/Dropdown";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 function Header() {
-  const { AuthUser, handleLogout, isTokenExpired, refreshToken } = useAuth();
-  const navigate = useNavigate();
-
-  // Auto-refresh token when access token is expired but refresh token is still valid
-  useEffect(() => {
-    const handleTokenRefresh = async () => {
-      if (
-        AuthUser &&
-        isTokenExpired(AuthUser.token?.access) &&
-        !isTokenExpired(AuthUser.token?.refresh)
-      ) {
-        const refreshSuccess = await refreshToken();
-        if (!refreshSuccess) {
-          navigate("/enter-the-floor");
-        }
-      } else if (AuthUser && isTokenExpired(AuthUser.token?.refresh)) {
-        // Both tokens expired, logout
-        handleLogout();
-      }
-    };
-
-    if (AuthUser) {
-      handleTokenRefresh();
-    }
-  }, [AuthUser, isTokenExpired, refreshToken, handleLogout, navigate]);
+  const { AuthUser, handleLogout } = useAuth();
 
   return (
     <nav className="navbar navbar-expand-lg bg-light">

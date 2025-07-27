@@ -14,6 +14,7 @@ export default function MyNote({ bill, AuthUser }) {
     if (bill?.id && AuthUser?.id) {
       fetchNotes();
     }
+    console.log("auh: ", AuthUser);
 
     return () => {
       console.log("MyNote component unmounted...");

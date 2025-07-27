@@ -79,7 +79,7 @@ export const authenticatedFetch = async (
  */
 export const refreshTokens = async (refreshToken) => {
   try {
-    const response = await fetch(`${window.location.protocol}//${baseURL}/token/refresh/`, {
+    const response = await fetch(`${window.location.protocol}//${baseURL}/api/token/refresh/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

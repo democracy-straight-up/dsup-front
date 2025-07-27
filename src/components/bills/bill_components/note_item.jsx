@@ -1,6 +1,15 @@
 import { useState } from "react";
+import { CloseButton } from "react-bootstrap";
 
-export default function NoteItem({ note, onUpdate, onDelete, isEditing, setEditingId }) {
+export default function NoteItem({
+  note,
+  onUpdate,
+  onDelete,
+  isEditing,
+  setEditingId,
+  canEdit = true,
+  noteType = "",
+}) {
   const [editedNote, setEditedNote] = useState(note.note);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -54,40 +63,56 @@ export default function NoteItem({ note, onUpdate, onDelete, isEditing, setEditi
     });
   };
 
+  console.log("note", note);
   return (
     <div className="card mb-3 ">
       <div className="card-body">
         <div className="d-flex justify-content-between align-items-start ">
-          <small className="text-muted">
-            Created: {formatDate(note.created_at)}
-            {/* {note.updated_at !== note.created_at && (
-              <span className="ms-2">(Updated: {formatDate(note.updated_at)})</span>
-            )} */}
-          </small>
-
-          <div className="btn-group btn-group-sm">
-            {!isEditing && (
-              <>
-                <button
-                  className="btn btn-outline-primary btn-sm"
-                  onClick={() => setEditingId(note.id)}
-                  disabled={isDeleting}>
-                  <i className="fas fa-edit"></i> Edit
-                </button>
-                <button
-                  className="btn btn-outline-danger btn-sm"
-                  onClick={handleDelete}
-                  disabled={isDeleting}>
-                  {isDeleting ? (
-                    <span className="spinner-border spinner-border-sm me-1"></span>
-                  ) : (
-                    <i className="fas fa-trash"></i>
-                  )}{" "}
-                  Delete
-                </button>
-              </>
-            )}
+          <div className="d-flex flex-column">
+            <p className="text-muted">
+              {noteType && (
+                <span className="badge border border-primary rounded-pill text-primary me-2 fw-normal">
+                  {noteType}
+                </span>
+              )}
+              Add on {formatDate(note.created_at)}
+            </p>
           </div>
+
+          {canEdit && (
+            <div className="btn-group btn-group-sm">
+              {!isEditing && (
+                <>
+                  <button
+                    className="btn btn-outline-primary btn-sm px-3"
+                    onClick={() => setEditingId(note.id)}
+                    disabled={isDeleting}
+                    title="Edit note">
+                    <i className="fas fa-edit"></i> Edit{" "}
+                  </button>
+                  <button
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    title="Delete note">
+                    {isDeleting ? (
+                      <span className="spinner-border spinner-border-sm me-1"></span>
+                    ) : (
+                      <i className="fas fa-trash"></i>
+                    )}{" "}
+                    Delete
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          {!canEdit && (
+            <small className="text-muted">
+              <i className="fas fa-lock me-1"></i>
+              You can only edit notes you created
+            </small>
+          )}
         </div>
 
         {isEditing ? (

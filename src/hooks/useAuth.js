@@ -20,8 +20,36 @@ export const useAuth = () => {
     }
   };
 
+  const isTokenExpiringSoon = (token, minutesThreshold = 5) => {
+    if (!token) return true;
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000);
+      const thresholdTime = currentTime + minutesThreshold * 60;
+      return decodedToken.exp < thresholdTime;
+    } catch (error) {
+      return true;
+    }
+  };
+
   const isAuthenticated = () => {
-    return AuthUser && AuthUser.token && !isTokenExpired(AuthUser.token.access);
+    if (!AuthUser || !AuthUser.token) {
+      return false;
+    }
+
+    // If access token is valid, user is authenticated
+    if (!isTokenExpired(AuthUser.token.access)) {
+      return true;
+    }
+
+    // If access token is expired but refresh token is still valid,
+    // user is still considered authenticated (we'll refresh automatically)
+    if (AuthUser.token.refresh && !isTokenExpired(AuthUser.token.refresh)) {
+      return true;
+    }
+
+    // Both tokens are expired or invalid
+    return false;
   };
 
   const handleLogout = () => {
@@ -31,16 +59,19 @@ export const useAuth = () => {
 
   const refreshToken = async () => {
     if (!AuthUser?.token?.refresh) {
+      console.log("No refresh token available");
       handleLogout();
       return false;
     }
 
     if (isTokenExpired(AuthUser.token.refresh)) {
+      console.log("Refresh token expired, logging out");
       handleLogout();
       return false;
     }
 
     try {
+      console.log("Refreshing access token...");
       const newTokenData = await refreshTokens(AuthUser.token.refresh);
       const updatedUser = {
         ...AuthUser,
@@ -50,9 +81,11 @@ export const useAuth = () => {
         },
       };
       dispatch(authenticate(updatedUser));
+      console.log("Token refreshed successfully");
       return true;
     } catch (error) {
       console.error("Token refresh failed:", error);
+      // Only logout if refresh actually failed, not just because access token expired
       handleLogout();
       return false;
     }
@@ -63,17 +96,28 @@ export const useAuth = () => {
       return false;
     }
 
-    if (isTokenExpired(AuthUser.token.access)) {
+    // If access token is still valid, no need to refresh
+    if (!isTokenExpired(AuthUser.token.access)) {
+      return true;
+    }
+
+    // Access token expired, try to refresh if refresh token is valid
+    if (AuthUser.token.refresh && !isTokenExpired(AuthUser.token.refresh)) {
+      console.log("Access token expired, attempting refresh...");
       return await refreshToken();
     }
 
-    return true;
+    // Both tokens are expired
+    console.log("Both tokens expired, user needs to login again");
+    return false;
+
   };
 
   return {
     AuthUser,
     isAuthenticated,
     isTokenExpired,
+    isTokenExpiringSoon,
     handleLogout,
     refreshToken,
     ensureValidToken,
