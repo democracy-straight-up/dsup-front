@@ -63,6 +63,7 @@ export default function NoteItem({
     });
   };
 
+  console.log("note", note);
   return (
     <div className="card mb-3 ">
       <div className="card-body">
@@ -112,6 +113,7 @@ export default function NoteItem({
               You can only edit notes you created
             </small>
           )} */}
+
         </div>
 
         {isEditing ? (
