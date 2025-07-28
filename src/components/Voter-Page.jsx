@@ -63,7 +63,7 @@ function VoterPage() {
         </div>
       </div>
       <div className="row text-center ">
-        <h1>Voter Page</h1>
+        <h1>My Voter Page</h1>
       </div>
       <Container>
         <UserCard />

@@ -106,12 +106,12 @@ export default function NoteItem({
             </div>
           )}
 
-          {!canEdit && (
+          {/* {!canEdit && (
             <small className="text-muted">
               <i className="fas fa-lock me-1"></i>
               You can only edit notes you created
             </small>
-          )}
+          )} */}
         </div>
 
         {isEditing ? (
