@@ -112,6 +112,7 @@ export default function NoteItem({
               You can only edit notes you created
             </small>
           )} */}
+
         </div>
 
         {isEditing ? (
