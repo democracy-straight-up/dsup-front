@@ -85,7 +85,7 @@ export default function MySecondDelNote({ bill, AuthUser }) {
         setNewNote("");
         setShowAddForm(false);
       } else {
-        const errorData = await response.json();
+        // const errorData = await response.json();
         alert("Failed to add note. Please try again.");
       }
     } catch (error) {
