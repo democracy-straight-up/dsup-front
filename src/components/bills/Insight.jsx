@@ -6,6 +6,7 @@ import { baseURL } from "../../store/conf";
 import MyNote from "./bill_components/my-note";
 import FirstDelegateNote from "./bill_components/first-del-note";
 import SecondDelegateNote from "./bill_components/my-second-del-note";
+
 import ModaNotes from "./bill_components/moda-note";
 import HolcNotes from "./bill_components/holc-notes";
 
