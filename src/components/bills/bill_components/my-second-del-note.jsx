@@ -85,7 +85,7 @@ export default function MySecondDelNote({ bill, AuthUser }) {
         setNewNote("");
         setShowAddForm(false);
       } else {
-        const errorData = await response.json();
+        // const errorData = await response.json();
         alert("Failed to add note. Please try again.");
       }
     } catch (error) {
@@ -212,11 +212,12 @@ export default function MySecondDelNote({ bill, AuthUser }) {
         </div>
       ) : (
         <div>
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <small className="text-muted">
               {notes.length} second delegate note{notes.length !== 1 ? "s" : ""} found
             </small>
-          </div>
+          </div> */}
+
           {notes.map((note) => (
             <NoteItem
               key={note.id}

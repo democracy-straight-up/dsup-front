@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { CloseButton } from "react-bootstrap";
 
 export default function NoteItem({
   note,
