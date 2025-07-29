@@ -1,5 +1,3 @@
-import React from "react";
-
 function Error() {
   return (
     <div className="">
@@ -9,8 +7,8 @@ function Error() {
           <h1 className="fs-3 ">This function is on our to-do list!</h1>
 
           <p>
-            Want to help us check off all the items on our list, and bring
-            direct democracy to America?
+            Want to help us check off all the items on our list, and bring direct democracy to
+            America?
           </p>
           <p>There are four ways to do that:</p>
           <ul>
@@ -21,17 +19,13 @@ function Error() {
           </ul>
           <p>
             Just email us at{" "}
-            <a href="mailto:democracystraightup@gmail.com">
-              democracystraightup@gmail.com
-            </a>{" "}
-            {"  "}
+            <a href="mailto:democracystraightup@gmail.com">democracystraightup@gmail.com</a> {"  "}
             and we'll respond with more info.
           </p>
           <p>
-            Otherwise, if you have signed up and joined a Circle, just sit tight
-            and functions will appear as they are built. Ask your F-Del to let
-            you know when new functions are introduced--we'll be in touch with
-            them.
+            Otherwise, if you have signed up and joined a Circle, just sit tight and functions will
+            appear as they are built. Ask your F-Del to let you know when new functions are
+            introduced--we'll be in touch with them.
           </p>
         </div>
         <div className="col"></div>

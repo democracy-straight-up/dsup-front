@@ -75,7 +75,7 @@ body {
 }
 
 .bills-list-voter-page-header-row {
-  font-family: "Inter-Bold";
+  /* font-family: "Inter-Bold"; */
   font-size: 18px;
   color: black;
 }
@@ -95,7 +95,7 @@ body {
 }
 
 .bill-page-note-headers {
-  font-family: "Inter-Bold";
+  /* font-family: "Inter-Bold"; */
   font-size: 30px;
   color: black;
   text-decoration: underline;

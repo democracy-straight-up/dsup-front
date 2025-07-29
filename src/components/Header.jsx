@@ -1,42 +1,10 @@
-import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../store/userSlice.js";
+import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import Dropdown from "react-bootstrap/Dropdown";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import jwtDecode from "jwt-decode";
 
 function Header() {
-  const AuthUser = useSelector((state) => state.AuthUser.user);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/enter-the-floor");
-  };
-
-  // this is where we track the expiry date of token and if so, take the voter to reenter their
-  const isTokenExpired = () => {
-    try {
-      const currentTime = Math.floor(Date.now() / 1000);
-      const decodedToken = jwtDecode(AuthUser?.token?.access);
-      if (!decodedToken || !decodedToken.exp) {
-        throw new Error("Invalid token: missing field.");
-      }
-      return decodedToken.exp < currentTime;
-    } catch (error) {
-      return true;
-    }
-  };
-
-  // useEffect(() => {
-  //   if (isTokenExpired()) {
-  //     dispatch(logout());
-  //     navigate("/");
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  const { AuthUser, handleLogout } = useAuth();
 
   return (
     <nav className="navbar navbar-expand-lg bg-light">
