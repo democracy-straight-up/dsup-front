@@ -217,6 +217,7 @@ export default function MySecondDelNote({ bill, AuthUser }) {
               {notes.length} second delegate note{notes.length !== 1 ? "s" : ""} found
             </small>
           </div> */}
+
           {notes.map((note) => (
             <NoteItem
               key={note.id}
