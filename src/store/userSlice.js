@@ -15,6 +15,7 @@ const userLocal = getLocalStorageItem("AuthUser");
 const circleLocal = getLocalStorageItem("circle");
 const sec_delLocal = getLocalStorageItem("sec_del");
 const modaLocal = getLocalStorageItem("moda");
+const holcLocal = getLocalStorageItem("holc");
 const circleMembersLocal = getLocalStorageItem("circleMembers");
 const chainOfDelegationLocal = getLocalStorageItem("chainOfDelegation");
 
@@ -22,6 +23,7 @@ let userInit = null;
 let circleInit = null;
 let sec_delInit = null;
 let modaInit = null;
+let holcInit = null;
 let circleMembersInit = null;
 let chainOfDelegationInit = null;
 
@@ -29,6 +31,7 @@ userLocal ? (userInit = userLocal) : (userInit = null);
 circleLocal ? (circleInit = circleLocal) : (circleInit = null);
 sec_delLocal ? (sec_delInit = sec_delLocal) : (sec_delInit = null);
 modaLocal ? (modaInit = modaLocal) : (modaInit = null);
+holcLocal ? (holcInit = holcLocal) : (holcInit = null);
 chainOfDelegationLocal
   ? (chainOfDelegationInit = chainOfDelegationLocal)
   : (chainOfDelegationInit = null);
@@ -40,6 +43,7 @@ const initialState = {
   circle: circleInit,
   sec_del: sec_delInit,
   moda: modaInit,
+  holc: holcInit,
   circleMembers: circleMembersInit,
   chainOfDelegation: chainOfDelegationInit,
 };
@@ -60,6 +64,7 @@ export const UserSlice = createSlice({
       localStorage.removeItem("circle");
       localStorage.removeItem("sec_del");
       localStorage.removeItem("moda");
+      localStorage.removeItem("holc");
       localStorage.removeItem("circleMembers");
       localStorage.removeItem("chainOfDelegation");
     },
@@ -74,6 +79,10 @@ export const UserSlice = createSlice({
     moda: (state, action) => {
       state.moda = action.payload;
       toLocalStorage("moda", state.moda);
+    },
+    holc: (state, action) => {
+      state.holc = action.payload;
+      toLocalStorage("holc", state.holc);
     },
     addCirclemMembers: (state, action) => {
       state.circleMembers = action.payload;
@@ -108,6 +117,7 @@ export const {
   circle,
   sec_del,
   moda,
+  holc,
   addCirclemMembers,
   desolveCircle,
   setChainOfDelegation,
