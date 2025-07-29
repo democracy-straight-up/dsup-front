@@ -10,7 +10,7 @@ export const useActivityTracker = () => {
   useEffect(() => {
     if (!AuthUser) return;
 
-    const activityEvents = ["mousedown", "mousemove", "keypress", "scroll", "touchstart", "click"];
+    const activityEvents = ["mousedown", "keypress", "scroll", "touchstart", "click"];
     let activityTimeout;
 
     const handleActivity = async () => {
