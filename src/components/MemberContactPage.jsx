@@ -12,9 +12,8 @@ function MemberContactPage() {
   const [contactList, setContactList] = useState([]);
 
   const isDelegate = () => {
-    return circleMembers.some(
-      (member) =>
-        member.user.username === AuthUser.username && member.is_delegate
+    return circleMembers?.some(
+      (member) => member?.user?.username === AuthUser?.username && member?.is_delegate
     );
   };
 

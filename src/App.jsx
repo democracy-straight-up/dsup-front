@@ -27,6 +27,8 @@ import SecondDelegatePage from "./components/sec_del/sec_del_page";
 import ModaPage from "./components/moda/moda_page";
 import JoinModa from "./components/moda/moda_join";
 import { useActivityTracker } from "./hooks/useActivityTracker";
+import JoinHolc from "components/holc/holc_join";
+import HolcPage from "components/holc/holc_page";
 // const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join"));
 
 function App() {
@@ -149,11 +151,31 @@ function App() {
           }
         />
         <Route
+          path="/join-holc"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <JoinHolc />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/s-link-page"
           element={
             <ProtectedRoute>
               <Header />
               <ModaPage />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/holc-page"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <HolcPage />
               <Footer />
             </ProtectedRoute>
           }
