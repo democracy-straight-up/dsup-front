@@ -18,7 +18,7 @@ export default function ChainOfDelegate() {
               {error}
             </div>
           )}
-          <div className="card  rounded-3 bg-light">
+          <div className="card rounded-3 bg-light">
             <div className="row text-center m-0 d-flex flex-nowrap overflow-auto">
               <div className="col flex-shirnk-0  p-1" style={{ minWidth: "120px" }}>
                 <h1 className="fs-4 m-0">Voter</h1>
