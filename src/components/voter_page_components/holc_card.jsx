@@ -1,15 +1,19 @@
+
 import { Link, useNavigate } from "react-router-dom";
+
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { baseURL } from "../../store/conf";
 import { holc, house_rep, authenticate } from "../../store/userSlice";
 
+
 export default function HolcCard() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const holc_info = useSelector((state) => state.AuthUser.holc);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -37,6 +41,7 @@ export default function HolcCard() {
         alert("Failed to copy ");
       });
   };
+
 
   const handleCreate = () => {
     if (AuthUser?.token.access.length > 0) {
