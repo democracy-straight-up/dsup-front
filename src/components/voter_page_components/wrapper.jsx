@@ -5,6 +5,7 @@ import FLinkWrapper from "./f_link_wrapper";
 import VoterCard from "./voter_card";
 import SLinkWrapper from "./s_link_wrapper";
 import HolcWrapper from "./holc_wrapper";
+import HouseRepWrapper from "./house_rep_wrapper";
 
 const UserCardSwitch = (AuthUser) => {
   switch (AuthUser?.users?.userType.substring(0, 2)) {
@@ -22,6 +23,9 @@ const UserCardSwitch = (AuthUser) => {
       return;
     case "U4":
       return <HolcWrapper />;
+    case "U5":
+      return <HouseRepWrapper />;
+
       break;
     default:
       console.log("");
