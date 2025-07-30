@@ -25,6 +25,7 @@ const UserCardSwitch = (AuthUser) => {
       return <HolcWrapper />;
     case "U5":
       return <HouseRepWrapper />;
+
       break;
     default:
       console.log("");
