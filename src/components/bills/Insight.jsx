@@ -9,6 +9,7 @@ import SecondDelegateNote from "./bill_components/my-second-del-note";
 
 import ModaNotes from "./bill_components/moda-note";
 import HolcNotes from "./bill_components/holc-note";
+import HouseRepNotes from "./bill_components/house-rep-note";
 
 function Insight() {
   const { id } = useParams();
@@ -64,7 +65,7 @@ function Insight() {
       case "holc":
         return <HolcNotes bill={bill} AuthUser={AuthUser} />;
       case "houserep":
-        return <HolcNotes bill={bill} AuthUser={AuthUser} />;
+        return <HouseRepNotes bill={bill} AuthUser={AuthUser} />;
       default:
         return (
           <div className="container-fluid p-4">

@@ -46,5 +46,6 @@ export const useChainOfDelegation = () => {
     isSecondDelegate: chainOfDelegation?.sec_del?.id === AuthUser?.id,
     isModa: chainOfDelegation?.moda?.id === AuthUser?.id,
     isHolc: chainOfDelegation?.holc?.id === AuthUser?.id,
+    isHouseRep: chainOfDelegation?.house_rep?.id === AuthUser?.id,
   };
 };
