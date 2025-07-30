@@ -16,6 +16,7 @@ const circleLocal = getLocalStorageItem("circle");
 const sec_delLocal = getLocalStorageItem("sec_del");
 const modaLocal = getLocalStorageItem("moda");
 const holcLocal = getLocalStorageItem("holc");
+const house_repLocal = getLocalStorageItem("house_rep");
 const circleMembersLocal = getLocalStorageItem("circleMembers");
 const chainOfDelegationLocal = getLocalStorageItem("chainOfDelegation");
 
@@ -24,6 +25,7 @@ let circleInit = null;
 let sec_delInit = null;
 let modaInit = null;
 let holcInit = null;
+let house_repInit = null;
 let circleMembersInit = null;
 let chainOfDelegationInit = null;
 
@@ -32,6 +34,7 @@ circleLocal ? (circleInit = circleLocal) : (circleInit = null);
 sec_delLocal ? (sec_delInit = sec_delLocal) : (sec_delInit = null);
 modaLocal ? (modaInit = modaLocal) : (modaInit = null);
 holcLocal ? (holcInit = holcLocal) : (holcInit = null);
+house_repLocal ? (house_repInit = house_repLocal) : (house_repInit = null);
 chainOfDelegationLocal
   ? (chainOfDelegationInit = chainOfDelegationLocal)
   : (chainOfDelegationInit = null);
@@ -44,6 +47,7 @@ const initialState = {
   sec_del: sec_delInit,
   moda: modaInit,
   holc: holcInit,
+  house_rep: house_repInit,
   circleMembers: circleMembersInit,
   chainOfDelegation: chainOfDelegationInit,
 };
@@ -65,6 +69,7 @@ export const UserSlice = createSlice({
       localStorage.removeItem("sec_del");
       localStorage.removeItem("moda");
       localStorage.removeItem("holc");
+      localStorage.removeItem("house_rep");
       localStorage.removeItem("circleMembers");
       localStorage.removeItem("chainOfDelegation");
     },
@@ -83,6 +88,10 @@ export const UserSlice = createSlice({
     holc: (state, action) => {
       state.holc = action.payload;
       toLocalStorage("holc", state.holc);
+    },
+    house_rep: (state, action) => {
+      state.house_rep = action.payload;
+      toLocalStorage("house_rep", state.house_rep);
     },
     addCirclemMembers: (state, action) => {
       state.circleMembers = action.payload;
@@ -118,6 +127,7 @@ export const {
   sec_del,
   moda,
   holc,
+  house_rep,
   addCirclemMembers,
   desolveCircle,
   setChainOfDelegation,

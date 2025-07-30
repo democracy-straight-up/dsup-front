@@ -29,6 +29,8 @@ import JoinModa from "./components/moda/moda_join";
 import { useActivityTracker } from "./hooks/useActivityTracker";
 import JoinHolc from "components/holc/holc_join";
 import HolcPage from "components/holc/holc_page";
+import House_repPage from "components/house_rep/house_rep_page";
+import JoinHouseRep from "components/house_rep/house_rep_join";
 // const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join"));
 
 function App() {
@@ -176,6 +178,26 @@ function App() {
             <ProtectedRoute>
               <Header />
               <HolcPage />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/house-rep-join"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <JoinHouseRep />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/house-rep-page"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <House_repPage />
               <Footer />
             </ProtectedRoute>
           }

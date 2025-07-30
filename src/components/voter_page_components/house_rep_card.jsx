@@ -1,25 +1,24 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { baseURL } from "../../store/conf";
-import { holc, house_rep, authenticate } from "../../store/userSlice";
+import { house_rep } from "../../store/userSlice";
 
-export default function HolcCard() {
+export default function HouseRepCard() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
-  const holc_info = useSelector((state) => state.AuthUser.holc);
+  const house_rep_info = useSelector((state) => state.AuthUser.house_rep);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [error, setError] = useState(false);
 
   useEffect(() => {
     // get the fLink info
-    const url = `${window.location.protocol}//${baseURL}/api/holc/holc/get_holc_by_user/`;
+    const url = `${window.location.protocol}//${baseURL}/api/rep/district-council/get_district_council_by_user/`;
     let header = { Authorization: `Bearer ${AuthUser?.token.access}` };
     axios
       .post(url, { user: AuthUser?.username }, { headers: header })
       .then((res) => {
-        dispatch(holc(res.data));
+        dispatch(house_rep(res.data));
       })
       .catch((err) => {
         setError(true);
@@ -38,42 +37,6 @@ export default function HolcCard() {
       });
   };
 
-  const handleCreate = () => {
-    if (AuthUser?.token.access.length > 0) {
-      // console.log("ceating a circle...")
-      // constructing to request to create the first link
-      let header = { Authorization: `Bearer ${AuthUser.token.access}` };
-      const url = `${window.location.protocol}//${baseURL}/api/rep/district-council/`;
-      const param = {
-        user: AuthUser?.username,
-        district: AuthUser?.users?.district?.code,
-      };
-
-      axios
-        .post(url, param, { headers: header })
-        .then((response) => {
-          if (response.status === 200) {
-            // if the request was a succcess, set the sec_del state so that we need it in the next page (sec_del housekeeping page)
-            dispatch(house_rep(response.data));
-
-            // set the userType to 2 without requesting new data from the server.
-            let u = { ...AuthUser.users };
-            let userType = "U5D5";
-            let users = { ...u, userType };
-            dispatch(authenticate({ ...AuthUser, users }));
-
-            //   after successfull operation of creating, settign datas and users, take the voter to first link page
-            navigate("/house-rep-page");
-          } else {
-            console.log("something went wrong:", response);
-          }
-        })
-        .catch((error) => {
-          console.log("something is not right!.", error);
-        });
-    }
-  };
-
   return (
     <div className="mt-3 ">
       <div className="">
@@ -84,13 +47,15 @@ export default function HolcCard() {
                 <div className="row">
                   <div className=" text-center">
                     <h1 className="fs-3 m-0 text-center">
-                      District Caucus-{holc_info?.district?.code}-{holc_info?.code}
+                      District Council-{house_rep_info?.district?.code}-{house_rep_info?.code}
                     </h1>
                     <div
                       style={{ maxWidth: "90%" }}
                       className="d-flex justify-content-between mx-auto border-bottom border-1">
-                      <p className="m-0">Status: {holc_info?.is_active ? "Active" : "Inactive"}</p>
-                      <p className="m-0">Members: {holc_info?.member_count}</p>
+                      <p className="m-0">
+                        Status: {house_rep_info?.is_active ? "Active" : "Inactive"}
+                      </p>
+                      <p className="m-0">Members: {house_rep_info?.member_count}</p>
                     </div>
                     <h1 className="fs-3 fw-light">Invitation Key</h1>
                     <div className="row">
@@ -98,11 +63,11 @@ export default function HolcCard() {
                         <p
                           className="fw-light font-monospace m-0"
                           style={{ letterSpacing: ".3rem" }}>
-                          {holc_info?.invitation_key}
+                          {house_rep_info?.invitation_key}
                         </p>
                         &nbsp; &nbsp;
                         <button
-                          onClick={() => CopyInviteKey(holc_info?.invitation_key)}
+                          onClick={() => CopyInviteKey(house_rep_info?.invitation_key)}
                           className="m-0 p-0 border-0 bg-transparent">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +88,7 @@ export default function HolcCard() {
                 </div>
                 <div className="row">
                   <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-3">
-                    <Link to="/holc-page" className="p-1 text-nowrap fw-light text-dark">
+                    <Link to="/house-rep-page" className="p-1 text-nowrap fw-light text-dark">
                       Housekeeping Page &nbsp;
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -134,7 +99,7 @@ export default function HolcCard() {
                         <path d="M12.47 10.47a.75.75 0 1 0 1.06 1.06l7.72-7.72v3.534a.75.75 0 0 0 1.5 0V2a.75.75 0 0 0-.75-.75h-5.344a.75.75 0 0 0 0 1.5h3.533z" />
                       </svg>
                     </Link>
-                    <Link to="/holc-contact" className="p-1 text-nowrap fw-light text-dark">
+                    <Link to="/house-rep-contact" className="p-1 text-nowrap fw-light text-dark">
                       Member Contact Page &nbsp;
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +121,9 @@ export default function HolcCard() {
                         <path d="M12.47 10.47a.75.75 0 1 0 1.06 1.06l7.72-7.72v3.534a.75.75 0 0 0 1.5 0V2a.75.75 0 0 0-.75-.75h-5.344a.75.75 0 0 0 0 1.5h3.533z" />
                       </svg>
                     </Link>
-                    <Link to="/holc-back-and-forth" className="p-1 text-nowrap fw-light text-dark">
+                    <Link
+                      to="/house-rep-back-and-forth"
+                      className="p-1 text-nowrap fw-light text-dark">
                       Back And Forth &nbsp;
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -168,7 +135,7 @@ export default function HolcCard() {
                       </svg>
                     </Link>
 
-                    <Link to="/holc-minutes" className="p-1 text-nowrap fw-light text-dark">
+                    <Link to="/house-rep-minutes" className="p-1 text-nowrap fw-light text-dark">
                       Meetings & Minutes &nbsp;
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -180,26 +147,6 @@ export default function HolcCard() {
                       </svg>
                     </Link>
                   </div>
-                </div>
-
-                <div className="row">
-                  {/* update this back to U4D4 */}
-                  {AuthUser.users.userType === "U4D3" ? (
-                    <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
-                      {holc_info?.is_active && (
-                        <>
-                          <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
-                            Create
-                          </Link>
-                          <Link to="/house-rep-join" className="p-1 text-nowrap  text-dark">
-                            Join
-                          </Link>
-                        </>
-                      )}
-                    </div>
-                  ) : (
-                    <div style={{ height: "3.5rem", display: "block" }}></div>
-                  )}
                 </div>
               </>
             ) : (
