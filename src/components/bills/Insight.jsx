@@ -6,10 +6,10 @@ import { baseURL } from "../../store/conf";
 import MyNote from "./bill_components/my-note";
 import FirstDelegateNote from "./bill_components/first-del-note";
 import SecondDelegateNote from "./bill_components/my-second-del-note";
-
 import ModaNotes from "./bill_components/moda-note";
 import HolcNotes from "./bill_components/holc-note";
 import HouseRepNotes from "./bill_components/house-rep-note";
+import Advisement from "./bill_components/advisement";
 
 function Insight() {
   const { id } = useParams();
@@ -57,15 +57,55 @@ function Insight() {
       case "mynotes":
         return <MyNote bill={bill} AuthUser={AuthUser} />;
       case "firstdel":
-        return <FirstDelegateNote bill={bill} AuthUser={AuthUser} />;
+        return (
+          <div>
+            <Advisement
+              bill={bill}
+              AuthUser={AuthUser}
+              advisementType="FD"
+              title="First Delegate Notes"
+            />
+            <FirstDelegateNote bill={bill} AuthUser={AuthUser} />
+          </div>
+        );
       case "seconddel":
-        return <SecondDelegateNote bill={bill} AuthUser={AuthUser} />;
+        return (
+          <div>
+            <Advisement
+              bill={bill}
+              AuthUser={AuthUser}
+              advisementType="FD"
+              title="Second Delegate Notes"
+            />
+            <SecondDelegateNote bill={bill} AuthUser={AuthUser} />
+          </div>
+        );
       case "moda":
-        return <ModaNotes bill={bill} AuthUser={AuthUser} />;
+        return (
+          <div>
+            <Advisement bill={bill} AuthUser={AuthUser} advisementType="FD" title="MoDa Notes" />
+            <ModaNotes bill={bill} AuthUser={AuthUser} />
+          </div>
+        );
       case "holc":
-        return <HolcNotes bill={bill} AuthUser={AuthUser} />;
+        return (
+          <div>
+            <Advisement bill={bill} AuthUser={AuthUser} advisementType="HL" title="HoLC Notes" />
+            <HolcNotes bill={bill} AuthUser={AuthUser} />
+          </div>
+        );
       case "houserep":
-        return <HouseRepNotes bill={bill} AuthUser={AuthUser} />;
+        return (
+          <div>
+            <Advisement
+              bill={bill}
+              AuthUser={AuthUser}
+              advisementType="HR"
+              title="House Rep Notes"
+            />
+            <HouseRepNotes bill={bill} AuthUser={AuthUser} />
+          </div>
+        );
       default:
         return (
           <div className="container-fluid p-4">

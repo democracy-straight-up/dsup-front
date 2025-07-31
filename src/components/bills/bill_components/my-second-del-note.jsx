@@ -12,11 +12,11 @@ export default function MySecondDelNote({ bill, AuthUser }) {
   const [showAddForm, setShowAddForm] = useState(false);
 
   const { makeRequest } = useAuthenticatedFetch();
-  const { isSecondDelegate, chainOfDelegation } = useChainOfDelegation();
+  const { isSDel, chainOfDelegation } = useChainOfDelegation();
 
   // Get the display title based on user role
   const getTitle = () => {
-    if (isSecondDelegate) {
+    if (isSDel) {
       return "My Second Delegate Notes";
     }
     return "Second Delegate Notes";
@@ -24,7 +24,7 @@ export default function MySecondDelNote({ bill, AuthUser }) {
 
   // Get the empty state message based on user role
   const getEmptyMessage = () => {
-    if (isSecondDelegate) {
+    if (isSDel) {
       return "You haven't created any second delegate notes for this bill yet.";
     }
 
@@ -154,7 +154,7 @@ export default function MySecondDelNote({ bill, AuthUser }) {
         <h5>
           {getTitle()} for Bill {bill?.number}
         </h5>
-        {isSecondDelegate && (
+        {isSDel && (
           <button className="btn btn-primary" onClick={() => setShowAddForm(!showAddForm)}>
             <i className="fas fa-plus"></i> Add Note
           </button>
@@ -162,7 +162,7 @@ export default function MySecondDelNote({ bill, AuthUser }) {
       </div>
 
       {/* Add Note Form - Only shown to second delegates */}
-      {showAddForm && isSecondDelegate && (
+      {showAddForm && isSDel && (
         <div className="card mb-4">
           <div className="card-body">
             <h5 className="card-title">Add New Second Delegate Note</h5>
@@ -226,7 +226,7 @@ export default function MySecondDelNote({ bill, AuthUser }) {
               onDelete={handleDeleteNote}
               isEditing={editingId === note.id}
               setEditingId={setEditingId}
-              canEdit={isSecondDelegate && note.user.username === AuthUser.username}
+              canEdit={isSDel && note.user.username === AuthUser.username}
               noteType="Second Delegate"
             />
           ))}

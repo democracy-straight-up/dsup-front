@@ -42,8 +42,8 @@ export const useChainOfDelegation = () => {
   return {
     chainOfDelegation,
     fetchChainOfDelegation,
-    isFirstDelegate: chainOfDelegation?.f_del?.id === AuthUser?.id,
-    isSecondDelegate: chainOfDelegation?.sec_del?.id === AuthUser?.id,
+    isFDel: chainOfDelegation?.f_del?.id === AuthUser?.id,
+    isSDel: chainOfDelegation?.sec_del?.id === AuthUser?.id,
     isModa: chainOfDelegation?.moda?.id === AuthUser?.id,
     isHolc: chainOfDelegation?.holc?.id === AuthUser?.id,
     isHouseRep: chainOfDelegation?.house_rep?.id === AuthUser?.id,
