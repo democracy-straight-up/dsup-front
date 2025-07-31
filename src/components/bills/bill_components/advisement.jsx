@@ -119,8 +119,8 @@ function Advisement({ bill, AuthUser, advisementType, title }) {
   }
 
   return (
-    <div className="container-fluid p-4">
-      {/* <h4>{title} Advisement</h4> */}
+    <div className="container-fluid mt-2">
+      <h4>{title} Advisement</h4>
 
       {message.msg && (
         <div className={`py-2 ${message.type}`} role="alert">
