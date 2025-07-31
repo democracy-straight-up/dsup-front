@@ -12,11 +12,11 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
   const [showAddForm, setShowAddForm] = useState(false);
 
   const { makeRequest } = useAuthenticatedFetch();
-  const { isFirstDelegate, chainOfDelegation } = useChainOfDelegation();
+  const { isFDel, chainOfDelegation } = useChainOfDelegation();
 
   // Get the display title based on user role
   const getTitle = () => {
-    if (isFirstDelegate) {
+    if (isFDel) {
       return "My First Delegate Notes";
     }
     return "First Delegate Notes";
@@ -24,7 +24,7 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
 
   // Get the empty state message based on user role
   const getEmptyMessage = () => {
-    if (isFirstDelegate) {
+    if (isFDel) {
       return "You haven't created any first delegate notes for this bill yet.";
     }
 
@@ -65,7 +65,7 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
   };
 
   const handleAddNote = async () => {
-    if (!isFirstDelegate) {
+    if (!isFDel) {
       alert("Only first delegates can add notes");
       return;
     }
@@ -103,7 +103,7 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
   };
 
   const handleUpdateNote = async (noteId, updatedNoteText) => {
-    if (!isFirstDelegate) {
+    if (!isFDel) {
       alert("Only first delegates can update notes");
       return;
     }
@@ -135,7 +135,7 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
   };
 
   const handleDeleteNote = async (noteId) => {
-    if (!isFirstDelegate) {
+    if (!isFDel) {
       alert("Only first delegates can delete notes");
       return;
     }
@@ -179,14 +179,14 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
         <h4>
           {getTitle()} for Bill {bill?.number}
         </h4>
-        {isFirstDelegate && (
+        {isFDel && (
           <button className="btn btn-primary" onClick={() => setShowAddForm(!showAddForm)}>
             {showAddForm ? "Cancel" : "Add Note"}
           </button>
         )}
       </div>
 
-      {!isFirstDelegate && (
+      {!isFDel && (
         <div className="alert alert-info" role="alert">
           <i className="bi bi-info-circle me-2"></i>
           You are viewing notes from your first delegate. Only first delegates can add or modify
@@ -194,7 +194,7 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
         </div>
       )}
 
-      {showAddForm && isFirstDelegate && (
+      {showAddForm && isFDel && (
         <div className="card mb-4">
           <div className="card-body">
             <h5 className="card-title">Add New First Delegate Note</h5>
@@ -243,7 +243,7 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
         <div className="alert alert-secondary" role="alert">
           <i className="bi bi-journal-text me-2"></i>
           {getEmptyMessage()}
-          {isFirstDelegate && " Be the first to add a note!"}
+          {isFDel && " Be the first to add a note!"}
         </div>
       ) : (
         <div className="notes-list">
@@ -255,7 +255,7 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
               onDelete={handleDeleteNote}
               isEditing={editingId === note.id}
               setEditingId={(isEditing) => setEditingId(isEditing ? note.id : null)}
-              canEdit={isFirstDelegate && note.user?.id === AuthUser?.id}
+              canEdit={isFDel && note.user?.id === AuthUser?.id}
               noteType="First Delegate"
             />
           ))}

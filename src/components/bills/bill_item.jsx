@@ -9,6 +9,18 @@ import { Link } from "react-router-dom";
 import Form from "react-bootstrap/Form";
 
 function BillItem({ bill, index }) {
+  // Helper function to render advisement badge
+  const renderAdvisement = (advisement) => {
+    if (advisement === undefined || advisement === null) {
+      return <span className="alert alert-secondary p-0 px-2 mx-1">N/A</span>;
+    }
+    return advisement ? (
+      <span className="alert alert-success p-0 px-2 mx-1">Yea</span>
+    ) : (
+      <span className="alert alert-danger p-0 px-2 mx-1">Nay</span>
+    );
+  };
+
   return (
     <tr key={index}>
       <td>{bill.number}</td>
@@ -16,14 +28,14 @@ function BillItem({ bill, index }) {
       <td>{bill.schedule_date}</td>
       <td style={{ minWidth: "180px" }}>
         F-Del &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
-        <span className="alert alert-success p-0 px-2 mx-1">Yea</span> <br />
+        {renderAdvisement(bill.advisements?.first_delegate?.advisement)} <br />
         Sec-Del&nbsp;&nbsp;&nbsp; &nbsp;
-        <span className="alert alert-success p-0 px-2 mx-1">Yea</span> <br />
+        {renderAdvisement(bill.advisements?.second_delegate?.advisement)} <br />
         MoDA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-        <span className="alert alert-success p-0 px-2 mx-1">Yea</span> <br />
+        {renderAdvisement(bill.advisements?.moda?.advisement)} <br />
         HoLC &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
-        <span className="alert alert-danger p-0 px-2 mx-1">Nay</span> <br />
-        House Rep<span className="alert alert-danger p-0 px-2 mx-1">Nay</span> <br />
+        {renderAdvisement(bill.advisements?.holc?.advisement)} <br />
+        House Rep {renderAdvisement(bill.advisements?.house_rep?.advisement)} <br />
       </td>
 
       <td>
