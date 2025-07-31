@@ -43,16 +43,16 @@ export default function BillsWrapper({ setMessage }) {
       <Table striped bordered hover responsive>
         <thead>
           <tr className="fw-normal ">
-            <th className="fw-normal fs-5">Bill Number</th>
-            <th className="fw-normal fs-5" style={{ minWidth: "300px" }}>
+            <th className="fw-semibold fs-5 text-nowrap">Bill Number</th>
+            <th className="fw-semibold fs-5 text-nowrap" style={{ minWidth: "250px" }}>
               Short Title
             </th>
-            <th className="fw-semibold fs-5">Scheduled For Vote</th>
-            <th className="fw-semibold fs-5">Advisement</th>
-            <th className="fw-semibold fs-5">Your Vote</th>
-            <th className="fw-semibold fs-5">District Tally</th>
-            <th className="fw-semibold fs-5">National Tally</th>
-            <th className="fw-semibold fs-5">More...</th>
+            <th className="fw-semibold fs-5 text-nowrap">Scheduled For Vote</th>
+            <th className="fw-semibold fs-5 text-nowrap">Advisement</th>
+            <th className="fw-semibold fs-5 text-nowrap">Your Vote</th>
+            <th className="fw-semibold fs-5 text-nowrap">District Tally</th>
+            <th className="fw-semibold fs-5 text-nowrap">National Tally</th>
+            <th className="fw-semibold fs-5 text-nowrap">More</th>
           </tr>
         </thead>
         <tbody>

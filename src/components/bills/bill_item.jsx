@@ -58,7 +58,7 @@ function BillItem({ bill, index, onVoteUpdate }) {
   return (
     <tr key={index}>
       <td>{bill.number}</td>
-      <td style={{ minWidth: "300px" }}>{bill.title} </td>
+      <td style={{ minWidth: "250px" }}>{bill.title} </td>
       <td>{bill.schedule_date}</td>
       <td style={{ minWidth: "180px" }}>
         F-Del &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
