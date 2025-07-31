@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import NoteItem from "./note_item";
+import Voting from "./voting";
 import { authenticatedFetch } from "../../../store/api";
 
 export default function MyNote({ bill, AuthUser }) {
@@ -145,6 +146,9 @@ export default function MyNote({ bill, AuthUser }) {
 
   return (
     <div className="container-fluid p-4">
+      {/* Voting Section */}
+      <Voting bill={bill} AuthUser={AuthUser} />
+
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4>My Notes for Bill {bill?.number}</h4>
         <button className="btn btn-primary" onClick={() => setShowAddForm(!showAddForm)}>
@@ -203,11 +207,6 @@ export default function MyNote({ bill, AuthUser }) {
         </div>
       ) : (
         <div>
-          <div className="mb-3">
-            <small className="text-muted">
-              {notes.length} note{notes.length !== 1 ? "s" : ""} found
-            </small>
-          </div>
           {notes.map((note) => (
             <NoteItem
               key={note.id}
