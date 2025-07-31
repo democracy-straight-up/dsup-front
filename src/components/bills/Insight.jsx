@@ -59,50 +59,35 @@ function Insight() {
       case "firstdel":
         return (
           <div>
-            <Advisement
-              bill={bill}
-              AuthUser={AuthUser}
-              advisementType="FD"
-              title="First Delegate Notes"
-            />
+            <Advisement bill={bill} AuthUser={AuthUser} advisementType="FD" title="F-Del" />
             <FirstDelegateNote bill={bill} AuthUser={AuthUser} />
           </div>
         );
       case "seconddel":
         return (
           <div>
-            <Advisement
-              bill={bill}
-              AuthUser={AuthUser}
-              advisementType="FD"
-              title="Second Delegate Notes"
-            />
+            <Advisement bill={bill} AuthUser={AuthUser} advisementType="FD" title="Sec-Del" />
             <SecondDelegateNote bill={bill} AuthUser={AuthUser} />
           </div>
         );
       case "moda":
         return (
           <div>
-            <Advisement bill={bill} AuthUser={AuthUser} advisementType="FD" title="MoDa Notes" />
+            <Advisement bill={bill} AuthUser={AuthUser} advisementType="FD" title="MoDa" />
             <ModaNotes bill={bill} AuthUser={AuthUser} />
           </div>
         );
       case "holc":
         return (
           <div>
-            <Advisement bill={bill} AuthUser={AuthUser} advisementType="HL" title="HoLC Notes" />
+            <Advisement bill={bill} AuthUser={AuthUser} advisementType="HL" title="HoLC" />
             <HolcNotes bill={bill} AuthUser={AuthUser} />
           </div>
         );
       case "houserep":
         return (
           <div>
-            <Advisement
-              bill={bill}
-              AuthUser={AuthUser}
-              advisementType="HR"
-              title="House Rep Notes"
-            />
+            <Advisement bill={bill} AuthUser={AuthUser} advisementType="HR" title="House Rep" />
             <HouseRepNotes bill={bill} AuthUser={AuthUser} />
           </div>
         );
