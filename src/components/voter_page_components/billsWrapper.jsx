@@ -11,7 +11,7 @@ export default function BillsWrapper({ setMessage }) {
   const [bills, setBills] = useState({});
 
   // load bills
-  useEffect(() => {
+  const loadBills = () => {
     let header = { Authorization: `Bearer ${AuthUser.token.access}` };
     axios
       .get(`${window.location.protocol}//${baseURL}/bill/bills/?page=${currentPage}`, {
@@ -23,12 +23,19 @@ export default function BillsWrapper({ setMessage }) {
       })
       .catch((error) => {
         setMessage({ type: "alert alert-danger", msg: "error getting bills." });
-        // setErr("Something went wrong. Check your inputs and try again.");
         console.log(error);
       });
+  };
 
+  useEffect(() => {
+    loadBills();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
+
+  // Handle vote updates
+  const handleVoteUpdate = () => {
+    loadBills(); // Reload bills to get updated vote counts
+  };
 
   return (
     <>
@@ -50,7 +57,7 @@ export default function BillsWrapper({ setMessage }) {
         </thead>
         <tbody>
           {bills?.results?.map((bill, index) => (
-            <BillItem bill={bill} key={index} index={index}></BillItem>
+            <BillItem bill={bill} key={index} index={index} onVoteUpdate={handleVoteUpdate} />
           ))}
         </tbody>
         <tfoot className="border-0">

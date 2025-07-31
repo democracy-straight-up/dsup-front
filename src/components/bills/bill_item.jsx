@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
-// import { useSelector, useDispatch } from "react-redux";
-// import { useNavigate } from "react-router-dom";
-// import { useState, useEffect } from "react";
-// import axios from "axios";
-// import { circle, authenticate } from '../store/userSlice.js';
-// import { baseURL } from '../store/conf.js'
-
+import { useState } from "react";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { baseURL } from "../../store/conf";
 import Form from "react-bootstrap/Form";
 
-function BillItem({ bill, index }) {
+function BillItem({ bill, index, onVoteUpdate }) {
+  const AuthUser = useSelector((state) => state.AuthUser.user);
+  const [isVoting, setIsVoting] = useState(false);
+
   // Helper function to render advisement badge
   const renderAdvisement = (advisement) => {
     if (advisement === undefined || advisement === null) {
@@ -19,6 +19,40 @@ function BillItem({ bill, index }) {
     ) : (
       <span className="alert alert-danger p-0 px-2 mx-1">Nay</span>
     );
+  };
+
+  // Handle vote submission
+  const handleVoteChange = async (voteValue) => {
+    if (!AuthUser?.token?.access) return;
+
+    setIsVoting(true);
+    try {
+      const header = { Authorization: `Bearer ${AuthUser.token.access}` };
+      console.log("Attempting to vote with:", {
+        bill_id: bill.id,
+        vote: voteValue,
+        url: `${window.location.protocol}//${baseURL}/bill/bills/${bill.id}/vote/`,
+      });
+
+      const response = await axios.post(
+        `${window.location.protocol}//${baseURL}/bill/bills/${bill.id}/vote/`,
+        { your_vote: voteValue },
+        { headers: header }
+      );
+
+      console.log("Vote response:", response.data);
+
+      // Call parent function to refresh bill data
+      if (onVoteUpdate) {
+        onVoteUpdate();
+      }
+    } catch (error) {
+      console.error("Error submitting vote:", error);
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+    } finally {
+      setIsVoting(false);
+    }
   };
 
   return (
@@ -39,43 +73,62 @@ function BillItem({ bill, index }) {
       </td>
 
       <td>
-        {["radio"].map((type) => (
-          <div key={`inline-${type}`} className="mb-3">
-            <Form>
-              <Form.Check inline label="YEA" name="group1" type={type} id={index} />
-              <br />
-              <Form.Check inline label="Nay" name="group1" type={type} id={index} />
-              <br />
-              <Form.Check
-                inline
-                label="PRESENT"
-                name="group1"
-                type={type}
-                id={index}
-                defaultChecked
-              />
-              <br />
-              <Form.Check
-                inline
-                label="PROXY"
-                name="group1"
-                type={type}
-                id={index}
-                defaultChecked
-              />
-            </Form>
-          </div>
-        ))}
+        <Form>
+          <Form.Check
+            inline
+            label="YEA"
+            name={`vote_${bill.id}`}
+            type="radio"
+            id={`${bill.id}_yea`}
+            checked={bill.user_vote === "Y"}
+            onChange={() => handleVoteChange("Y")}
+            disabled={isVoting}
+          />
+          <br />
+          <Form.Check
+            inline
+            label="Nay"
+            name={`vote_${bill.id}`}
+            type="radio"
+            id={`${bill.id}_nay`}
+            checked={bill.user_vote === "N"}
+            onChange={() => handleVoteChange("N")}
+            disabled={isVoting}
+          />
+          <br />
+          <Form.Check
+            inline
+            label="PRESENT"
+            name={`vote_${bill.id}`}
+            type="radio"
+            id={`${bill.id}_present`}
+            checked={bill.user_vote === "Pr"}
+            onChange={() => handleVoteChange("Pr")}
+            disabled={isVoting}
+          />
+          <br />
+          <Form.Check
+            inline
+            label="PROXY"
+            name={`vote_${bill.id}`}
+            type="radio"
+            id={`${bill.id}_proxy`}
+            checked={bill.user_vote === "Px"}
+            onChange={() => handleVoteChange("Px")}
+            disabled={isVoting}
+          />
+          {isVoting && <div className="text-muted">Updating...</div>}
+        </Form>
       </td>
 
       <td>
-        <span className="border border-dark px-5">{bill.yea_votes_count}</span>
+        <span className="border border-dark px-5">{bill.district_yea_votes_count || 0}</span>
         <br />
-        <span className="border border-dark px-5">{bill.nay_votes_count}</span>
+        <span className="border border-dark px-5">{bill.district_nay_votes_count || 0}</span>
         <br />
-        <span className="border border-dark px-5">{bill.present_votes_count}</span>
+        <span className="border border-dark px-5">{bill.district_present_votes_count || 0}</span>
         <br />
-        <span className="border border-dark px-5">{bill.proxy_votes_count}</span>
+        <span className="border border-dark px-5">{bill.district_proxy_votes_count || 0}</span>
         <br />
       </td>
       <td>
