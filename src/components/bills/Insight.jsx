@@ -146,11 +146,11 @@ function Insight() {
               </div>
             </div>
             <div className="row justify-content-center pt-3">
-              <div style={{ maxWidth: "98%" }} className="d-flex flex-column flex-wrap  ">
-                <p className=" text-nowrap fw-light text-dark">
+              <div style={{ maxWidth: "98%" }} className="d-flex flex-column flex-wrap">
+                <p className="fw-light text-dark">
                   <span className="fw-semibold">Title:</span> &nbsp; {bill?.title}
                 </p>
-                <p className=" text-nowrap fw-light text-dark">
+                <p className="fw-light text-dark">
                   <span className="fw-semibold">When Introduced:</span>&nbsp;{" "}
                   {bill?.introduced_date
                     ? (() => {
@@ -162,13 +162,13 @@ function Insight() {
                       })()
                     : ""}
                 </p>
-                <p className=" text-nowrap fw-light text-dark">
+                <p className="fw-light text-dark">
                   <span className="fw-semibold">Sponsors:</span>&nbsp;{bill?.sponsors}
                 </p>
-                <p className=" text-nowrap fw-light text-dark">
+                <p className="fw-light text-dark">
                   <span className="fw-semibold">Committees:</span> &nbsp; {bill?.committees}
                 </p>
-                <p className=" text-nowrap fw-light text-dark">
+                <p className="fw-light text-dark">
                   <span className="fw-semibold">Committees Meetings:</span> &nbsp;{" "}
                   {bill?.committee_meeting
                     ? (() => {
@@ -190,99 +190,120 @@ function Insight() {
         </div>
       </div>
 
-      {/* the tabs container */}
       <div className="row mt-3">
-        <ul className="nav nav-tabs d-flex justify-content-center w-100">
-          <li className="nav-item flex-fill text-center">
-            <a
-              className={`nav-link ${activeTab === "summary" ? "active" : ""}`}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleTabClick("summary");
-              }}>
-              Summary
-            </a>
-          </li>
-          <li className="nav-item flex-fill text-center">
-            <a
-              className={`nav-link ${activeTab === "text" ? "active" : ""}`}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleTabClick("text");
-              }}>
-              Text
-            </a>
-          </li>
-          <li className="nav-item flex-fill text-center">
-            <a
-              className={`nav-link ${activeTab === "mynotes" ? "active" : ""}`}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleTabClick("mynotes");
-              }}>
-              My Notes
-            </a>
-          </li>
-          <li className="nav-item flex-fill text-center">
-            <a
-              className={`nav-link ${activeTab === "firstdel" ? "active" : ""}`}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleTabClick("firstdel");
-              }}>
-              First Delegate Notes
-            </a>
-          </li>
-          <li className="nav-item flex-fill text-center">
-            <a
-              className={`nav-link ${activeTab === "seconddel" ? "active" : ""}`}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleTabClick("seconddel");
-              }}>
-              Second Delegate Notes
-            </a>
-          </li>
-          <li className="nav-item flex-fill text-center">
-            <a
-              className={`nav-link ${activeTab === "moda" ? "active" : ""}`}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleTabClick("moda");
-              }}>
-              MoDa Notes
-            </a>
-          </li>
-          <li className="nav-item flex-fill text-center">
-            <a
-              className={`nav-link ${activeTab === "holc" ? "active" : ""}`}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleTabClick("holc");
-              }}>
-              HoLC Notes
-            </a>
-          </li>
-          <li className="nav-item flex-fill text-center">
-            <a
-              className={`nav-link ${activeTab === "houserep" ? "active" : ""}`}
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleTabClick("houserep");
-              }}>
-              House Rep Notes
-            </a>
-          </li>
-        </ul>
-
+        <div
+          className=""
+          style={{
+            overflowX: "auto",
+            whiteSpace: "nowrap",
+            padding: 0,
+            scrollbarWidth: "none", // Firefox
+            msOverflowStyle: "none", // IE/Edge
+          }}>
+          <style>
+            {`
+            /* Hide scrollbar for Chrome, Safari and Opera */
+            .hide-scrollbar::-webkit-scrollbar {
+              display: none;
+          `}
+          </style>
+          <ul
+            className="nav nav-tabs justify-content-start flex-nowrap hide-scrollbar"
+            style={{
+              minWidth: "800px",
+              width: "max-content",
+              marginBottom: 0,
+            }}>
+            <li className="nav-item d-inline-block text-center" style={{ minWidth: 150 }}>
+              <a
+                className={`nav-link ${activeTab === "summary" ? "active" : ""}`}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleTabClick("summary");
+                }}>
+                Summary
+              </a>
+            </li>
+            <li className="nav-item d-inline-block text-center" style={{ minWidth: 150 }}>
+              <a
+                className={`nav-link ${activeTab === "text" ? "active" : ""}`}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleTabClick("text");
+                }}>
+                Text
+              </a>
+            </li>
+            <li className="nav-item d-inline-block text-center" style={{ minWidth: 150 }}>
+              <a
+                className={`nav-link ${activeTab === "mynotes" ? "active" : ""}`}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleTabClick("mynotes");
+                }}>
+                My Notes
+              </a>
+            </li>
+            <li className="nav-item d-inline-block text-center" style={{ minWidth: 150 }}>
+              <a
+                className={`nav-link ${activeTab === "firstdel" ? "active" : ""}`}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleTabClick("firstdel");
+                }}>
+                First Delegate Notes
+              </a>
+            </li>
+            <li className="nav-item d-inline-block text-center" style={{ minWidth: 150 }}>
+              <a
+                className={`nav-link ${activeTab === "seconddel" ? "active" : ""}`}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleTabClick("seconddel");
+                }}>
+                Second Delegate Notes
+              </a>
+            </li>
+            <li className="nav-item d-inline-block text-center" style={{ minWidth: 150 }}>
+              <a
+                className={`nav-link ${activeTab === "moda" ? "active" : ""}`}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleTabClick("moda");
+                }}>
+                MoDa Notes
+              </a>
+            </li>
+            <li className="nav-item d-inline-block text-center" style={{ minWidth: 150 }}>
+              <a
+                className={`nav-link ${activeTab === "holc" ? "active" : ""}`}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleTabClick("holc");
+                }}>
+                HoLC Notes
+              </a>
+            </li>
+            <li className="nav-item d-inline-block text-center" style={{ minWidth: 150 }}>
+              <a
+                className={`nav-link ${activeTab === "houserep" ? "active" : ""}`}
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleTabClick("houserep");
+                }}>
+                House Rep Notes
+              </a>
+            </li>
+          </ul>
+        </div>
         {/* Tab Content Container */}
         <div className="tab-content border border-top-0 bg-white">{renderTabContent()}</div>
       </div>

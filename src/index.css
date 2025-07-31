@@ -109,16 +109,14 @@ body {
   this custom class is being used in voter page for user card borders for sm and md screens
 */
 .user-card-middle-border {
-  border-top: 1px solid #dee2e6;
-  border-bottom: 1px solid #dee2e6;
+  border-top: 0;
+  border-bottom: 0;
+  border-left: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
 }
 
 /* For medium screens (md) and above */
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
   .user-card-middle-border {
-    border-top: 0;
-    border-bottom: 0;
-    border-left: 1px solid #dee2e6;
-    border-right: 1px solid #dee2e6;
   }
-}
+} */
