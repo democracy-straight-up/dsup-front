@@ -190,10 +190,10 @@ export default function SLinkCard() {
                       {moda_info?.is_active && (
                         <>
                           <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
-                            Create
+                            Create a Legislative Caucus
                           </Link>
                           <Link to="/join-holc" className="p-1 text-nowrap  text-dark">
-                            Join
+                            Join a Legislative Caucuc
                           </Link>
                         </>
                       )}

@@ -47,7 +47,7 @@ export default function HouseRepCard() {
                 <div className="row">
                   <div className=" text-center">
                     <h1 className="fs-3 m-0 text-center">
-                      District Council-{house_rep_info?.district?.code}-{house_rep_info?.code}
+                      Legislative Council-{house_rep_info?.district?.code}-{house_rep_info?.code}
                     </h1>
                     <div
                       style={{ maxWidth: "90%" }}

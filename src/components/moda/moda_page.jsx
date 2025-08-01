@@ -252,7 +252,7 @@ function ModaPage() {
             </button>
           ) : null}
 
-          {second_link?.is_active ? <p className="text-center">Circle Status: ACTIVE!</p> : null}
+          {second_link?.is_active ? <p className="text-center">Sec-Link Status: ACTIVE!</p> : null}
         </div>
         <div className="col-sm-12 col-md-3"></div>
       </div>

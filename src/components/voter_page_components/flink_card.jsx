@@ -192,10 +192,10 @@ export default function FLinkCard() {
                       {sec_del_info?.is_active && (
                         <>
                           <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
-                            Create S-Link
+                            Create Sec-Link
                           </Link>
                           <Link to="/join-s-link" className="p-1 text-nowrap  text-dark">
-                            Join S-Link
+                            Join Sec-Link
                           </Link>
                         </>
                       )}

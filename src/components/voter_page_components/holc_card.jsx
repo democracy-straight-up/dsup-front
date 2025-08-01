@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -6,7 +5,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { baseURL } from "../../store/conf";
 import { holc, house_rep, authenticate } from "../../store/userSlice";
-
 
 export default function HolcCard() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
@@ -41,7 +39,6 @@ export default function HolcCard() {
         alert("Failed to copy ");
       });
   };
-
 
   const handleCreate = () => {
     if (AuthUser?.token.access.length > 0) {
@@ -89,7 +86,7 @@ export default function HolcCard() {
                 <div className="row">
                   <div className=" text-center">
                     <h1 className="fs-3 m-0 text-center">
-                      District Caucus-{holc_info?.district?.code}-{holc_info?.code}
+                      Legislative Caucus-{holc_info?.district?.code}-{holc_info?.code}
                     </h1>
                     <div
                       style={{ maxWidth: "90%" }}
@@ -194,10 +191,10 @@ export default function HolcCard() {
                       {holc_info?.is_active && (
                         <>
                           <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
-                            Create
+                            Create a Legislative Council
                           </Link>
                           <Link to="/house-rep-join" className="p-1 text-nowrap  text-dark">
-                            Join
+                            Join Legislative Council
                           </Link>
                         </>
                       )}
