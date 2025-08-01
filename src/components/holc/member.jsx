@@ -159,7 +159,7 @@ export default function Member({
         <td className="align-middle">
           {member?.user?.users?.legalName}
           {member?.is_delegate ? (
-            <span className="alert alert-success p-0 px-2 mx-2">holc</span>
+            <span className="alert alert-success p-0 px-2 mx-2">HoLC</span>
           ) : null}
         </td>
 

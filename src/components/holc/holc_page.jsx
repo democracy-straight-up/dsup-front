@@ -239,7 +239,7 @@ function HolcPage() {
 
           <h1 className="text-center">Housekeeping Page</h1>
           <h3 className="text-center">
-            District Caucus No: {districtCaucus?.code} &nbsp;&nbsp; District:
+            Legislative Caucus No: {districtCaucus?.code} &nbsp;&nbsp; District:
             {districtCaucus?.district.code}
           </h3>
           <h4 className="text-center">Invitation Key: {districtCaucus?.invitation_key}</h4>
@@ -252,7 +252,9 @@ function HolcPage() {
             </button>
           ) : null}
 
-          {districtCaucus?.is_active ? <p className="text-center">Circle Status: ACTIVE!</p> : null}
+          {districtCaucus?.is_active ? (
+            <p className="text-center">Legislative Caucus Status: ACTIVE!</p>
+          ) : null}
         </div>
         <div className="col-sm-12 col-md-3"></div>
       </div>

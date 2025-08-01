@@ -239,7 +239,7 @@ function House_repPage() {
 
           <h1 className="text-center">Housekeeping Page</h1>
           <h3 className="text-center">
-            District Council No: {districtcouncil?.code} &nbsp;&nbsp; District:
+            Legislative Council No: {districtcouncil?.code} &nbsp;&nbsp; District:
             {districtcouncil?.district?.code}
           </h3>
           <h4 className="text-center">Invitation Key: {districtcouncil?.invitation_key}</h4>

@@ -249,7 +249,7 @@ function SecondDelegatePage() {
             </button>
           ) : null}
 
-          {first_link?.is_active ? <p className="text-center">Circle Status: ACTIVE!</p> : null}
+          {first_link?.is_active ? <p className="text-center">F-Link Status: ACTIVE!</p> : null}
         </div>
         <div className="col-sm-12 col-md-3"></div>
       </div>

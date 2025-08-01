@@ -73,7 +73,7 @@ function Insight() {
       case "moda":
         return (
           <div>
-            <Advisement bill={bill} AuthUser={AuthUser} advisementType="FD" title="MoDa" />
+            <Advisement bill={bill} AuthUser={AuthUser} advisementType="FD" title="MoDA" />
             <ModaNotes bill={bill} AuthUser={AuthUser} />
           </div>
         );
@@ -262,7 +262,7 @@ function Insight() {
                   e.preventDefault();
                   handleTabClick("moda");
                 }}>
-                MoDa Notes
+                MoDA Notes
               </a>
             </li>
             <li className="nav-item d-inline-block text-center" style={{ minWidth: 150 }}>
