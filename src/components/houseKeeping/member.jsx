@@ -166,7 +166,7 @@ const Member = ({
           ) : null}
         </td>
 
-        {circleInfo?.is_active ? (
+        {circleInfo?.status ? (
           <>
             {/* ckeck if the member is auth user so that he/she can not vote for his own delegation  */}
             <th className="fw-bold">
@@ -214,7 +214,7 @@ const Member = ({
               </>
             ) : null}
           </td>
-        ) : circleInfo?.is_active === true ? (
+        ) : circleInfo?.status === true ? (
           // if the user vote out this member
           <td>
             Yes

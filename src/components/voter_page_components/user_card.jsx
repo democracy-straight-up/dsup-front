@@ -29,10 +29,7 @@ export default function UserCard() {
                     />
                   </svg>
                 </h1>
-                <p className="m-0">
-                  {String(+AuthUser?.users?.userType[1] + +"1").padStart(2, "0")}/
-                  {String(6).padStart(2, "0")}
-                </p>
+                <p className="m-0">{AuthUser?.users?.verificationScore}</p>
               </div>
               <div className="col-sm-12 col-md-4 p-1">
                 <h1 className="fs-4 m-0">
