@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { circle, desolveCircle, authenticate, addCirclemMembers } from "../../store/userSlice";
 import Member from "./member";
@@ -11,7 +11,7 @@ function HouseKeeping() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const circleInfo = useSelector((state) => state.AuthUser.circle);
   const [err, setErr] = useState("");
-  const [connectionErr, setConnectionErr] = useState(null);
+  const [connectionErr] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -297,7 +297,7 @@ function HouseKeeping() {
             </button>
           ) : null}
 
-          {circleInfo?.is_active ? <p className="text-center">Circle Status: ACTIVE!</p> : null}
+          {circleInfo?.status ? <p className="text-center">Circle Status: ACTIVE!</p> : null}
         </div>
         <div className="col-sm-12 col-md-3"></div>
       </div>
@@ -307,7 +307,7 @@ function HouseKeeping() {
             <tr>
               <th className="fw-bold">#</th>
               <th className="fw-bold">Member Name</th>
-              {circleInfo?.is_active ? (
+              {circleInfo?.status ? (
                 <>
                   <th className="fw-bold">Put forward as First Delegate</th>
                 </>
