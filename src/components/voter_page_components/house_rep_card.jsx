@@ -53,7 +53,7 @@ export default function HouseRepCard() {
                       style={{ maxWidth: "90%" }}
                       className="d-flex justify-content-between mx-auto border-bottom border-1">
                       <p className="m-0">
-                        Status: {house_rep_info?.is_active ? "Active" : "Inactive"}
+                        Status: {house_rep_info?.status ? "Active" : "Inactive"}
                       </p>
                       <p className="m-0">Members: {house_rep_info?.member_count}</p>
                     </div>

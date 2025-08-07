@@ -89,7 +89,7 @@ export default function SLinkCard() {
                     <div
                       style={{ maxWidth: "90%" }}
                       className="d-flex justify-content-between mx-auto border-bottom border-1">
-                      <p className="m-0">Status: {moda_info?.is_active ? "Active" : "Inactive"}</p>
+                      <p className="m-0">Status: {moda_info?.status ? "Active" : "Inactive"}</p>
                       <p className="m-0">Members: {moda_info?.member_count}</p>
                     </div>
                     <h1 className="fs-3 fw-light">Invitation Key</h1>
@@ -185,22 +185,22 @@ export default function SLinkCard() {
                 </div>
 
                 <div className="row">
-                  {AuthUser.users.userType === "U3D3" ? (
-                    <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
-                      {moda_info?.is_active && (
-                        <>
-                          <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
-                            Create a Legislative Caucus
-                          </Link>
-                          <Link to="/join-holc" className="p-1 text-nowrap  text-dark">
-                            Join a Legislative Caucuc
-                          </Link>
-                        </>
-                      )}
-                    </div>
-                  ) : (
+                  {/* {AuthUser.users.userType === "U3D3" ? ( */}
+                  <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
+                    {moda_info?.status && (
+                      <>
+                        <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
+                          Create a Legislative Caucus
+                        </Link>
+                        <Link to="/join-holc" className="p-1 text-nowrap  text-dark">
+                          Join a Legislative Caucuc
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                  {/* ) : (
                     <div style={{ height: "3.5rem", display: "block" }}></div>
-                  )}
+                  )} */}
                 </div>
               </>
             ) : (

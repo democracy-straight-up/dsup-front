@@ -186,22 +186,22 @@ export default function FLinkCard() {
                 </div>
 
                 <div className="row">
-                  {AuthUser.users.userType === "U2D2" ? (
-                    <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
-                      {sec_del_info?.status && (
-                        <>
-                          <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
-                            Create Sec-Link
-                          </Link>
-                          <Link to="/join-s-link" className="p-1 text-nowrap  text-dark">
-                            Join Sec-Link
-                          </Link>
-                        </>
-                      )}
-                    </div>
-                  ) : (
-                    <div style={{ height: "3.5rem", display: "block" }}></div>
-                  )}
+                  {/* {AuthUser.users.userType === "U2D2" ? ( */}
+                  <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
+                    {sec_del_info?.status && (
+                      <>
+                        <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
+                          Create Sec-Link
+                        </Link>
+                        <Link to="/join-s-link" className="p-1 text-nowrap  text-dark">
+                          Join Sec-Link
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                  {/*  ) : (
+                     <div style={{ height: "3.5rem", display: "block" }}></div>
+                  )} */}
                 </div>
               </>
             ) : (

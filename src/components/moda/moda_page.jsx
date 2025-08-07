@@ -220,8 +220,6 @@ function ModaPage() {
         setErr("Cannot send invitation: Required data is missing.");
       }
     } else {
-      // 5. Handle cases where socket exists but is not OPEN
-      //    This is the correct place to handle states like CONNECTING, CLOSING, CLOSED
       console.log(
         "Cannot send invitation key: WebSocket is not OPEN. Current state:",
         socketRef.current.readyState
@@ -252,7 +250,7 @@ function ModaPage() {
             </button>
           ) : null}
 
-          {second_link?.is_active ? <p className="text-center">Sec-Link Status: ACTIVE!</p> : null}
+          {second_link?.status ? <p className="text-center">Sec-Link Status: ACTIVE!</p> : null}
         </div>
         <div className="col-sm-12 col-md-3"></div>
       </div>
@@ -262,7 +260,7 @@ function ModaPage() {
             <tr>
               <th className="fw-bold">#</th>
               <th className="fw-bold">Mamber Name</th>
-              {second_link?.is_active ? (
+              {second_link?.status ? (
                 <>
                   <th className="fw-bold">Put forward as Delegate</th>
                 </>
@@ -277,10 +275,6 @@ function ModaPage() {
             </tr>
           </thead>
           <tbody>
-            {/**
-             * It will always be 1 at least.
-             * first check if the members is greater than 0.
-             *  */}
             {members?.length > 0
               ? members?.map((member, index) => (
                   <Member
@@ -318,10 +312,6 @@ function ModaPage() {
             </tr>
           </thead>
           <tbody>
-            {/**
-             * check if the candidate list is greater than 0
-             *
-             */}
             {candidates?.length > 0 ? (
               candidates?.map((cand, index) => (
                 <Candidate

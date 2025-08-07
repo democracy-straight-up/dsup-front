@@ -69,9 +69,6 @@ function HolcPage() {
     chatSocket.onmessage = (e) => {
       try {
         const data = JSON.parse(e.data);
-        console.log("Parsed message data: ", data);
-        // !!! IMPLEMENT THIS FUNCTION !!!
-        // action_lists(data);
         action_lists(data);
       } catch (error) {
         console.error("Failed to parse message data:", error);
@@ -120,15 +117,11 @@ function HolcPage() {
 
     if (msg.status === "success") {
       if (msg.member_list) {
-        // set the members and candidates
-        // setSec_del(msg.member_list[0]?.first_link);
-        console.log(" action_list: members list: ", msg.member_list);
         dispatch(holc(msg.member_list[0]?.holc));
 
         // on each member change, check if the Circle has one member.
         if (msg.member_list.length <= 1) {
           setDissolve(true);
-          console.log("eligible to Dissolve the District Caucus...");
         } else {
           setDissolve(false);
         }
@@ -209,7 +202,7 @@ function HolcPage() {
               payload: { districtCaucus: holcCode },
             })
           );
-          console.log("Invitation key message sent successfully.");
+
           // setErr(""); // Optional: Clear error state on success
         } catch (error) {
           console.error("Failed to send invitation key message:", error);
@@ -252,7 +245,7 @@ function HolcPage() {
             </button>
           ) : null}
 
-          {districtCaucus?.is_active ? (
+          {districtCaucus?.status ? (
             <p className="text-center">Legislative Caucus Status: ACTIVE!</p>
           ) : null}
         </div>
@@ -264,7 +257,7 @@ function HolcPage() {
             <tr>
               <th className="fw-bold">#</th>
               <th className="fw-bold">Mamber Name</th>
-              {districtCaucus?.is_active ? (
+              {districtCaucus?.status ? (
                 <>
                   <th className="fw-bold">Put forward as Delegate</th>
                 </>

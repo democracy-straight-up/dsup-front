@@ -78,7 +78,7 @@ export default function CircleCard() {
     <div className="mt-3">
       <div className="">
         <div className="px-2">
-          <div className={`card rounded-3 bg-light p-4 ${!circleInfo?.is_active ? "" : ""}`}>
+          <div className={`card rounded-3 bg-light p-4 ${!circleInfo?.status ? "" : ""}`}>
             {error === false ? (
               <>
                 <div className="row">
@@ -91,7 +91,7 @@ export default function CircleCard() {
                       style={{
                         maxWidth: AuthUser.users.userType.substring(0, 2) === "U1" ? "60%" : "90%",
                       }}>
-                      <p className="m-0">Status: {circleInfo?.is_active ? "Active" : "Inactive"}</p>
+                      <p className="m-0">Status: {circleInfo?.status ? "Active" : "Inactive"}</p>
                       <p className="m-0">Members: {circleInfo?.member_count}</p>
                     </div>
                     <h1 className="fs-3 fw-light">Invitation Key</h1>
