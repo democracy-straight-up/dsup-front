@@ -163,7 +163,7 @@ export default function Member({
           ) : null}
         </td>
 
-        {holcInfo?.is_active ? (
+        {holcInfo?.status ? (
           <>
             {/* ckeck if the member is auth user so that he/she can not vote for his own delegation  */}
             <th className="fw-normal align-middle py-3">
@@ -193,12 +193,7 @@ export default function Member({
             </th>
           </>
         ) : null}
-        {/* if the circle is not active
-             and the member is delegate
-             then can he remove the member.
-             otherwise, the members can vote out to remove.. */}
 
-        {/* you can not not remove yourself. */}
         {member?.user?.username === AuthUser.username ? (
           <td className="align-middle py-3">
             {/* check if the circle is dissolvable.  */}
@@ -215,7 +210,7 @@ export default function Member({
               </>
             ) : null}
           </td>
-        ) : holcInfo?.is_active === true ? (
+        ) : holcInfo?.status === true ? (
           // if the user vote out this member
           <td className="align-middle py-3">
             {!voted_out ? (
@@ -235,15 +230,12 @@ export default function Member({
                 onChange={() => RemoveVoteOut()}
               />
             )}
-            {/* <p className="py-2"> */}
+
             <span className=" alert alert-primary text-nowrap p-1 px-2">
               {member?.count_vote_out} votes
             </span>
-            {/* </p> */}
           </td>
         ) : (
-          // if the circle is not active and the auth user is the delegate.
-          // then he can remove the members.
           <td className="align-middle py-3">
             {Iam_delegate ? (
               <>

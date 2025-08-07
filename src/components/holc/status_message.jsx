@@ -6,7 +6,7 @@ const Status = ({ Iam_candidate, Iam_delegate, Iam_member, HoLCInfo, candidates 
       <div className="row border p-3 shadow-sm">
         <p>
           <strong>Status: </strong>
-          {HoLCInfo?.is_active
+          {HoLCInfo?.status
             ? "This Legislative Caucus is active!"
             : "This Legislative Caucus will become active when it has six members."}{" "}
         </p>

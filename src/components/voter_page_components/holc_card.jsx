@@ -91,7 +91,7 @@ export default function HolcCard() {
                     <div
                       style={{ maxWidth: "90%" }}
                       className="d-flex justify-content-between mx-auto border-bottom border-1">
-                      <p className="m-0">Status: {holc_info?.is_active ? "Active" : "Inactive"}</p>
+                      <p className="m-0">Status: {holc_info?.status ? "Active" : "Inactive"}</p>
                       <p className="m-0">Members: {holc_info?.member_count}</p>
                     </div>
                     <h1 className="fs-3 fw-light">Invitation Key</h1>
@@ -186,22 +186,22 @@ export default function HolcCard() {
 
                 <div className="row">
                   {/* update this back to U4D4 */}
-                  {AuthUser.users.userType === "U4D3" ? (
-                    <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
-                      {holc_info?.is_active && (
-                        <>
-                          <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
-                            Create a Legislative Council
-                          </Link>
-                          <Link to="/house-rep-join" className="p-1 text-nowrap  text-dark">
-                            Join Legislative Council
-                          </Link>
-                        </>
-                      )}
-                    </div>
-                  ) : (
+                  {/* {AuthUser.users.userType === "U4D3" ? ( */}
+                  <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
+                    {holc_info?.status && (
+                      <>
+                        <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
+                          Create a Legislative Council
+                        </Link>
+                        <Link to="/house-rep-join" className="p-1 text-nowrap  text-dark">
+                          Join Legislative Council
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                  {/* ) : (
                     <div style={{ height: "3.5rem", display: "block" }}></div>
-                  )}
+                  )} */}
                 </div>
               </>
             ) : (
