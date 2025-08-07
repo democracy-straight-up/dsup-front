@@ -60,7 +60,10 @@ export default function Candidate({
         JSON.stringify({
           action: "remove_candidate",
           remover: AuthUser?.username,
-          candidate: candidate.id,
+          payload: {
+            remover: AuthUser.username,
+            candidate: candidate.id,
+          },
         })
       );
     } else {

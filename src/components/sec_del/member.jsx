@@ -172,7 +172,7 @@ export default function Member({
           ) : null}
         </td>
 
-        {circleInfo?.is_active ? (
+        {circleInfo?.status ? (
           <>
             {/* ckeck if the member is auth user so that he/she can not vote for his own delegation  */}
             <th className="fw-normal align-middle py-3">
@@ -224,7 +224,7 @@ export default function Member({
               </>
             ) : null}
           </td>
-        ) : circleInfo?.is_active === true ? (
+        ) : circleInfo?.status === true ? (
           // if the user vote out this member
           <td className="align-middle py-3">
             {!voted_out ? (

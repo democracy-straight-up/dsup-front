@@ -19,6 +19,7 @@ export default function FLinkCard() {
     axios
       .post(url, { user: AuthUser.username }, { headers: header })
       .then((res) => {
+        console.log("f link", res.data);
         dispatch(sec_del(res.data));
       })
       .catch((err) => {
@@ -89,9 +90,7 @@ export default function FLinkCard() {
                     <div
                       style={{ maxWidth: "90%" }}
                       className="d-flex justify-content-between mx-auto border-bottom border-1">
-                      <p className="m-0">
-                        Status: {sec_del_info?.is_active ? "Active" : "Inactive"}
-                      </p>
+                      <p className="m-0">Status: {sec_del_info?.status ? "Active" : "Inactive"}</p>
                       <p className="m-0">Members: {sec_del_info?.member_count}</p>
                     </div>
                     <h1 className="fs-3 fw-light">Invitation Key</h1>
@@ -189,7 +188,7 @@ export default function FLinkCard() {
                 <div className="row">
                   {AuthUser.users.userType === "U2D2" ? (
                     <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
-                      {sec_del_info?.is_active && (
+                      {sec_del_info?.status && (
                         <>
                           <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
                             Create Sec-Link
