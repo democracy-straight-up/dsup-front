@@ -165,7 +165,6 @@ export default function Member({
 
         {modaInfo?.status ? (
           <>
-            {/* ckeck if the member is auth user so that he/she can not vote for his own delegation  */}
             <th className="fw-normal align-middle py-3">
               {!put_forward ? (
                 <input
@@ -184,8 +183,6 @@ export default function Member({
                   className="sm:m-3 form-check-input mx-3 mt-0 pt-0 mb-2"
                 />
               )}
-
-              {/* <p className="py-2"> */}
               <span className="alert alert-primary text-nowrap p-1 px-2">
                 {member?.count_put_forward} votes
               </span>
@@ -193,10 +190,6 @@ export default function Member({
             </th>
           </>
         ) : null}
-        {/* if the circle is not active
-             and the member is delegate
-             then can he remove the member.
-             otherwise, the members can vote out to remove.. */}
 
         {/* you can not not remove yourself. */}
         {member?.user?.username === AuthUser.username ? (
