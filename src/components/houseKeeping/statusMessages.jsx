@@ -7,7 +7,7 @@ const Status = ({ Iam_candidate, Iam_delegate, Iam_member, circleInfo, candidate
       <div className="row border p-3 shadow-sm">
         <p>
           <strong>Status: </strong>
-          {circleInfo?.is_active
+          {circleInfo?.status
             ? "This First Link is active!"
             : "This First Link will become active when it has six members."}
         </p>
