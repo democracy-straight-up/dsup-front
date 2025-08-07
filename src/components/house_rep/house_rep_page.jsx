@@ -252,7 +252,7 @@ function House_repPage() {
             </button>
           ) : null}
 
-          {districtcouncil?.is_active ? (
+          {districtcouncil?.status ? (
             <p className="text-center">District Council Status: ACTIVE!</p>
           ) : null}
         </div>
@@ -264,7 +264,7 @@ function House_repPage() {
             <tr>
               <th className="fw-bold">#</th>
               <th className="fw-bold">Mamber Name</th>
-              {districtcouncil?.is_active ? (
+              {districtcouncil?.status ? (
                 <>
                   <th className="fw-bold">Put forward as Delegate</th>
                 </>

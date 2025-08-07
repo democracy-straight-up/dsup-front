@@ -15,27 +15,20 @@ function JoinHouseRep() {
 
   useEffect(() => {
     // F_link is being set and sending a msg to the live server
-    if (rep_instance?.code > 1) {
+    if (rep_instance?.code > 0) {
       let ws_schame = window.location.protocol === "https:" ? "wss" : "ws";
-      const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/district-council/${rep_instance?.code}/${AuthUser?.username}/`;
+      const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/district-council/${rep_instance?.code}/${AuthUser?.username}`;
       const chatSocket = new WebSocket(url);
 
       chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        /**
-         * all the messages that comes from this end point is the same.
-         * it contains members
-         */
         if (data.status === "success") {
-          console.log("closing the connection and redirecting to the district council page");
           chatSocket.close();
           navigate("/house-rep-page");
         }
       };
 
       chatSocket.onopen = () => {
-        console.log("connected to the server");
-        // although the payload is not needed.
         chatSocket.send(
           JSON.stringify({
             action: "join",
@@ -45,12 +38,8 @@ function JoinHouseRep() {
             },
           })
         );
-        console.log("joined the district council");
-        //
       };
 
-      //
-      // what happens on closing the connection
       chatSocket.onclose = (e) => {
         console.error("Chat socket closed unexpectedly", e);
       };
@@ -75,7 +64,7 @@ function JoinHouseRep() {
             });
           } else if (response.status === 200) {
             // set the user and create a store for circle
-            console.log("the response is: ", response.data);
+
             dispatch(house_rep(response.data[0].district_council));
             setRepIntance(response.data[0].district_council);
 
@@ -100,8 +89,6 @@ function JoinHouseRep() {
 
   const handleCreate = () => {
     if (AuthUser?.token.access.length > 0) {
-      // console.log("ceating a circle...")
-      // constructing to request to create the first link
       let header = { Authorization: `Bearer ${AuthUser.token.access}` };
       const url = `${window.location.protocol}//${baseURL}/api/rep/district-council/`;
       const param = {
@@ -112,7 +99,6 @@ function JoinHouseRep() {
       axios
         .post(url, param, { headers: header })
         .then((response) => {
-          console.log("the response is: ", response);
           if (response.status === 400) {
             setMessage({
               msg: response.data.message,
