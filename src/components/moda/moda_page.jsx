@@ -252,7 +252,7 @@ function ModaPage() {
             </button>
           ) : null}
 
-          {second_link?.is_active ? <p className="text-center">Sec-Link Status: ACTIVE!</p> : null}
+          {second_link?.status ? <p className="text-center">Sec-Link Status: ACTIVE!</p> : null}
         </div>
         <div className="col-sm-12 col-md-3"></div>
       </div>
@@ -262,7 +262,7 @@ function ModaPage() {
             <tr>
               <th className="fw-bold">#</th>
               <th className="fw-bold">Mamber Name</th>
-              {second_link?.is_active ? (
+              {second_link?.status ? (
                 <>
                   <th className="fw-bold">Put forward as Delegate</th>
                 </>

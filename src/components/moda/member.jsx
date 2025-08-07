@@ -163,7 +163,7 @@ export default function Member({
           ) : null}
         </td>
 
-        {modaInfo?.is_active ? (
+        {modaInfo?.status ? (
           <>
             {/* ckeck if the member is auth user so that he/she can not vote for his own delegation  */}
             <th className="fw-normal align-middle py-3">
@@ -215,7 +215,7 @@ export default function Member({
               </>
             ) : null}
           </td>
-        ) : modaInfo?.is_active === true ? (
+        ) : modaInfo?.status === true ? (
           // if the user vote out this member
           <td className="align-middle py-3">
             {!voted_out ? (
