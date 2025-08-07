@@ -244,7 +244,6 @@ function SecondDelegatePage() {
               Generate new key
             </button>
           ) : null}
-
           {first_link?.status ? <p className="text-center">F-Link Status: ACTIVE!</p> : null}
         </div>
         <div className="col-sm-12 col-md-3"></div>

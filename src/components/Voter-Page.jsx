@@ -74,7 +74,7 @@ function VoterPage() {
               to="/help/chain-of-delegation"
               className="fs-3 text-dark"
               style={{ textDecorationThickness: "2px", textUnderlineOffset: "6px" }}>
-              Chain Of Delegation
+              Chain Of Delegation - {AuthUser?.users?.userType}
             </Link>
           </div>
         </div>
