@@ -69,7 +69,6 @@ function SecondDelegatePage() {
     chatSocket.onmessage = (e) => {
       try {
         const data = JSON.parse(e.data);
-        console.log("Parsed message data:");
         // !!! IMPLEMENT THIS FUNCTION !!!
         // action_lists(data);
         action_lists(data);
@@ -120,14 +119,11 @@ function SecondDelegatePage() {
 
     if (msg.status === "success") {
       if (msg.member_list) {
-        // set the members and candidates
-        // setSec_del(msg.member_list[0]?.first_link);
         dispatch(sec_del(msg.member_list[0]?.sec_del));
 
         // on each member change, check if the Circle has one member.
         if (msg.member_list.length <= 1) {
           setDissolve(true);
-          console.log("eligible to Dissolve the first link...");
         } else {
           setDissolve(false);
         }
@@ -137,7 +133,7 @@ function SecondDelegatePage() {
           (member) => member.user.username === AuthUser?.username
         );
         // check the msg.member_list to AuthUser.username, if not found, redirect to voter page
-        if (instance === undefined) {
+        if (instance === undefined || instance === null) {
           navigate("/voter-page");
         }
 
@@ -249,7 +245,7 @@ function SecondDelegatePage() {
             </button>
           ) : null}
 
-          {first_link?.is_active ? <p className="text-center">F-Link Status: ACTIVE!</p> : null}
+          {first_link?.status ? <p className="text-center">F-Link Status: ACTIVE!</p> : null}
         </div>
         <div className="col-sm-12 col-md-3"></div>
       </div>
@@ -259,7 +255,7 @@ function SecondDelegatePage() {
             <tr>
               <th className="fw-bold">#</th>
               <th className="fw-bold">Mamber Name</th>
-              {first_link?.is_active ? (
+              {first_link?.status ? (
                 <>
                   <th className="fw-bold">Put forward as First Delegate</th>
                 </>
