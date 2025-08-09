@@ -90,7 +90,6 @@ function App() {
             </>
           }
         />
-
         <Route
           path="/voter-page"
           element={
@@ -141,7 +140,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/join-s-link"
           element={
