@@ -200,7 +200,7 @@ export default function Member({
 
             {dissolve === true ? (
               <>
-                Dissolve The District Caucus {dissolve} ?
+                Dissolve The Legislative Caucus {dissolve} ?
                 <input
                   type="checkbox"
                   checked={showModal}
