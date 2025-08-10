@@ -34,10 +34,10 @@ export const useChainOfDelegation = () => {
 
   useEffect(() => {
     // Only fetch if user is authenticated, doesn't have userType U0D0, and chain isn't already loaded
-    if (AuthUser?.username && AuthUser?.users?.userType !== "U0D0" && !chainOfDelegation) {
+    if (AuthUser?.username && AuthUser?.users?.userType !== "U0D0") {
       fetchChainOfDelegation();
     }
-  }, [AuthUser?.username, AuthUser?.users?.userType, chainOfDelegation]);
+  }, [AuthUser?.username, AuthUser?.users?.userType]);
 
   return {
     chainOfDelegation,
