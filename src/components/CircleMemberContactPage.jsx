@@ -22,7 +22,6 @@ function CircleMemberContactPage() {
       let header = { Authorization: `Bearer ${AuthUser.token.access}` };
       let url = `${window.location.protocol}//${baseURL}/api/circle-member-contacts/`;
       const response = await axios.get(url, { headers: header });
-      console.log("list of contact info", response.data);
       setContactList(response.data);
     } catch (error) {
       console.error("Error fetching contact list: ", error);
@@ -38,10 +37,7 @@ function CircleMemberContactPage() {
       <div className="row">
         <div className="col-sm-12 col-md-3"></div>
         <div className="col-sm-12 col-md-6 mt-3">
-          {/* <div className="row">
-                  <div class="alert alert-danger" role="alert"> </div>
-              </div> */}
-          <h1 className="text-center">Members Contant Page </h1>
+          <h1 className="text-center">Members Contact Page </h1>
           <h3 className="text-center">
             Circle: {circleInfo?.code} District: {circleInfo?.district?.code}
           </h3>
