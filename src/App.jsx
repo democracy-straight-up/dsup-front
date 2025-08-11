@@ -32,6 +32,7 @@ import House_repPage from "components/house_rep/house_rep_page";
 import JoinHouseRep from "components/house_rep/house_rep_join";
 import SLinkMemberContactPage from "components/moda/moda_member_contact";
 import HoLCMemberContactPage from "components/holc/holc_member_contact";
+import RepMemberContactPage from "components/house_rep/rep_member_contact";
 // const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join"));
 
 function App() {
@@ -217,6 +218,16 @@ function App() {
             <ProtectedRoute>
               <Header />
               <JoinHouseRep />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/house-rep-member-contact"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <RepMemberContactPage />
               <Footer />
             </ProtectedRoute>
           }
