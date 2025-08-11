@@ -34,7 +34,7 @@ function RepMemberContactPage() {
         <div className="col-sm-12 col-md-6 mt-3">
           <h1 className="text-center">Members Contact Page </h1>
           <h3 className="text-center">
-            District Council: {house_rep_info?.code} District: {house_rep_info?.district?.code}
+            Legislative Council: {house_rep_info?.code} District: {house_rep_info?.district?.code}
           </h3>
         </div>
         <div className="col-sm-12 col-md-3"></div>

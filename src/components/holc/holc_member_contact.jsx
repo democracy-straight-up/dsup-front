@@ -34,7 +34,7 @@ function HoLCMemberContactPage() {
         <div className="col-sm-12 col-md-6 mt-3">
           <h1 className="text-center">Members Contact Page </h1>
           <h3 className="text-center">
-            Sec Link: {holc_info?.code} District: {holc_info?.district?.code}
+            Legislative Caucus: {holc_info?.code} District: {holc_info?.district?.code}
           </h3>
         </div>
         <div className="col-sm-12 col-md-3"></div>
