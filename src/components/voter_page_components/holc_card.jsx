@@ -136,7 +136,7 @@ export default function HolcCard() {
                         <path d="M12.47 10.47a.75.75 0 1 0 1.06 1.06l7.72-7.72v3.534a.75.75 0 0 0 1.5 0V2a.75.75 0 0 0-.75-.75h-5.344a.75.75 0 0 0 0 1.5h3.533z" />
                       </svg>
                     </Link>
-                    <Link to="/holc-contact" className="p-1 text-nowrap fw-light text-dark">
+                    <Link to="/holc-member-contact" className="p-1 text-nowrap fw-light text-dark">
                       Member Contact Page &nbsp;
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

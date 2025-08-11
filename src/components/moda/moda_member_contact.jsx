@@ -5,16 +5,16 @@ import { baseURL } from "../../store/conf";
 import axios from "axios";
 import { Suspense } from "react";
 
-function FLinkMemberContactPage() {
+function SLinkMemberContactPage() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
-  const first_link = useSelector((state) => state.AuthUser.sec_del);
+  const moda_info = useSelector((state) => state.AuthUser.moda);
   const [contactList, setContactList] = useState([]);
   const [delegate, setDelegate] = useState({});
 
   const fetchContactList = async () => {
     try {
       let header = { Authorization: `Bearer ${AuthUser.token.access}` };
-      let url = `${window.location.protocol}//${baseURL}/api/sec-del-member-contacts/`;
+      let url = `${window.location.protocol}//${baseURL}/api/moda/moda-member-contacts/by_moda_code/?code=${moda_info?.code}`;
       const response = await axios.get(url, { headers: header });
       setContactList(response.data);
       setDelegate(response.data.find((member) => member?.member.is_delegate) || {});
@@ -22,6 +22,7 @@ function FLinkMemberContactPage() {
       console.error("Error fetching contact list: ", error);
     }
   };
+
   useEffect(() => {
     fetchContactList();
   }, []);
@@ -33,7 +34,7 @@ function FLinkMemberContactPage() {
         <div className="col-sm-12 col-md-6 mt-3">
           <h1 className="text-center">Members Contact Page </h1>
           <h3 className="text-center">
-            F-Link: {first_link?.code} District: {first_link?.district?.code}
+            Sec Link: {moda_info?.code} District: {moda_info?.district?.code}
           </h3>
         </div>
         <div className="col-sm-12 col-md-3"></div>
@@ -64,4 +65,4 @@ function FLinkMemberContactPage() {
   );
 }
 
-export default FLinkMemberContactPage;
+export default SLinkMemberContactPage;

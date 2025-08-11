@@ -5,16 +5,16 @@ import { baseURL } from "../../store/conf";
 import axios from "axios";
 import { Suspense } from "react";
 
-function FLinkMemberContactPage() {
+function HoLCMemberContactPage() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
-  const first_link = useSelector((state) => state.AuthUser.sec_del);
+  const holc_info = useSelector((state) => state.AuthUser.holc);
   const [contactList, setContactList] = useState([]);
   const [delegate, setDelegate] = useState({});
 
   const fetchContactList = async () => {
     try {
       let header = { Authorization: `Bearer ${AuthUser.token.access}` };
-      let url = `${window.location.protocol}//${baseURL}/api/sec-del-member-contacts/`;
+      let url = `${window.location.protocol}//${baseURL}/api/holc/holc-member-contacts/by_holc_code/?code=${holc_info?.code}`;
       const response = await axios.get(url, { headers: header });
       setContactList(response.data);
       setDelegate(response.data.find((member) => member?.member.is_delegate) || {});
@@ -22,6 +22,7 @@ function FLinkMemberContactPage() {
       console.error("Error fetching contact list: ", error);
     }
   };
+
   useEffect(() => {
     fetchContactList();
   }, []);
@@ -33,7 +34,7 @@ function FLinkMemberContactPage() {
         <div className="col-sm-12 col-md-6 mt-3">
           <h1 className="text-center">Members Contact Page </h1>
           <h3 className="text-center">
-            F-Link: {first_link?.code} District: {first_link?.district?.code}
+            Sec Link: {holc_info?.code} District: {holc_info?.district?.code}
           </h3>
         </div>
         <div className="col-sm-12 col-md-3"></div>
@@ -64,4 +65,4 @@ function FLinkMemberContactPage() {
   );
 }
 
-export default FLinkMemberContactPage;
+export default HoLCMemberContactPage;

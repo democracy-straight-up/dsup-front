@@ -1,27 +1,22 @@
 import { useSelector } from "react-redux";
 import ContactInfoItem from "./contact_info_item";
 import { useEffect, useState } from "react";
-import { baseURL } from "../store/conf";
+import { baseURL } from "../../store/conf";
 import axios from "axios";
 import { Suspense } from "react";
 
 function CircleMemberContactPage() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const circleInfo = useSelector((state) => state.AuthUser.circle);
-  const circleMembers = useSelector((state) => state.AuthUser.circleMembers);
   const [contactList, setContactList] = useState([]);
-
-  const isDelegate = () => {
-    return circleMembers?.some(
-      (member) => member?.user?.username === AuthUser?.username && member?.is_delegate
-    );
-  };
+  const [delegate, setDelegate] = useState({});
 
   const fetchContactList = async () => {
     try {
       let header = { Authorization: `Bearer ${AuthUser.token.access}` };
       let url = `${window.location.protocol}//${baseURL}/api/circle-member-contacts/`;
       const response = await axios.get(url, { headers: header });
+      setDelegate(response.data.find((member) => member?.member.is_delegate) || {});
       setContactList(response.data);
     } catch (error) {
       console.error("Error fetching contact list: ", error);
@@ -60,7 +55,7 @@ function CircleMemberContactPage() {
           <tbody>
             {contactList?.map((member, index) => (
               <Suspense key={index} fallback={<>loading</>}>
-                <ContactInfoItem isDelegate={() => isDelegate()} index={index} member={member} />
+                <ContactInfoItem delegate={delegate} index={index} member={member} />
               </Suspense>
             ))}
           </tbody>

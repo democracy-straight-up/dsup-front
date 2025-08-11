@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { baseURL } from "../store/conf";
+import { baseURL } from "../../store/conf";
 import axios from "axios";
 
-export default function ContactInfoItem({ index, isDelegate, member }) {
+export default function ContactInfoItem({ index, delegate, member }) {
   const [editContactRules, setEditContactRules] = useState(member?.contact_rules);
   const [editEmail, setEditEmail] = useState(member?.email);
   const [editPhone, setEditPhone] = useState(member?.phone);
@@ -15,7 +15,7 @@ export default function ContactInfoItem({ index, isDelegate, member }) {
   const [editingAddress, setEditingAddress] = useState(false);
 
   const canEdit = () => {
-    if (isDelegate() === true) {
+    if (delegate?.member?.user?.username === AuthUser?.username) {
       return true;
     }
 

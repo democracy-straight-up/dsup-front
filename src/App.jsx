@@ -16,14 +16,12 @@ import CircleBackNforth from "./components/CircleBackNforth";
 import SettingsPage from "./components/SettingsPage";
 // import SearchFeature from './components/SearchFeature';
 import Insight from "./components/bills/Insight";
-import CircleMemberContactPage from "./components/CircleMemberContactPage";
+import CircleMemberContactPage from "./components/houseKeeping/CircleMemberContactPage";
 import FLinkMemberContactPage from "./components/sec_del/MemberContactPage";
 import MeetingsAndMinutes from "./components/MeetingsAndMinutes";
 import RegistarationStatusVerfication from "./components/RegisterationStatusVerification";
 import HouseKeeping from "./components/houseKeeping/house-keeping";
-
 import JoinSecDel from "./components/sec_del/sec_del_join";
-
 import SecondDelegatePage from "./components/sec_del/sec_del_page";
 import ModaPage from "./components/moda/moda_page";
 import JoinModa from "./components/moda/moda_join";
@@ -32,6 +30,8 @@ import JoinHolc from "components/holc/holc_join";
 import HolcPage from "components/holc/holc_page";
 import House_repPage from "components/house_rep/house_rep_page";
 import JoinHouseRep from "components/house_rep/house_rep_join";
+import SLinkMemberContactPage from "components/moda/moda_member_contact";
+import HoLCMemberContactPage from "components/holc/holc_member_contact";
 // const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join"));
 
 function App() {
@@ -172,11 +172,31 @@ function App() {
           }
         />
         <Route
+          path="/s-link-member-contact"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <SLinkMemberContactPage />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/f-link-member-contact"
           element={
             <ProtectedRoute>
               <Header />
               <FLinkMemberContactPage />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/holc-member-contact"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <HoLCMemberContactPage />
               <Footer />
             </ProtectedRoute>
           }
