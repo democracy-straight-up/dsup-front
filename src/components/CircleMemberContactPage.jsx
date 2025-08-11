@@ -5,7 +5,7 @@ import { baseURL } from "../store/conf";
 import axios from "axios";
 import { Suspense } from "react";
 
-function MemberContactPage() {
+function CircleMemberContactPage() {
   const AuthUser = useSelector((state) => state.AuthUser.user);
   const circleInfo = useSelector((state) => state.AuthUser.circle);
   const circleMembers = useSelector((state) => state.AuthUser.circleMembers);
@@ -20,9 +20,9 @@ function MemberContactPage() {
   const fetchContactList = async () => {
     try {
       let header = { Authorization: `Bearer ${AuthUser.token.access}` };
-      let url = `${window.location.protocol}//${baseURL}/api/contact-info/`;
+      let url = `${window.location.protocol}//${baseURL}/api/circle-member-contacts/`;
       const response = await axios.get(url, { headers: header });
-      // console.log("Contact List: ", response.data);
+      console.log("list of contact info", response.data);
       setContactList(response.data);
     } catch (error) {
       console.error("Error fetching contact list: ", error);
@@ -63,13 +63,8 @@ function MemberContactPage() {
           </thead>
           <tbody>
             {contactList?.map((member, index) => (
-              <Suspense fallback={<>loading</>}>
-                <ContactInfoItem
-                  key={index}
-                  isDelegate={() => isDelegate()}
-                  index={index}
-                  member={member}
-                />
+              <Suspense key={index} fallback={<>loading</>}>
+                <ContactInfoItem isDelegate={() => isDelegate()} index={index} member={member} />
               </Suspense>
             ))}
           </tbody>
@@ -79,4 +74,4 @@ function MemberContactPage() {
   );
 }
 
-export default MemberContactPage;
+export default CircleMemberContactPage;

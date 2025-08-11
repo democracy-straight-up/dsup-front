@@ -16,7 +16,7 @@ import CircleBackNforth from "./components/CircleBackNforth";
 import SettingsPage from "./components/SettingsPage";
 // import SearchFeature from './components/SearchFeature';
 import Insight from "./components/bills/Insight";
-import MemberContactPage from "./components/MemberContactPage";
+import CircleMemberContactPage from "./components/CircleMemberContactPage";
 import MeetingsAndMinutes from "./components/MeetingsAndMinutes";
 import RegistarationStatusVerfication from "./components/RegisterationStatusVerification";
 import HouseKeeping from "./components/houseKeeping/house-keeping";
@@ -273,11 +273,11 @@ function App() {
           }
         />
         <Route
-          path="/member-contact"
+          path="/circle-member-contact"
           element={
             <>
               <Header />
-              <MemberContactPage />
+              <CircleMemberContactPage />
               <Footer />
             </>
           }

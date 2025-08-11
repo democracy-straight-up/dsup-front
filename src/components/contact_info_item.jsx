@@ -4,20 +4,18 @@ import { baseURL } from "../store/conf";
 import axios from "axios";
 
 export default function ContactInfoItem({ index, isDelegate, member }) {
-  const [editContactRules, setEditContactRules] = useState(
-    member?.contact_rules
-  );
+  const [editContactRules, setEditContactRules] = useState(member?.contact_rules);
   const [editEmail, setEditEmail] = useState(member?.email);
   const [editPhone, setEditPhone] = useState(member?.phone);
-
+  const [editAddress, setEditAddress] = useState(member?.address);
   const AuthUser = useSelector((state) => state.AuthUser.user);
+
   const [editing, setEditing] = useState(false);
   const [editingRules, setEditingRules] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(false);
 
-  const canEdite = () => {
+  const canEdit = () => {
     if (isDelegate() === true) {
-      return true;
-    } else if (member?.member?.user.username === AuthUser.username) {
       return true;
     }
 
@@ -29,19 +27,23 @@ export default function ContactInfoItem({ index, isDelegate, member }) {
       email: editEmail,
       phone: editPhone,
       user: AuthUser.username,
+      address: editAddress,
       contact_rules: editContactRules,
     };
 
     let header = { Authorization: `Bearer ${AuthUser.token.access}` };
-    let url = `${window.location.protocol}//${baseURL}/api/contact-info/${member?.id}/`;
+    let url = `${window.location.protocol}//${baseURL}/api/circle-member-contacts/${member?.id}/`;
 
     axios
       .patch(url, data, { headers: header })
       .then((res) => {
+        console.log("Contact info updated successfully", res.data);
         setEditPhone(res.data.phone);
         setEditEmail(res.data.email);
-        setEditContactRules(res.data.contact_rules);
+        setEditAddress(res.data?.address);
+        setEditContactRules(res.data?.contact_rules);
         setEditing(false);
+        setEditingAddress(false);
         setEditingRules(false);
       })
       .catch((err) => console.log("error: ", err));
@@ -71,14 +73,10 @@ export default function ContactInfoItem({ index, isDelegate, member }) {
           </div>
         </div>
         <div className="row p-2 gap-3 mx-auto">
-          <button
-            onClick={() => handleUpdate()}
-            className="btn btn-primary btn-sm col-5">
+          <button onClick={() => handleUpdate()} className="btn btn-primary btn-sm col-5">
             Update Contact
           </button>
-          <button
-            onClick={() => setEditing(false)}
-            className="btn btn-secondary btn-sm col-5">
+          <button onClick={() => setEditing(false)} className="btn btn-secondary btn-sm col-5">
             cancel
           </button>
         </div>
@@ -97,14 +95,35 @@ export default function ContactInfoItem({ index, isDelegate, member }) {
         </div>
 
         <div className="row py-1 gap-1">
-          <button
-            onClick={() => handleUpdate()}
-            className="btn  btn-primary btn-sm col-5">
+          <button onClick={() => handleUpdate()} className="btn  btn-primary btn-sm col-5">
             Update Rules
           </button>
+          <button onClick={() => setEditingRules(false)} className="btn btn-secondary btn-sm col-5">
+            cancel
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const AddressEditMode = () => {
+    return (
+      <div className="container">
+        <div className="row">
+          <textarea
+            onChange={(e) => setEditAddress(e.target.value)}
+            rows={2}
+            defaultValue={editAddress}
+            placeholder="Please specify your address."></textarea>
+        </div>
+
+        <div className="col py-1 gap-1">
+          <button onClick={() => handleUpdate()} className="btn btn-primary btn-sm">
+            Update Address
+          </button>
           <button
-            onClick={() => setEditingRules(false)}
-            className="btn btn-secondary btn-sm col-5">
+            onClick={() => setEditingAddress(false)}
+            className="btn btn-secondary btn-sm mx-2">
             cancel
           </button>
         </div>
@@ -122,7 +141,23 @@ export default function ContactInfoItem({ index, isDelegate, member }) {
         ) : null}
       </td>
       <td>
-        {member?.address} <br />
+        <div className="container">
+          {editingAddress === true ? (
+            AddressEditMode()
+          ) : (
+            <div className="p-0">
+              <p className="m-0">Address: {editAddress}</p>
+              {canEdit() === true && (
+                <span
+                  className="  text-primary text-decoration-underline"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setEditingAddress(true)}>
+                  Edit this section
+                </span>
+              )}
+            </div>
+          )}
+        </div>
       </td>
       <td>
         <div className="container">
@@ -132,7 +167,7 @@ export default function ContactInfoItem({ index, isDelegate, member }) {
             <div className="p-0">
               <p className="m-0">Email: {editEmail}</p>
               <p className="m-0">Phone: {editPhone}</p>
-              {canEdite() === true && (
+              {canEdit() === true && (
                 <span
                   className="  text-primary text-decoration-underline"
                   style={{ cursor: "pointer" }}
@@ -151,11 +186,9 @@ export default function ContactInfoItem({ index, isDelegate, member }) {
           ) : (
             <div className="container p-0 m-0">
               <div className="row  m-0 mb-1">
-                <textarea
-                  disabled={true}
-                  defaultValue={editContactRules}></textarea>
+                <textarea disabled={true} defaultValue={editContactRules}></textarea>
               </div>
-              {canEdite() === true && (
+              {canEdit() === true && (
                 <span
                   className=" text-sm text-primary text-decoration-underline"
                   style={{ cursor: "pointer" }}
