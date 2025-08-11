@@ -17,6 +17,7 @@ import SettingsPage from "./components/SettingsPage";
 // import SearchFeature from './components/SearchFeature';
 import Insight from "./components/bills/Insight";
 import CircleMemberContactPage from "./components/CircleMemberContactPage";
+import FLinkMemberContactPage from "./components/sec_del/MemberContactPage";
 import MeetingsAndMinutes from "./components/MeetingsAndMinutes";
 import RegistarationStatusVerfication from "./components/RegisterationStatusVerification";
 import HouseKeeping from "./components/houseKeeping/house-keeping";
@@ -166,6 +167,16 @@ function App() {
             <ProtectedRoute>
               <Header />
               <ModaPage />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/f-link-member-contact"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <FLinkMemberContactPage />
               <Footer />
             </ProtectedRoute>
           }
