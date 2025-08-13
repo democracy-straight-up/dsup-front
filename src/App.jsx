@@ -33,6 +33,7 @@ import JoinHouseRep from "components/house_rep/house_rep_join";
 import SLinkMemberContactPage from "components/moda/moda_member_contact";
 import HoLCMemberContactPage from "components/holc/holc_member_contact";
 import RepMemberContactPage from "components/house_rep/rep_member_contact";
+import FLinkBackNForth from "./components/sec_del/FLinkBackNForth";
 // const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join"));
 
 function App() {
@@ -249,6 +250,17 @@ function App() {
             <ProtectedRoute>
               <Header />
               <CircleBackNforth />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/flink-backnforth"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <FLinkBackNForth />
               <Footer />
             </ProtectedRoute>
           }
