@@ -34,6 +34,7 @@ import SLinkMemberContactPage from "components/moda/moda_member_contact";
 import HoLCMemberContactPage from "components/holc/holc_member_contact";
 import RepMemberContactPage from "components/house_rep/rep_member_contact";
 import FLinkBackNForth from "./components/sec_del/FLinkBackNForth";
+import SLinkBackNForth from "./components/moda/SLinkBackNForth";
 // const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join"));
 
 function App() {
@@ -261,6 +262,17 @@ function App() {
             <ProtectedRoute>
               <Header />
               <FLinkBackNForth />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/s-link-back-and-forth"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <SLinkBackNForth />
               <Footer />
             </ProtectedRoute>
           }

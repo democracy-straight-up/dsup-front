@@ -99,7 +99,7 @@ const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
         {/* Sender name (only for others' messages) */}
         {!isOwnMessage && (
           <div className="fw-bold small text-primary mb-1">
-            {message.sender_name || message.sender}
+            {message.sender_name || message.sender?.username}
           </div>
         )}
 
