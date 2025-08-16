@@ -228,7 +228,7 @@ const HolcBackNForth = () => {
         <div className="row">
           <div className="col-12">
             <div className="card">
-              <div className="card-header bg-warning text-dark">
+              <div className="card-header  text-dark">
                 <h4 className="mb-0">
                   <i className="fas fa-comments me-2"></i>
                   HoLC BackNForth Chat - Error
@@ -239,7 +239,7 @@ const HolcBackNForth = () => {
                   <i className="fas fa-exclamation-triangle me-2"></i>
                   {error}
                 </div>
-                <button className="btn btn-warning" onClick={() => window.location.reload()}>
+                <button className="btn btn-primary" onClick={() => window.location.reload()}>
                   <i className="fas fa-refresh me-2"></i>
                   Refresh Page
                 </button>
@@ -252,38 +252,14 @@ const HolcBackNForth = () => {
   }
 
   return (
-    <div className="container-fluid mt-4">
+    <div className="container mt-4">
       <div className="row">
-        <div className="col-12">
+        <div className="col-12 col-lg-10 offset-lg-1">
           <div className="card h-100">
-            {/* Header */}
-            <div className="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
-              <div>
-                <h4 className="mb-0">
-                  <i className="fas fa-comments me-2"></i>
-                  HoLC-{holc?.code} BackNForth Chat
-                </h4>
-              </div>
-              <div>
-                <span
-                  className={`badge ${
-                    connectionStatus === "Connected"
-                      ? "bg-success"
-                      : connectionStatus === "Connecting..."
-                      ? "bg-info"
-                      : "bg-danger"
-                  }`}>
-                  <i
-                    className={`fas ${
-                      connectionStatus === "Connected"
-                        ? "fa-check-circle"
-                        : connectionStatus === "Connecting..."
-                        ? "fa-clock"
-                        : "fa-times-circle"
-                    } me-1`}></i>
-                  {connectionStatus}
-                </span>
-              </div>
+            <div className="card-header text-dark d-flex justify-content-center align-items-center">
+              <h4 className="text-center">
+                Back & Forth - HoLC-{holc?.code} - {holc?.district?.code}
+              </h4>
             </div>
 
             {/* Messages Container */}
@@ -299,7 +275,7 @@ const HolcBackNForth = () => {
                 }}>
                 {loading ? (
                   <div className="text-center">
-                    <div className="spinner-border text-warning" role="status">
+                    <div className="spinner-border text-primary" role="status">
                       <span className="visually-hidden">Loading...</span>
                     </div>
                     <p className="mt-2">Loading messages...</p>
@@ -335,7 +311,7 @@ const HolcBackNForth = () => {
                     {nextPageUrl && (
                       <div className="text-center my-3">
                         <button
-                          className="btn btn-outline-warning btn-sm"
+                          className="btn btn-outline-primary btn-sm"
                           onClick={loadMoreMessages}
                           disabled={loadingMore}>
                           {loadingMore ? (

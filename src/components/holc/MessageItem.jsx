@@ -1,9 +1,12 @@
 import { useState } from "react";
 
 const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editText, setEditText] = useState(message.message);
-  const [showOptions, setShowOptions] = useState(false);
+  const [isEditing] = useState(false);
+  const [, setShowOptions] = useState(false);
+  //   the actual states has been commented.
+  //   const [isEditing, setIsEditing] = useState(false);
+  //   const [editText, setEditText] = useState(message.message);
+  //   const [showOptions, setShowOptions] = useState(false);
 
   // Check if current user is the sender
   const isOwnMessage =
@@ -36,42 +39,42 @@ const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
   };
 
   // Handle edit save
-  const handleEditSave = () => {
-    if (editText.trim() && editText !== message.message) {
-      onEdit(message.id, editText.trim());
-    }
-    setIsEditing(false);
-  };
+  //   const handleEditSave = () => {
+  //     if (editText.trim() && editText !== message.message) {
+  //       onEdit(message.id, editText.trim());
+  //     }
+  //     setIsEditing(false);
+  //   };
 
   // Handle edit cancel
-  const handleEditCancel = () => {
-    setEditText(message.message);
-    setIsEditing(false);
-  };
+  //   const handleEditCancel = () => {
+  //     setEditText(message.message);
+  //     setIsEditing(false);
+  //   };
 
   // Handle delete
-  const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this message?")) {
-      onDelete(message.id);
-    }
-    setShowOptions(false);
-  };
+  //   const handleDelete = () => {
+  //     if (window.confirm("Are you sure you want to delete this message?")) {
+  //       onDelete(message.id);
+  //     }
+  //     setShowOptions(false);
+  //   };
 
   // Handle key press in edit mode
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleEditSave();
-    } else if (e.key === "Escape") {
-      handleEditCancel();
-    }
-  };
+  //   const handleKeyPress = (e) => {
+  //     if (e.key === "Enter" && !e.shiftKey) {
+  //       e.preventDefault();
+  //       handleEditSave();
+  //     } else if (e.key === "Escape") {
+  //       handleEditCancel();
+  //     }
+  //   };
 
   return (
     <div className={`mb-3 ${isOwnMessage ? "text-end" : ""}`}>
       <div
         className={`d-inline-block position-relative ${
-          isOwnMessage ? "bg-success text-white" : "bg-light"
+          isOwnMessage ? "bg-primary text-white" : "bg-light"
         } rounded p-3`}
         style={{
           maxWidth: "70%",
@@ -98,7 +101,7 @@ const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
 
         {/* Sender name (only for others' messages) */}
         {!isOwnMessage && (
-          <div className="fw-bold small text-success mb-1">
+          <div className="fw-bold small mb-1">
             {message.sender_name || message.sender?.username}
           </div>
         )}
@@ -106,7 +109,7 @@ const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
         {/* Message content */}
         {isEditing ? (
           <div className="row ">
-            <textarea
+            {/* <textarea
               className="form-control mb-2"
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
@@ -124,7 +127,7 @@ const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
               <button className="btn btn-sm btn-secondary" onClick={handleEditCancel}>
                 Cancel
               </button>
-            </div>
+            </div> */}
           </div>
         ) : (
           <div>
@@ -149,7 +152,8 @@ const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
               </span>
 
               {/* Options menu */}
-              {showOptions && isOwnMessage && (
+
+              {/* {showOptions && isOwnMessage && (
                 <div className="d-flex gap-1">
                   <button
                     className={`btn btn-sm  ${
@@ -168,7 +172,7 @@ const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
                     Remove
                   </button>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
         )}

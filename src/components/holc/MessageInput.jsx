@@ -75,26 +75,24 @@ const MessageInput = ({ onSendMessage, onTyping = () => {}, disabled = false }) 
       <div className="flex-grow-1">
         <textarea
           ref={textareaRef}
-          className="form-control border-success"
-          placeholder={disabled ? "Connecting to HoLC chat..." : "Type your message to HoLC..."}
+          className="form-control border-primary"
+          placeholder={
+            disabled
+              ? "Connecting to HoLC chat..."
+              : "Type your entry here. This is your Circle's permanent log of orders sent forward to your First Delegate, and reports and requests they send back. Entries cannot be undone or edited, only amended."
+          }
           value={message}
           onChange={handleInputChange}
           onInput={handleTextareaInput}
           onKeyDown={handleKeyPress}
           disabled={disabled}
-          rows="1"
-          style={{
-            resize: "none",
-            minHeight: "40px",
-            maxHeight: "120px",
-          }}
+          rows="2"
         />
       </div>
       <button
-        className="btn btn-success"
+        className="btn btn-primary "
         onClick={handleSendMessage}
-        disabled={!message.trim() || disabled}
-        style={{ height: "40px" }}>
+        disabled={!message.trim() || disabled}>
         Send
       </button>
     </div>
