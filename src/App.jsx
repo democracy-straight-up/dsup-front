@@ -35,6 +35,7 @@ import HoLCMemberContactPage from "components/holc/holc_member_contact";
 import RepMemberContactPage from "components/house_rep/rep_member_contact";
 import FLinkBackNForth from "./components/sec_del/FLinkBackNForth";
 import SLinkBackNForth from "./components/moda/SLinkBackNForth";
+import HolcBackNForth from "./components/holc/HolcBackNForth";
 // const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join"));
 
 function App() {
@@ -273,6 +274,17 @@ function App() {
             <ProtectedRoute>
               <Header />
               <SLinkBackNForth />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/holc-back-and-forth"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <HolcBackNForth />
               <Footer />
             </ProtectedRoute>
           }
