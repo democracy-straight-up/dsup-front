@@ -36,6 +36,7 @@ import RepMemberContactPage from "components/house_rep/rep_member_contact";
 import FLinkBackNForth from "./components/sec_del/FLinkBackNForth";
 import SLinkBackNForth from "./components/moda/SLinkBackNForth";
 import HolcBackNForth from "./components/holc/HolcBackNForth";
+import HouseRepBackNForth from "components/house_rep/RepBackNforth";
 // const JoinSecDel = lazy(() => import("./components/sec_del/sec_del_join"));
 
 function App() {
@@ -285,6 +286,16 @@ function App() {
             <ProtectedRoute>
               <Header />
               <HolcBackNForth />
+              <Footer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/house-rep-back-and-forth"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <HouseRepBackNForth />
               <Footer />
             </ProtectedRoute>
           }
