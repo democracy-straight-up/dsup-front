@@ -3,9 +3,9 @@ import { useState } from "react";
 const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
   const [isEditing] = useState(false);
   const [, setShowOptions] = useState(false);
-  // const [isEditing, setIsEditing] = useState(false);
-  // const [editText, setEditText] = useState(message.message);
-  // const [showOptions, setShowOptions] = useState(false);
+  //   const [isEditing, setIsEditing] = useState(false);
+  //   const [editText, setEditText] = useState(message.message);
+  //   const [showOptions, setShowOptions] = useState(false);
 
   // Check if current user is the sender
   const isOwnMessage =
@@ -38,36 +38,36 @@ const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
   };
 
   // Handle edit save
-  // const handleEditSave = () => {
-  //   if (editText.trim() && editText !== message.message) {
-  //     onEdit(message.id, editText.trim());
-  //   }
-  //   setIsEditing(false);
-  // };
+  //   const handleEditSave = () => {
+  //     if (editText.trim() && editText !== message.message) {
+  //       onEdit(message.id, editText.trim());
+  //     }
+  //     setIsEditing(false);
+  //   };
 
   // Handle edit cancel
-  // const handleEditCancel = () => {
-  //   setEditText(message.message);
-  //   setIsEditing(false);
-  // };
+  //   const handleEditCancel = () => {
+  //     setEditText(message.message);
+  //     setIsEditing(false);
+  //   };
 
   // Handle delete
-  // const handleDelete = () => {
-  //   if (window.confirm("Are you sure you want to delete this message?")) {
-  //     onDelete(message.id);
-  //   }
-  //   setShowOptions(false);
-  // };
+  //   const handleDelete = () => {
+  //     if (window.confirm("Are you sure you want to delete this message?")) {
+  //       onDelete(message.id);
+  //     }
+  //     setShowOptions(false);
+  //   };
 
   // Handle key press in edit mode
-  // const handleKeyPress = (e) => {
-  //   if (e.key === "Enter" && !e.shiftKey) {
-  //     e.preventDefault();
-  //     handleEditSave();
-  //   } else if (e.key === "Escape") {
-  //     handleEditCancel();
-  //   }
-  // };
+  //   const handleKeyPress = (e) => {
+  //     if (e.key === "Enter" && !e.shiftKey) {
+  //       e.preventDefault();
+  //       handleEditSave();
+  //     } else if (e.key === "Escape") {
+  //       handleEditCancel();
+  //     }
+  //   };
 
   return (
     <div className={`mb-3 ${isOwnMessage ? "text-end" : ""}`}>
@@ -88,7 +88,7 @@ const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
           <div
             className={`small mb-2 p-2 rounded ${
               isOwnMessage
-                ? "bg-primary-dark border-start border-3 border-light"
+                ? " border-start border-3 border-light"
                 : "bg-secondary bg-opacity-25 border-start border-3 border-primary"
             }`}>
             <div className="fw-bold">{message.reply_to_message.sender}</div>
@@ -118,7 +118,7 @@ const MessageItem = ({ message, currentUser, onEdit, onDelete }) => {
             />
             <div>
               <button
-                className="btn btn-sm btn-success me-2"
+                className="btn btn-sm btn-info me-2"
                 onClick={handleEditSave}
                 disabled={!editText.trim()}>
                 Save

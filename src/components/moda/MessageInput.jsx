@@ -75,10 +75,10 @@ const MessageInput = ({ onSendMessage, onTyping = () => {}, disabled = false }) 
       <div className="flex-grow-1">
         <textarea
           ref={textareaRef}
-          className="form-control"
+          className="form-control border-primary"
           placeholder={
             disabled
-              ? "Connecting..."
+              ? "Connecting to S-Link chat..."
               : "Type your entry here. This is your Circle's permanent log of orders sent forward to your First Delegate, and reports and requests they send back. Entries cannot be undone or edited, only amended."
           }
           value={message}

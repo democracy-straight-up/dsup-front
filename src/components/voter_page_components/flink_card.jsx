@@ -19,7 +19,6 @@ export default function FLinkCard() {
     axios
       .post(url, { user: AuthUser.username }, { headers: header })
       .then((res) => {
-        console.log("f link", res.data);
         dispatch(sec_del(res.data));
       })
       .catch((err) => {
@@ -41,7 +40,6 @@ export default function FLinkCard() {
 
   const handleCreate = () => {
     if (AuthUser?.token.access.length > 0) {
-      // console.log("ceating a circle...")
       // constructing to request to create the first link
       let header = { Authorization: `Bearer ${AuthUser.token.access}` };
       const url = `${window.location.protocol}//${baseURL}/api/moda/moda/`;

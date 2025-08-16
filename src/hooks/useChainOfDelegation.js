@@ -19,7 +19,6 @@ export const useChainOfDelegation = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Chain of delegation fetched:", data);
         dispatch(setChainOfDelegation(data));
         return data;
       } else {

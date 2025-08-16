@@ -19,7 +19,6 @@ export default function BillsWrapper({ setMessage }) {
       })
       .then((response) => {
         setBills(response.data);
-        console.log("bills", response.data);
       })
       .catch((error) => {
         setMessage({ type: "alert alert-danger", msg: "error getting bills." });

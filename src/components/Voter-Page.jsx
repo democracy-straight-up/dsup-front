@@ -15,7 +15,7 @@ function VoterPage() {
   const [message, setMessage] = useState({ type: "alert alert-", msg: "" });
   const dispatch = useDispatch();
   const circleMembers = useSelector((state) => state.AuthUser.circleMembers);
-  const [delegate, setDelegate] = useState({});
+  const [, setDelegate] = useState({});
 
   // set the delegate on render
   useEffect(() => {

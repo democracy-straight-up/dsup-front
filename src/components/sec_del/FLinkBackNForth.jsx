@@ -1,127 +1,45 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { baseURL } from "../../store/conf";
+
+// Import F-Link specific components
 import MessageItem from "./MessageItem";
 import MessageInput from "./MessageInput";
-import axios from "axios";
 
 const FLinkBackNForth = () => {
-  const AuthUser = useSelector((state) => state.AuthUser.user);
-  const sec_del_info = useSelector((state) => state.AuthUser.sec_del);
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [websocket, setWebsocket] = useState(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [typingUsers, setTypingUsers] = useState([]);
+  const [connectionStatus, setConnectionStatus] = useState("Connecting...");
+  const [socket, setSocket] = useState(null);
   const [nextPageUrl, setNextPageUrl] = useState(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
-  const lastScrollHeight = useRef(0);
 
-  // Scroll to bottom smoothly
+  const AuthUser = useSelector((state) => state.AuthUser.user);
+  const sec_del_info = useSelector((state) => state.AuthUser.sec_del);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Load initial messages (recent 10 messages)
-  const loadInitialMessages = async () => {
-    try {
-      setLoading(true);
-      const url = `${window.location.protocol}//${process.env.REACT_APP_BASE_URL}/api/backnforth/${sec_del_info?.code}/messages/?page=1`;
-
-      const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${AuthUser?.token?.access}` },
-      });
-
-      if (response.data.results) {
-        // Display messages in chronological order (oldest first)
-        const initialMessages = response.data.results.reverse();
-        setMessages(initialMessages);
-        setNextPageUrl(response.data.next);
-
-        // Scroll to bottom after messages are rendered
-        setTimeout(() => {
-          scrollToBottom();
-        }, 100);
-      }
-    } catch (err) {
-      console.error("Error loading initial messages:", err);
-      setError("Failed to load messages");
-    } finally {
-      setLoading(false);
-      setIsInitialized(true);
-    }
-  };
-
-  // Load older messages (pagination)
-  const loadOlderMessages = async () => {
-    if (!nextPageUrl || loadingOlder) return;
-
-    try {
-      setLoadingOlder(true);
-      const container = messagesContainerRef.current;
-
-      // Store current scroll position
-      if (container) {
-        lastScrollHeight.current = container.scrollHeight;
-      }
-
-      const response = await axios.get(nextPageUrl, {
-        headers: { Authorization: `Bearer ${AuthUser?.token?.access}` },
-      });
-
-      if (response.data.results) {
-        // Add older messages to the beginning
-        const olderMessages = response.data.results.reverse();
-        setMessages((prev) => [...olderMessages, ...prev]);
-        setNextPageUrl(response.data.next);
-
-        // Maintain scroll position after adding messages
-        setTimeout(() => {
-          if (container) {
-            const newScrollHeight = container.scrollHeight;
-            const scrollDiff = newScrollHeight - lastScrollHeight.current;
-            container.scrollTop = scrollDiff;
-          }
-        }, 50);
-      }
-    } catch (err) {
-      console.error("Error loading older messages:", err);
-    } finally {
-      setLoadingOlder(false);
-    }
-  };
-
-  // Handle scroll to load older messages
-  const handleScroll = () => {
-    const container = messagesContainerRef.current;
-    if (!container || loadingOlder || !nextPageUrl) return;
-
-    const { scrollTop } = container;
-
-    // Load more messages when scrolled near the top
-    if (scrollTop < 100) {
-      loadOlderMessages();
-    }
-  };
-
-  // Connect to WebSocket
-  const connectWebSocket = () => {
+  // WebSocket connection
+  useEffect(() => {
     if (!sec_del_info?.code || !AuthUser?.token?.access) {
+      setError("F-Link information or authentication token not available");
+      setLoading(false);
       return;
     }
 
     const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${wsProtocol}//${process.env.REACT_APP_BASE_URL}/ws/backnforth/${sec_del_info.code}/?token=${AuthUser.token.access}`;
-
+    const wsUrl = `${wsProtocol}//${baseURL}/ws/backnforth/${sec_del_info.code}/?token=${AuthUser.token.access}`;
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
-      console.log("Connected to BackNForth chat");
-      setIsConnected(true);
-      setError(null);
+      setConnectionStatus("Connected");
+      setSocket(ws);
     };
 
     ws.onmessage = (event) => {
@@ -129,7 +47,7 @@ const FLinkBackNForth = () => {
 
       switch (data.type) {
         case "chat_message":
-          setMessages((prev) => [...prev, data.message_data]);
+          setMessages((prev) => [data.message_data, ...prev]);
           setTimeout(scrollToBottom, 100);
           break;
 
@@ -148,19 +66,10 @@ const FLinkBackNForth = () => {
           break;
 
         case "user_status":
-          console.log(data.message);
           break;
 
-        case "typing_status":
-          if (data.is_typing) {
-            setTypingUsers((prev) => [...prev.filter((u) => u !== data.user), data.user]);
-          } else {
-            setTypingUsers((prev) => prev.filter((u) => u !== data.user));
-          }
-          break;
-
-        case "recent_messages":
-          // Ignore - we handle initial load via REST API
+        case "error":
+          setError(data.message || "WebSocket error occurred");
           break;
 
         default:
@@ -168,84 +77,168 @@ const FLinkBackNForth = () => {
       }
     };
 
-    ws.onclose = () => {
-      console.log("Disconnected from BackNForth chat");
-      setIsConnected(false);
-    };
-
     ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      setError("Connection error. Retrying...");
+      console.error("F-Link BackNForth WebSocket error:", error);
+      setConnectionStatus("Connection Error");
+      setError("WebSocket connection failed");
     };
 
-    setWebsocket(ws);
+    ws.onclose = (event) => {
+      console.log("F-Link BackNForth WebSocket disconnected:", event.code, event.reason);
+      setConnectionStatus("Disconnected");
+      setSocket(null);
+    };
+
+    setSocket(ws);
+
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
+  }, [sec_del_info?.code, AuthUser?.token?.access]);
+
+  // Fetch initial messages
+  useEffect(() => {
+    if (!sec_del_info?.code || !AuthUser?.token?.access) {
+      return;
+    }
+
+    const fetchMessages = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `${window.location.protocol}//${baseURL}/api/backnforth/${sec_del_info.code}/messages/`,
+          {
+            headers: {
+              Authorization: `Bearer ${AuthUser.token.access}`,
+            },
+          }
+        );
+
+        if (response.data.results) {
+          setMessages(response.data.results);
+          setNextPageUrl(response.data.next);
+          setTimeout(scrollToBottom, 100);
+        } else {
+          console.warn("No results in response:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+        if (error.response?.status === 403) {
+          setError("You must be a F-Link member to view messages");
+        } else if (error.response?.status === 404) {
+          setError("F-Link not found");
+        } else {
+          setError("Failed to load messages");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, [sec_del_info?.code, AuthUser?.token?.access]);
+
+  // Load more messages (pagination)
+  const loadMoreMessages = async () => {
+    if (!nextPageUrl || loadingMore) return;
+
+    try {
+      setLoadingMore(true);
+      const response = await axios.get(nextPageUrl, {
+        headers: {
+          Authorization: `Bearer ${AuthUser.token.access}`,
+        },
+      });
+
+      if (response.data.results) {
+        setMessages((prev) => [...prev, ...response.data.results]);
+        setNextPageUrl(response.data.next);
+      }
+    } catch (error) {
+      console.error("Error loading more messages:", error);
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
   // Send message via WebSocket
   const sendMessage = (messageText, replyTo = null) => {
-    if (websocket && websocket.readyState === WebSocket.OPEN && messageText.trim()) {
-      websocket.send(
-        JSON.stringify({
-          type: "chat_message",
-          message: messageText.trim(),
-          reply_to: replyTo,
-        })
-      );
-    }
-  };
-
-  // Send typing indicator
-  const sendTyping = (isTyping) => {
-    if (websocket && websocket.readyState === WebSocket.OPEN) {
-      websocket.send(
-        JSON.stringify({
-          type: "typing",
-          is_typing: isTyping,
-        })
-      );
-    }
-  };
-
-  // Edit message
-  const editMessage = (messageId, newContent) => {
-    if (websocket && websocket.readyState === WebSocket.OPEN && newContent.trim()) {
-      websocket.send(
-        JSON.stringify({
-          type: "edit_message",
-          message_id: messageId,
-          message: newContent.trim(),
-        })
-      );
-    }
-  };
-
-  // Delete message
-  const deleteMessage = (messageId) => {
-    if (websocket && websocket.readyState === WebSocket.OPEN) {
-      websocket.send(
-        JSON.stringify({
-          type: "delete_message",
-          message_id: messageId,
-        })
-      );
-    }
-  };
-
-  // Initialize chat when component mounts
-  useEffect(() => {
-    if (sec_del_info?.code) {
-      // First connect WebSocket, then load messages
-      connectWebSocket();
-      loadInitialMessages();
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      setError("Connection not available. Please refresh the page.");
+      return;
     }
 
-    return () => {
-      if (websocket) {
-        websocket.close();
-      }
+    if (!messageText.trim()) {
+      return;
+    }
+
+    const messageData = {
+      type: "chat_message",
+      message: messageText.trim(),
+      reply_to: replyTo?.id || null,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sec_del_info?.code]);
+    socket.send(JSON.stringify(messageData));
+  };
+
+  // Edit message via WebSocket
+  const editMessage = (messageId, newContent) => {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      setError("Connection not available. Please refresh the page.");
+      return;
+    }
+
+    const editData = {
+      type: "edit_message",
+      message_id: messageId,
+      message: newContent.trim(),
+    };
+    socket.send(JSON.stringify(editData));
+  };
+
+  // Delete message via WebSocket
+  const deleteMessage = (messageId) => {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      setError("Connection not available. Please refresh the page.");
+      return;
+    }
+
+    const deleteData = {
+      type: "delete_message",
+      message_id: messageId,
+    };
+    socket.send(JSON.stringify(deleteData));
+  };
+
+  if (error) {
+    return (
+      <div className="container mt-4">
+        <div className="row">
+          <div className="col-12 col-lg-10 offset-lg-1 ">
+            <div className="card">
+              <div className="card-header bg-primary text-white">
+                <h4 className="mb-0">
+                  <i className="fas fa-comments me-2"></i>
+                  F-Link BackNForth - Error
+                </h4>
+              </div>
+              <div className="card-body text-center">
+                <div className="alert alert-danger">
+                  <i className="fas fa-exclamation-triangle me-2"></i>
+                  {error}
+                </div>
+                <button className="btn btn-primary" onClick={() => window.location.reload()}>
+                  <i className="fas fa-refresh me-2"></i>
+                  Refresh Page
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!sec_del_info?.code) {
     return (
@@ -259,105 +252,97 @@ const FLinkBackNForth = () => {
   }
 
   return (
-    <div className="container-fluid  d-flex flex-column p-3">
-      <div className="row justify-content-center flex-grow-1">
-        <div className="col-lg-8 col-md-10 d-flex flex-column">
-          <div className="card border-gray h-100 d-flex flex-column">
+    <div className="container mt-4">
+      <div className="row">
+        <div className="col-12 col-lg-10 offset-lg-1 ">
+          <div className="card h-100">
             {/* Header */}
-            <div className="card-header bg-primary text-white">
-              <div className="d-flex justify-content-between align-items-center">
-                <h4 className="mb-0">
-                  F-Link-{sec_del_info?.district?.code}-{sec_del_info?.code} BackNForth
-                </h4>
-                <div className="d-flex align-items-center">
-                  <span className={`badge ${isConnected ? "bg-success" : "bg-danger"} me-2`}>
-                    {isConnected ? "Connected" : "Disconnected"}
-                  </span>
-                  <small>{sec_del_info?.member_count} members</small>
-                </div>
-              </div>
+            <div className="card-header d-flex justify-content-center align-items-center">
+              <h4 className="mb-0">F-Link-{sec_del_info?.code} Back & Forth</h4>
             </div>
 
             {/* Messages Container */}
-            <div className="flex-grow-1 d-flex flex-column">
+            <div className="card-body p-0" style={{ height: "70vh", overflow: "hidden" }}>
               <div
-                className="flex-grow-1 overflow-auto"
                 ref={messagesContainerRef}
-                onScroll={handleScroll}
-                style={{ minHeight: 0 }}>
-                {error && <div className="alert alert-danger m-3">{error}</div>}
-
-                {/* Loading older messages indicator */}
-                {loadingOlder && (
-                  <div className="text-center py-3">
-                    <div className="spinner-border spinner-border-sm" role="status">
-                      <span className="visually-hidden">Loading older messages...</span>
+                className="messages-container p-3"
+                style={{
+                  height: "100%",
+                  overflowY: "auto",
+                  display: "flex",
+                  flexDirection: "column-reverse",
+                }}>
+                {loading ? (
+                  <div className="text-center">
+                    <div className="spinner-border text-primary" role="status">
+                      <span className="visually-hidden">Loading...</span>
                     </div>
-                    <div className="small text-muted mt-1">Loading older messages...</div>
+                    <p className="mt-2">Loading messages...</p>
                   </div>
-                )}
-
-                {/* No more messages indicator */}
-                {!nextPageUrl && messages.length > 0 && isInitialized && (
-                  <div className="text-center py-3">
-                    <small className="text-muted">
-                      <i className="bi bi-check-circle me-1"></i>
-                      Beginning of conversation
-                    </small>
+                ) : messages.length === 0 ? (
+                  <div className="text-center text-muted">
+                    <i className="fas fa-comments fa-3x mb-3 opacity-50"></i>
+                    <p>No messages yet. Start the conversation!</p>
                   </div>
-                )}
-
-                {/* Initial loading */}
-                {loading && (
-                  <div className="d-flex justify-content-center align-items-center h-100">
-                    <div className="text-center">
-                      <div className="spinner-border" role="status">
-                        <span className="visually-hidden">Loading messages...</span>
-                      </div>
-                      <div className="mt-2 text-muted">Loading chat...</div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Messages */}
-                {isInitialized && (
-                  <div className="p-3">
-                    {messages.length === 0 ? (
-                      <div className="text-center text-muted py-5">
-                        <h5>No messages yet</h5>
-                        <p>Start the conversation by sending the first message!</p>
-                      </div>
-                    ) : (
-                      messages.map((message) => (
-                        <MessageItem
-                          key={message.id}
-                          message={message}
-                          currentUser={AuthUser}
-                          onEdit={editMessage}
-                          onDelete={deleteMessage}
-                        />
-                      ))
-                    )}
-
-                    {/* Typing indicator */}
-                    {typingUsers.length > 0 && (
-                      <div className="text-muted small ms-3 mb-2">
-                        {typingUsers.join(", ")} {typingUsers.length === 1 ? "is" : "are"} typing...
-                      </div>
-                    )}
-
+                ) : (
+                  <>
                     <div ref={messagesEndRef} />
-                  </div>
+                    {messages.map((message, index) => (
+                      <MessageItem
+                        key={message.id}
+                        message={message}
+                        currentUser={AuthUser}
+                        onEdit={editMessage}
+                        onDelete={deleteMessage}
+                        onReply={(replyToMessage) => {
+                          // Scroll to message input and set reply
+                          const messageInput = document.querySelector(".message-input");
+                          if (messageInput) {
+                            messageInput.scrollIntoView({ behavior: "smooth" });
+                            // You might want to implement a reply state here
+                          }
+                        }}
+                        isLastMessage={index === 0}
+                      />
+                    ))}
+
+                    {/* Load More Button */}
+                    {nextPageUrl && (
+                      <div className="text-center my-3">
+                        <button
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={loadMoreMessages}
+                          disabled={loadingMore}>
+                          {loadingMore ? (
+                            <>
+                              <span
+                                className="spinner-border spinner-border-sm me-2"
+                                role="status"
+                                aria-hidden="true"></span>
+                              Loading...
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-chevron-up me-2"></i>
+                              Load Earlier Messages
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
 
             {/* Message Input */}
-            <div className="card-footer">
+            <div className="card-footer bg-light">
               <MessageInput
                 onSendMessage={sendMessage}
-                onTyping={sendTyping}
-                disabled={!isConnected}
+                disabled={connectionStatus !== "Connected"}
+                placeholder={
+                  connectionStatus !== "Connected" ? "Connecting..." : "Type your message..."
+                }
               />
             </div>
           </div>
