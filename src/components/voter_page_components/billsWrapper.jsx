@@ -48,10 +48,10 @@ export default function BillsWrapper({ setMessage }) {
             </th>
             <th className="fw-semibold fs-5 text-nowrap">Scheduled For Vote</th>
             <th className="fw-semibold fs-5 text-nowrap">Advisement</th>
-            <th className="fw-semibold fs-5 text-nowrap">Your Vote</th>
+            <th className="fw-semibold fs-5 text-nowrap">My Vote</th>
             <th className="fw-semibold fs-5 text-nowrap">District Tally</th>
             <th className="fw-semibold fs-5 text-nowrap">National Tally</th>
-            <th className="fw-semibold fs-5 text-nowrap">More</th>
+            <th className="fw-semibold fs-5 text-nowrap">Advisement & More</th>
           </tr>
         </thead>
         <tbody>

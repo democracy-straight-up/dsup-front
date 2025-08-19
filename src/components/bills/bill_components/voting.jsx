@@ -136,7 +136,7 @@ function Voting({ bill, AuthUser, onVoteUpdate }) {
                   onClick={() => handleVoteSubmit("Y")}
                   disabled={isVoting}
                   size="lg">
-                  {isVoting && currentVote !== "Y" ? "Voting..." : "YEA"}
+                  {isVoting && currentVote !== "Y" ? "Voting..." : "Yea"}
                 </Button>
 
                 <Button
@@ -144,7 +144,7 @@ function Voting({ bill, AuthUser, onVoteUpdate }) {
                   onClick={() => handleVoteSubmit("N")}
                   disabled={isVoting}
                   size="lg">
-                  {isVoting && currentVote !== "N" ? "Voting..." : "NAY"}
+                  {isVoting && currentVote !== "N" ? "Voting..." : "Nay"}
                 </Button>
 
                 <Button
@@ -152,7 +152,7 @@ function Voting({ bill, AuthUser, onVoteUpdate }) {
                   onClick={() => handleVoteSubmit("Pr")}
                   disabled={isVoting}
                   size="lg">
-                  {isVoting && currentVote !== "Pr" ? "Voting..." : "PRESENT"}
+                  {isVoting && currentVote !== "Pr" ? "Voting..." : "Present"}
                 </Button>
 
                 <Button
@@ -160,7 +160,7 @@ function Voting({ bill, AuthUser, onVoteUpdate }) {
                   onClick={() => handleVoteSubmit("Px")}
                   disabled={isVoting}
                   size="lg">
-                  {isVoting && currentVote !== "Px" ? "Voting..." : "PROXY"}
+                  {isVoting && currentVote !== "Px" ? "Voting..." : "Proxy"}
                 </Button>
               </div>
             </Form>
@@ -172,20 +172,22 @@ function Voting({ bill, AuthUser, onVoteUpdate }) {
             <div className="row">
               <div className="col-6">
                 <strong>National Tally:</strong>
-                <ul className="list-unstyled mt-2">
-                  <li>
-                    Yea: <span className="badge  bg-primary">{voteCounts.national_counts.yea}</span>
+                <ul className="list-unstyled mt-2" style={{ display: "table" }}>
+                  <li style={{ display: "table-row" }}>
+                    <span style={{ display: "table-cell", paddingRight: "1rem" }}>Yea:</span>
+                    <span className="badge bg-primary">{voteCounts.national_counts.yea}</span>
                   </li>
-                  <li>
-                    Nay: <span className="badge  bg-primary">{voteCounts.national_counts.nay}</span>
+                  <li style={{ display: "table-row" }}>
+                    <span style={{ display: "table-cell", paddingRight: "1rem" }}>Nay:</span>
+                    <span className="badge bg-primary">{voteCounts.national_counts.nay}</span>
                   </li>
-                  <li>
-                    Present:{" "}
-                    <span className="badge  bg-primary ">{voteCounts.national_counts.present}</span>
+                  <li style={{ display: "table-row" }}>
+                    <span style={{ display: "table-cell", paddingRight: "1rem" }}>Present:</span>
+                    <span className="badge bg-primary">{voteCounts.national_counts.present}</span>
                   </li>
-                  <li>
-                    Proxy:{" "}
-                    <span className="badge  bg-primary">{voteCounts.national_counts.proxy}</span>
+                  <li style={{ display: "table-row" }}>
+                    <span style={{ display: "table-cell", paddingRight: "1rem" }}>Proxy:</span>
+                    <span className="badge bg-primary">{voteCounts.national_counts.proxy}</span>
                   </li>
                 </ul>
               </div>
@@ -193,21 +195,21 @@ function Voting({ bill, AuthUser, onVoteUpdate }) {
               {voteCounts.district_counts && (
                 <div className="col-6">
                   <strong>District Tally:</strong>
-                  <ul className="list-unstyled mt-2">
-                    <li>
-                      Yea:{" "}
+                  <ul className="list-unstyled mt-2" style={{ display: "table" }}>
+                    <li style={{ display: "table-row" }}>
+                      <span style={{ display: "table-cell", paddingRight: "1rem" }}>Yea:</span>
                       <span className="badge bg-primary">{voteCounts.district_counts.yea}</span>
                     </li>
-                    <li>
-                      Nay:{" "}
+                    <li style={{ display: "table-row" }}>
+                      <span style={{ display: "table-cell", paddingRight: "1rem" }}>Nay:</span>
                       <span className="badge bg-primary">{voteCounts.district_counts.nay}</span>
                     </li>
-                    <li>
-                      Present:{" "}
+                    <li style={{ display: "table-row" }}>
+                      <span style={{ display: "table-cell", paddingRight: "1rem" }}>Present:</span>
                       <span className="badge bg-primary">{voteCounts.district_counts.present}</span>
                     </li>
-                    <li>
-                      Proxy:{" "}
+                    <li style={{ display: "table-row" }}>
+                      <span style={{ display: "table-cell", paddingRight: "1rem" }}>Proxy:</span>
                       <span className="badge bg-primary">{voteCounts.district_counts.proxy}</span>
                     </li>
                   </ul>

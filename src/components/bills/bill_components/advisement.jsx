@@ -134,7 +134,7 @@ function Advisement({ bill, AuthUser, advisementType, title }) {
 
           {existingAdvisement && (
             <div className="alert my-0 py-2 alert-info">
-              <strong>Current Advisement:</strong> {existingAdvisement.advisement ? "YEA" : "NAY"}
+              <strong>Current Advisement:</strong> {existingAdvisement.advisement ? "Yea" : "Nay"}
               <br />
               <small>
                 Last updated: {new Date(existingAdvisement.last_update).toLocaleString()}
@@ -149,14 +149,14 @@ function Advisement({ bill, AuthUser, advisementType, title }) {
                   className={`btn my-2 btn-success w-100 ${advisement === true ? "active" : ""}`}
                   onClick={() => handleSubmit(true)}
                   style={{ marginRight: "10px" }}>
-                  YEA
+                  Yea
                 </button>
               </div>
               <div className="col-md-6">
                 <button
                   className={`btn btn-danger my-2  w-100 ${advisement === false ? "active" : ""}`}
                   onClick={() => handleSubmit(false)}>
-                  NAY
+                  Nay
                 </button>
               </div>
             </div>
@@ -165,7 +165,7 @@ function Advisement({ bill, AuthUser, advisementType, title }) {
           {existingAdvisement && (
             <div className="container">
               <small className="text-muted">
-                Click YEA or NAY to update your advisement. Your current advisement will be
+                Click Yea or Nay to update your advisement. Your current advisement will be
                 overwritten.
               </small>
             </div>

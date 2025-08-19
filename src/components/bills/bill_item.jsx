@@ -28,19 +28,11 @@ function BillItem({ bill, index, onVoteUpdate }) {
     setIsVoting(true);
     try {
       const header = { Authorization: `Bearer ${AuthUser.token.access}` };
-      console.log("Attempting to vote with:", {
-        bill_id: bill.id,
-        vote: voteValue,
-        url: `${window.location.protocol}//${baseURL}/bill/bills/${bill.id}/vote/`,
-      });
-
       const response = await axios.post(
         `${window.location.protocol}//${baseURL}/bill/bills/${bill.id}/vote/`,
         { your_vote: voteValue },
         { headers: header }
       );
-
-      console.log("Vote response:", response.data);
 
       // Call parent function to refresh bill data
       if (onVoteUpdate) {
@@ -61,22 +53,33 @@ function BillItem({ bill, index, onVoteUpdate }) {
       <td style={{ minWidth: "250px" }}>{bill.title} </td>
       <td>{bill.schedule_date}</td>
       <td style={{ minWidth: "180px" }}>
-        F-Del &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
-        {renderAdvisement(bill.advisements?.first_delegate?.advisement)} <br />
-        Sec-Del&nbsp;&nbsp;&nbsp; &nbsp;
-        {renderAdvisement(bill.advisements?.second_delegate?.advisement)} <br />
-        MoDA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{" "}
-        {renderAdvisement(bill.advisements?.moda?.advisement)} <br />
-        HoLC &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
-        {renderAdvisement(bill.advisements?.holc?.advisement)} <br />
-        House Rep {renderAdvisement(bill.advisements?.house_rep?.advisement)} <br />
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>F-Del</span>
+          <span>{renderAdvisement(bill.advisements?.first_delegate?.advisement)}</span>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>Sec-Del</span>
+          <span>{renderAdvisement(bill.advisements?.second_delegate?.advisement)}</span>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>MoDA</span>
+          <span>{renderAdvisement(bill.advisements?.moda?.advisement)}</span>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>HoLC</span>
+          <span>{renderAdvisement(bill.advisements?.holc?.advisement)}</span>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <span>House Rep</span>
+          <span>{renderAdvisement(bill.advisements?.house_rep?.advisement)}</span>
+        </div>
       </td>
 
       <td>
         <Form>
           <Form.Check
             inline
-            label="YEA"
+            label="Yea"
             name={`vote_${bill.id}`}
             type="radio"
             id={`${bill.id}_yea`}
@@ -98,7 +101,7 @@ function BillItem({ bill, index, onVoteUpdate }) {
           <br />
           <Form.Check
             inline
-            label="PRESENT"
+            label="Present"
             name={`vote_${bill.id}`}
             type="radio"
             id={`${bill.id}_present`}
@@ -109,7 +112,7 @@ function BillItem({ bill, index, onVoteUpdate }) {
           <br />
           <Form.Check
             inline
-            label="PROXY"
+            label="Proxy"
             name={`vote_${bill.id}`}
             type="radio"
             id={`${bill.id}_proxy`}
@@ -142,7 +145,7 @@ function BillItem({ bill, index, onVoteUpdate }) {
         <br />
       </td>
       <td>
-        <Link to={`/bill/${bill.id}`}> More </Link>
+        <Link to={`/bill/${bill.id}`}> Advisement & More </Link>
       </td>
     </tr>
   );

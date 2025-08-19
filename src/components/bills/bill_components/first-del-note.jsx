@@ -188,7 +188,6 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
 
       {!isFDel && (
         <div className="alert alert-info" role="alert">
-          <i className="bi bi-info-circle me-2"></i>
           You are viewing notes from your first delegate. Only first delegates can add or modify
           these notes.
         </div>
@@ -241,7 +240,6 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
 
       {notes.length === 0 ? (
         <div className="alert alert-secondary" role="alert">
-          <i className="bi bi-journal-text me-2"></i>
           {getEmptyMessage()}
           {isFDel && " Be the first to add a note!"}
         </div>

@@ -46,7 +46,7 @@ function Header() {
                   to="/voter-page"
                   className="nav-link fs-5 px-3 py-1"
                   aria-current="page">
-                  Voter Page
+                  My Voter Page
                 </Link>
               </li>
             ) : (
