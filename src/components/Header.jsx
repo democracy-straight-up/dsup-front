@@ -106,8 +106,8 @@ function Header() {
                 <Dropdown.Item href="#">Help</Dropdown.Item>
                 <Dropdown.Item href="#">Settings</Dropdown.Item>
                 {AuthUser && (
-                  <Dropdown.Item href="#">
-                    <span onClick={handleLogout}>Logout</span>
+                  <Dropdown.Item href="#" onClick={handleLogout}>
+                    <span>Logout</span>
                   </Dropdown.Item>
                 )}
               </Dropdown.Menu>

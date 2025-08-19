@@ -145,7 +145,7 @@ function BillItem({ bill, index, onVoteUpdate }) {
         <br />
       </td>
       <td>
-        <Link to={`/bill/${bill.id}`}> Advisement & More </Link>
+        <Link to={`/bill/${bill.id}`}> Delegate Advisement and more.. </Link>
       </td>
     </tr>
   );

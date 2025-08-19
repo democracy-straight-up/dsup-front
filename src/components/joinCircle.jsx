@@ -185,7 +185,7 @@ function JoinCircle() {
             ""
           )}
 
-          <label className="text-left">invitation Key</label>
+          <label className="text-left">Invitation Key</label>
           <input
             type="text"
             onChange={(e) => setInviteKey(e.target.value)}
