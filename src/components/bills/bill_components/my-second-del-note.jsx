@@ -17,20 +17,19 @@ export default function MySecondDelNote({ bill, AuthUser }) {
   // Get the display title based on user role
   const getTitle = () => {
     if (isSDel) {
-      return "My Second Delegate Notes";
+      return "My Sec-Del Notes";
     }
-    return "Second Delegate Notes";
+    return "Sec-Del Notes";
   };
 
   // Get the empty state message based on user role
   const getEmptyMessage = () => {
     if (isSDel) {
-      return "You haven't created any second delegate notes for this bill yet.";
+      return "You haven't created any Sec-Del notes for this bill yet.";
     }
 
-    const secondDelegateName =
-      chainOfDelegation?.sec_del?.users?.legalName || "your second delegate";
-    return `No second delegate notes available from ${secondDelegateName} for this bill yet.`;
+    const secondDelegateName = chainOfDelegation?.sec_del?.users?.legalName || "your Sec-Del";
+    return `No Sec-Del notes available from ${secondDelegateName} for this bill yet.`;
   };
 
   useEffect(() => {
@@ -57,7 +56,7 @@ export default function MySecondDelNote({ bill, AuthUser }) {
         }
       }
     } catch (error) {
-      console.error("Error fetching second delegate notes:", error);
+      console.error("Error fetching Sec-Del notes:", error);
     } finally {
       setIsLoading(false);
     }
@@ -138,7 +137,7 @@ export default function MySecondDelNote({ bill, AuthUser }) {
   if (isLoading) {
     return (
       <div className="container-fluid p-4">
-        <h4>Second Delegate Notes</h4>
+        <h4>Sec-Del Notes</h4>
         <div className="d-flex justify-content-center">
           <div className="spinner-border" role="status">
             <span className="visually-hidden">Loading...</span>
@@ -165,13 +164,13 @@ export default function MySecondDelNote({ bill, AuthUser }) {
       {showAddForm && isSDel && (
         <div className="card mb-4">
           <div className="card-body">
-            <h5 className="card-title">Add New Second Delegate Note</h5>
+            <h5 className="card-title">Add New Sec-Del Note</h5>
             <textarea
               className="form-control mb-3"
               rows="4"
               value={newNote}
               onChange={(e) => setNewNote(e.target.value)}
-              placeholder="Enter your note about this bill as a second delegate..."
+              placeholder="Enter your note about this bill as a Sec-Del..."
             />
             <div className="d-flex gap-2">
               <button
@@ -207,7 +206,7 @@ export default function MySecondDelNote({ bill, AuthUser }) {
       {notes.length === 0 ? (
         <div className="text-center py-5">
           <i className="fas fa-sticky-note fa-3x text-muted mb-3"></i>
-          <h5 className="text-muted">No second delegate notes yet</h5>
+          <h5 className="text-muted">No Sec-Del notes yet</h5>
           <p className="text-muted">{getEmptyMessage()}</p>
         </div>
       ) : (
@@ -227,7 +226,7 @@ export default function MySecondDelNote({ bill, AuthUser }) {
               isEditing={editingId === note.id}
               setEditingId={setEditingId}
               canEdit={isSDel && note.user.username === AuthUser.username}
-              noteType="Second Delegate"
+              noteType="Sec-Del"
             />
           ))}
         </div>

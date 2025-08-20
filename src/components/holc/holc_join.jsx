@@ -86,7 +86,7 @@ function JoinHolc() {
             dispatch(authenticate({ ...AuthUser, users }));
             setMessage({
               type: "alert alert-success",
-              msg: "Joint District Caucus. wait for the members to aprove you. Redirecting to District Caucus...",
+              msg: "",
             });
           }
         })

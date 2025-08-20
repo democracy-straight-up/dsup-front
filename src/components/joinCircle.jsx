@@ -68,7 +68,7 @@ function JoinCircle() {
               dispatch(authenticate({ ...AuthUser, users }));
               setMessage({
                 type: "alert alert-success",
-                msg: "Joint the circle. wait for the members to aprove you. Redirecting to Circle...",
+                msg: "",
               });
 
               setCIRCLE(response.data.code);

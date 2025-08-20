@@ -25,11 +25,11 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
   // Get the empty state message based on user role
   const getEmptyMessage = () => {
     if (isFDel) {
-      return "You haven't created any first delegate notes for this bill yet.";
+      return "You haven't created any F-Del notes for this bill yet.";
     }
 
-    const firstDelegateName = chainOfDelegation?.f_del?.users?.legalName || "your first delegate";
-    return `No first delegate notes available from ${firstDelegateName} for this bill yet.`;
+    const firstDelegateName = chainOfDelegation?.f_del?.users?.legalName || "your F-Del";
+    return `No F-Del notes available from ${firstDelegateName} for this bill yet.`;
   };
 
   useEffect(() => {
@@ -49,10 +49,9 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("list of first delegate notes", data);
+
         setNotes(data.results || []);
       } else {
-        console.error("Failed to fetch first delegate notes", response.status);
         if (response.status === 401) {
           console.error("Authentication required");
         }
@@ -118,7 +117,7 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
 
       if (response.ok) {
         const updatedNote = await response.json();
-        console.log("updated first delegate note", updatedNote);
+
         setNotes((prevNotes) => prevNotes.map((note) => (note.id === noteId ? updatedNote : note)));
       } else {
         if (response.status === 403) {
@@ -188,15 +187,14 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
 
       {!isFDel && (
         <div className="alert alert-info" role="alert">
-          You are viewing notes from your first delegate. Only first delegates can add or modify
-          these notes.
+          You are viewing notes from your F-Del. Only F-Del can add or modify these notes.
         </div>
       )}
 
       {showAddForm && isFDel && (
         <div className="card mb-4">
           <div className="card-body">
-            <h5 className="card-title">Add New First Delegate Note</h5>
+            <h5 className="card-title">Add New F-Del Note</h5>
             <div className="mb-3">
               <textarea
                 className="form-control"
@@ -254,7 +252,7 @@ export default function FirstDelegateNote({ bill, AuthUser }) {
               isEditing={editingId === note.id}
               setEditingId={(isEditing) => setEditingId(isEditing ? note.id : null)}
               canEdit={isFDel && note.user?.id === AuthUser?.id}
-              noteType="First Delegate"
+              noteType="F-Del"
             />
           ))}
         </div>

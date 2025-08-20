@@ -74,7 +74,7 @@ function JoinHouseRep() {
             dispatch(authenticate({ ...AuthUser, users }));
             setMessage({
               type: "alert alert-success",
-              msg: "Joint District Council. wait for the members to aprove you. Redirecting to District Council...",
+              msg: "",
             });
           }
         })

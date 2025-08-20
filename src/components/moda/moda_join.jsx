@@ -87,7 +87,7 @@ function JoinModa() {
             dispatch(authenticate({ ...AuthUser, users }));
             setMessage({
               type: "alert alert-success",
-              msg: "Joint the f-link. wait for the members to aprove you. Redirecting to f-link...",
+              msg: "",
             });
           }
         })
