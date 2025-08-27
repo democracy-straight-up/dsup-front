@@ -39,7 +39,7 @@ export default function BillsWrapper({ setMessage }) {
   return (
     <>
       <h1 className="fs-3 mt-4 pl-4">List of Bills</h1>
-      <Table striped bordered hover responsive>
+      <Table striped bordered hover responsive="lg">
         <thead>
           <tr className="fw-normal ">
             <th className="fw-semibold fs-5 text-nowrap">Bill Number</th>
