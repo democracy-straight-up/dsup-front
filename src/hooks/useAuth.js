@@ -64,11 +64,11 @@ export const useAuth = () => {
       return false;
     }
 
-    if (isTokenExpired(AuthUser.token.refresh)) {
-      console.log("Refresh token expired, logging out");
-      handleLogout();
-      return false;
-    }
+    // if (isTokenExpired(AuthUser.token.refresh)) {
+    //   console.log("Refresh token expired, logging out");
+    //   handleLogout();
+    //   return false;
+    // }
 
     try {
       console.log("Refreshing access token...");
@@ -110,7 +110,6 @@ export const useAuth = () => {
     // Both tokens are expired
     console.log("Both tokens expired, user needs to login again");
     return false;
-
   };
 
   return {
