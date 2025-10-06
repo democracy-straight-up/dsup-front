@@ -187,19 +187,21 @@ export default function SLinkCard() {
                 </div>
 
                 <div className="row">
+                  <div style={{ height: "2rem", display: "block" }}></div>
                   {/* {AuthUser.users.userType === "U3D3" ? ( */}
-                  <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
+                  {/* delegate will automatically be assigned to the next level */}
+                  {/* <div className="d-flex flex-sm-column flex-md-row justify-content-around flex-wrap mt-4 ">
                     {moda_info?.status && (
                       <>
                         <Link to="#" onClick={handleCreate} className="p-1 text-nowrap text-dark">
                           Create a Legislative Caucus
                         </Link>
                         <Link to="/join-holc" className="p-1 text-nowrap  text-dark">
-                          Join a Legislative Caucuc
+                          Join a Legislative Caucus
                         </Link>
                       </>
                     )}
-                  </div>
+                  </div> */}
                   {/* ) : (
                     <div style={{ height: "3.5rem", display: "block" }}></div>
                   )} */}
