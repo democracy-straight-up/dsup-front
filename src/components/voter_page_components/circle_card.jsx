@@ -214,7 +214,7 @@ export default function CircleCard() {
               </>
             ) : (
               <div>
-                <p>Something went wrong..</p>
+                <p>Circle information is unavailable</p>
               </div>
             )}
           </div>

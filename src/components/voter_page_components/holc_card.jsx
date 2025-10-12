@@ -152,12 +152,12 @@ export default function HolcCard() {
 
                 <div className="row">
                   {/* the userType is U4D4 and the next level is auto */}
-                  <div style={{ height: "2rem", display: "block" }}></div>
+                  <div style={{ height: "3.5rem", display: "block" }}></div>
                 </div>
               </>
             ) : (
               <div>
-                <p>Something went wrong..</p>
+                <p>Data not available</p>
               </div>
             )}
           </div>
