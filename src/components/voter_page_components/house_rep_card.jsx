@@ -153,7 +153,7 @@ export default function HouseRepCard() {
               </>
             ) : (
               <div>
-                <p>Something went wrong..</p>
+                <p>This data is not available</p>
               </div>
             )}
           </div>
