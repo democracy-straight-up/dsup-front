@@ -46,16 +46,7 @@ function App() {
   return (
     <Routes>
       <Route>
-        <Route
-          index
-          element={
-            <>
-              <Header />
-              <Home />
-              <Footer />
-            </>
-          }
-        />
+        <Route index element={<Home />} />
         <Route
           path="/claim-your-seat"
           element={
