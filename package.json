@@ -48,5 +48,8 @@
   },
   "engines": {
     "node": "16.15.1"
+  },
+  "devDependencies": {
+    "eslint-plugin-jest": "25.6.0"
   }
 }

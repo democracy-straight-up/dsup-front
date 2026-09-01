@@ -1,0 +1,260 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap");
+
+.cys-home {
+  min-height: 100vh;
+  background: #f6f7f9;
+  color: #25313c;
+  font-family: "Lato", Arial, Helvetica, sans-serif;
+}
+
+.cys-topbar {
+  height: 56px;
+  padding: 0 4%;
+  background: white;
+  border-bottom: 1px solid #d7dde4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cys-project-link,
+.cys-what-link {
+  color: #7c8792;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.cys-project-link:hover,
+.cys-what-link:hover {
+  color: #555f69;
+  text-decoration: underline;
+}
+
+.cys-main {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px 32px 30px;
+  text-align: center;
+}
+
+.cys-kicker {
+  display: inline-block;
+  margin-bottom: 18px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: #0f4fb8;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.cys-hero {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr) 210px;
+  gap: 22px;
+  align-items: center;
+}
+
+.cys-logo-box {
+  height: 230px;
+  padding: 14px;
+  background: white;
+  border: 1px solid #d7dde4;
+  border-radius: 24px;
+  box-shadow: 0 8px 22px rgba(25, 42, 70, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cys-logo-box img {
+  max-width: 100%;
+  max-height: 205px;
+  object-fit: contain;
+}
+
+.cys-intro h1 {
+  margin: 0 0 8px;
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1.08;
+}
+
+.cys-intro h2 {
+  margin: 0 0 14px;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.cys-intro p {
+  margin: 0 auto;
+  max-width: 760px;
+  font-size: 1.08rem;
+  line-height: 1.48;
+}
+
+.cys-diesel {
+  margin-top: 12px;
+  color: #7c8792;
+  font-size: 0.96rem;
+}
+
+.cys-diesel a {
+  color: #687581;
+}
+
+.cys-actions {
+  max-width: 1050px;
+  margin: 26px auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.cys-action-card {
+  min-height: 215px;
+  padding: 22px 24px;
+  background: white;
+  border: 1px solid #d7dde4;
+  border-radius: 22px;
+  box-shadow: 0 8px 22px rgba(25, 42, 70, 0.06);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.cys-primary-card {
+  border: 2px solid #bfd3fb;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%);
+}
+
+.cys-card-label {
+  margin-bottom: 6px;
+  color: #7c8792;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cys-action-card h2 {
+  margin: 0 0 10px;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.cys-action-card p {
+  margin: 0 0 18px;
+  font-size: 1.02rem;
+  line-height: 1.45;
+}
+
+.cys-button {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cys-primary-button {
+  background: #1f6feb;
+  color: white;
+  border: 1px solid #1f6feb;
+}
+
+.cys-primary-button:hover {
+  background: #195fc9;
+  color: white;
+}
+
+.cys-secondary-button {
+  background: white;
+  color: #1f6feb;
+  border: 1px solid #1f6feb;
+}
+
+.cys-secondary-button:hover {
+  background: #eef4ff;
+  color: #195fc9;
+}
+
+.cys-clarification {
+  max-width: 1100px;
+  margin: 20px auto 0;
+  padding: 13px 16px;
+  background: #f4efe2;
+  border: 1px solid #e2d9be;
+  border-radius: 16px;
+  text-align: left;
+}
+
+.cys-clarification strong,
+.cys-mobile-note strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.cys-clarification p,
+.cys-mobile-note p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.cys-mobile-note {
+  max-width: 1100px;
+  margin: 12px auto 0;
+  padding: 12px 16px;
+  background: white;
+  border: 1px dashed #bcc7d5;
+  border-radius: 16px;
+  text-align: left;
+}
+
+.cys-mobile-note a {
+  display: inline-block;
+  margin-top: 8px;
+  color: #1f6feb;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.cys-mobile-note a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1050px) {
+  .cys-hero {
+    grid-template-columns: 150px minmax(0, 1fr) 150px;
+  }
+
+  .cys-logo-box {
+    height: 175px;
+  }
+
+  .cys-logo-box img {
+    max-height: 150px;
+  }
+
+  .cys-intro h1 {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .cys-hero,
+  .cys-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .cys-logo-box {
+    display: none;
+  }
+
+  .cys-main {
+    padding: 22px 18px;
+  }
+}
