@@ -82,7 +82,7 @@ function EnterTheFloor() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (checkInputs) {
+    if (checkInputs()) {
       // generate the token here.
       const TokenUrl = `${window.location.protocol}//${baseURL}/api/token/`;
       const token_params = { username: entry_code.toUpperCase(), password: password };
