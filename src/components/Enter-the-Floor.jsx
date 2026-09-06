@@ -40,11 +40,11 @@ function EnterTheFloor() {
             dispatch(authenticate({ ...response.data, token: token }));
             navigate("/voter-page");
           } else {
-            setErr("Something went wrong. Check your inputs and try again.");
+            setErr("We couldn't sign you in. Check your district, entry code, and password.");
           }
         })
         .catch((error) => {
-          setErr("Something went wrong. Check your inputs and try again.");
+          setErr("We couldn't sign you in. Check your district, entry code, and password.");
           console.log(error);
         });
     }
@@ -98,7 +98,7 @@ function EnterTheFloor() {
           }
         })
         .catch((error) => {
-          setErr("Something went wrong. Check your inputs and try again.");
+          setErr("We couldn't sign you in. Check your district, entry code, and password.");
           console.log(error);
         });
     } else {
