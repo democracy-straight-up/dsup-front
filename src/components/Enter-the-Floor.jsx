@@ -101,6 +101,8 @@ function EnterTheFloor() {
           setErr("Something went wrong. Check your inputs and try again.");
           console.log(error);
         });
+    } else {
+      setErr("Please enter your district, entry code, and password.");
     }
   };
 
