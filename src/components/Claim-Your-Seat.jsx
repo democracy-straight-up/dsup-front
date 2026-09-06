@@ -134,7 +134,7 @@ function ClaimYourSeat() {
     axios
       .post(url, register_obj)
       .then(function (response) {
-        if (response.statusText === "Created") {
+        if (response.status === 201) {
           navigate("/sign-up");
         }
       })
