@@ -35,7 +35,6 @@ function ClaimYourSeat() {
   const [legalName, setLegalName] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
-  const [reg, setReg] = useState(true);
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [confirmPass, setConfirmPass] = useState(false);
@@ -100,7 +99,6 @@ function ClaimYourSeat() {
       legalName: legalName,
       email: email,
       address: address,
-      is_reg1: !reg,
       password: password,
       password2: password2,
     };
@@ -191,8 +189,9 @@ function ClaimYourSeat() {
               type="text"
               required
               maxLength={4}
-              onChange={(e) => setDistrict(e.target.value)}
+              onChange={(e) => setDistrict(e.target.value.toUpperCase())}
               onBlur={(e) => handleCheck(e)}
+              value={district}
               className={`form-control text-uppercase ${
                 District_OK ? "border border-2 border-danger" : ""
               }`}
@@ -204,10 +203,25 @@ function ClaimYourSeat() {
             ) : (
               ""
             )}
-            {/* registeration verification link */}
-            <Link className="m-y-3" to={"/registeration-status-verification"}>
-              How is my registration status verified?
+            <div className="form-check mt-3">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="voterAttestation"
+                required
+              />
+              <label className="form-check-label" htmlFor="voterAttestation">
+                I certify that, to the best of my knowledge, I am legally eligible to
+                vote in this U.S. congressional district. I understand that intentionally
+                providing false information may result in
+                the rejection of my credentials by my fellow legislators.
+              </label>
+            </div>
+
+            <Link className="d-inline-block mt-2" to="/credentials-evaluation">
+              How are credentials evaluated?
             </Link>
+
             <br />
             <br />
             <span>
