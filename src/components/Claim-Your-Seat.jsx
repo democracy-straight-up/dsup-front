@@ -213,6 +213,7 @@ function ClaimYourSeat() {
             {/* <label htmlFor="district" className="text-right">District:</label> */}
             <input
               type="text"
+              required
               maxLength={4}
               onChange={(e) => setDistrict(e.target.value)}
               onBlur={(e) => handleCheck(e)}
@@ -243,6 +244,7 @@ function ClaimYourSeat() {
             {/* <label htmlFor="legalName" required ={true} className="text-right">Legal Name:</label> */}
             <input
               type="text"
+              required
               onChange={(e) => setLegalName(e.target.value)}
               onBlur={(e) => handleCheckLegalName(e)}
               className="form-control"
@@ -271,6 +273,7 @@ function ClaimYourSeat() {
             {/* <label htmlFor="email" className="text-right">Email:</label> */}
             <input
               type="email"
+              required
               onChange={(e) => setEmail(e.target.value)}
               className="form-control"
               id="email"
@@ -290,6 +293,7 @@ function ClaimYourSeat() {
             <br />
             {/* <label htmlFor="address" className="text-right">Address:</label> */}
             <textarea
+              required
               placeholder="Enter your address "
               onChange={(e) => setAddress(e.target.value)}
               onBlur={(e) => handleCheckAddress(e)}
@@ -315,6 +319,7 @@ function ClaimYourSeat() {
                 className="form-control border-0"
                 onChange={(e) => handlePassword(e.target.value)}
                 type={passwordType}
+                required
                 value={password}
                 placeholder="Enter your password"
                 name="password"
@@ -345,6 +350,7 @@ function ClaimYourSeat() {
             <div className="input-group mb-3 border rounded ">
               <input
                 type={passwordTypeConf}
+                required
                 className="form-control border-0"
                 onChange={(e) => handleConfirmPass(e.target.value)}
                 value={password2}
