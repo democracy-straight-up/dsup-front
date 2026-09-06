@@ -7,11 +7,11 @@ import { Eye, EyeSlash } from "react-bootstrap-icons";
 // import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 
 export const GenPass = function (length) {
-  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
   const lowerCase = "abcdefghijklmnopqrstuvwxyz";
   const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
-  const specialChars = "!@#$%^&*()";
+  const specialChars = "!@#$%^&*";
   let password = [];
 
   password.push(lowerCase.charAt(Math.floor(Math.random() * lowerCase.length)));
