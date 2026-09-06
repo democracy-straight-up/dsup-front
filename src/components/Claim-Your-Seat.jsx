@@ -139,7 +139,7 @@ function ClaimYourSeat() {
         }
       })
       .catch((err) => {
-        setFormErr(err.response.data);
+        setFormErr(err.response?.data || {});
         setIs_formErr(true);
         // set this to an array
         // console.log(err.response.data.email?.[0])
