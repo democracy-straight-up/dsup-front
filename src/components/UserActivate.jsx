@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { baseURL } from "../store/conf";
 
 function UserActivate() {
@@ -10,6 +10,7 @@ function UserActivate() {
   const [entryCode, setEntryCode] = useState(false);
   // sent the request to backend url for activation
 
+useEffect(() => {
   axios
     .get(
       `${window.location.protocol}//${baseURL}/api/activate/${uid}/${token}/`
@@ -23,6 +24,7 @@ function UserActivate() {
     .catch((error) => {
       setMessage(false);
     });
+}, [uid, token]);
 
   return (
     <div className="container">
