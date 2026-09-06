@@ -19,7 +19,7 @@ import Insight from "./components/bills/Insight";
 import CircleMemberContactPage from "./components/houseKeeping/CircleMemberContactPage";
 import FLinkMemberContactPage from "./components/sec_del/MemberContactPage";
 import MeetingsAndMinutes from "./components/MeetingsAndMinutes";
-import RegistarationStatusVerfication from "./components/RegisterationStatusVerification";
+import CredentialsEvaluation from "./components/RegisterationStatusVerification";
 import HouseKeeping from "./components/houseKeeping/house-keeping";
 import JoinSecDel from "./components/sec_del/sec_del_join";
 import SecondDelegatePage from "./components/sec_del/sec_del_page";
@@ -58,11 +58,11 @@ function App() {
           }
         />
         <Route
-          path="/registeration-status-verification"
+          path="/credentials-evaluation"
           element={
             <>
               <Header />
-              <RegistarationStatusVerfication />
+              <CredentialsEvaluation />
               <Footer />
             </>
           }
