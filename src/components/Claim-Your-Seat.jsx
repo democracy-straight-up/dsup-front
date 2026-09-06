@@ -37,6 +37,7 @@ function ClaimYourSeat() {
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+  const [eligibilityAttested, setEligibilityAttested] = useState(false);
   const [confirmPass, setConfirmPass] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(false);
   const [District_OK, setDistrict_OK] = useState(false);
@@ -101,6 +102,7 @@ function ClaimYourSeat() {
       address: address,
       password: password,
       password2: password2,
+      eligibility_attested: eligibilityAttested
     };
     const url = `${window.location.protocol}//${baseURL}/api/register/`;
     axios
@@ -209,6 +211,8 @@ function ClaimYourSeat() {
                 type="checkbox"
                 id="voterAttestation"
                 required
+                checked={eligibilityAttested}
+                onChange={(e) => setEligibilityAttested(e.target.checked)}
               />
               <label className="form-check-label" htmlFor="voterAttestation">
                 I certify that, to the best of my knowledge, I am legally eligible to
