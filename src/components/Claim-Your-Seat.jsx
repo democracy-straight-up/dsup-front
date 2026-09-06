@@ -46,8 +46,6 @@ function ClaimYourSeat() {
   const [passwordTypeConf, setPasswordTypeConf] = useState("password"); // show/hide confirm password input
 
   const [formErr, setFormErr] = useState("");
-  const [LegalName_Err, setLegalName_Err] = useState(false);
-  const [Address_Err, setAddress_Err] = useState(false);
   const [is_formErr, setIs_formErr] = useState(false);
 
   const handleCheck = (e) => {
@@ -66,28 +64,6 @@ function ClaimYourSeat() {
         }
       }
     }); //endof then function
-  };
-
-  const handleCheckLegalName = (e) => {
-    //check legal name in valid or not
-    const reEmoji = /[^a-zA-Z0-9 ]/gm;
-    if (!reEmoji.test(e.target.value)) {
-      setLegalName_Err(false);
-    } else {
-      setLegalName_Err(true);
-    }
-    //endof then function
-  };
-
-  const handleCheckAddress = (e) => {
-    //check legal name in valid or not
-    const reAddress = /[^a-zA-Z0-9\s,.-]/gm;
-    if (!reAddress.test(e.target.value)) {
-      setAddress_Err(false);
-    } else {
-      setAddress_Err(true);
-    }
-    //endof then function
   };
 
   const handlePassword = (e) => {
@@ -246,18 +222,12 @@ function ClaimYourSeat() {
               type="text"
               required
               onChange={(e) => setLegalName(e.target.value)}
-              onBlur={(e) => handleCheckLegalName(e)}
               className="form-control"
               id="legalName"
               placeholder="Enter your full legal name "
             />
             {is_formErr ? (
               <p className="m-0 text-danger"> {formErr?.legalName ? formErr?.legalName[0] : ""}</p>
-            ) : (
-              ""
-            )}
-            {LegalName_Err && legalName.length > 0 ? (
-              <p className="text-danger m-0">Please enter valid legal name.</p>
             ) : (
               ""
             )}
@@ -296,7 +266,6 @@ function ClaimYourSeat() {
               required
               placeholder="Enter your address "
               onChange={(e) => setAddress(e.target.value)}
-              onBlur={(e) => handleCheckAddress(e)}
               className="form-control"
               rows="5"
             />
@@ -305,11 +274,6 @@ function ClaimYourSeat() {
 
                         id="address" placeholder="enter your address"/>
                         <br/> */}
-            {Address_Err && address.length > 0 ? (
-              <p className="text-danger m-0">Please enter valid address.</p>
-            ) : (
-              ""
-            )}
             <br />
             <button className="btn btn-primary my-2" onClick={(e) => generatePass(e)}>
               Generate password
