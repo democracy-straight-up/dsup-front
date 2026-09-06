@@ -28,6 +28,7 @@ function UserActivate() {
 
   return (
     <div className="container">
+      <div className="row center">
               {message === null ? (
           <div className="mt-5 text-center">
             <p>Activating your account...</p>
@@ -60,6 +61,7 @@ function UserActivate() {
             </Link>
           </div>
         )}
+      </div>
     </div>
   );
 }
