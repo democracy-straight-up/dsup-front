@@ -92,24 +92,22 @@ function ClaimYourSeat() {
 
   const handlePassword = (e) => {
     setPassword(e);
-    if (passcheck(e)) {
-      setPass_Err(false);
-      setSubmitStatus(true);
-    } else {
-      setPass_Err(true);
-      setSubmitStatus(false);
-    }
+
+    const isValid = passcheck(e);
+    const passwordsMatch = e === password2 && password2.length > 0;
+
+    setPass_Err(!isValid);
+    setConfirmPass(passwordsMatch);
+    setSubmitStatus(isValid && passwordsMatch);
   };
 
   const handleConfirmPass = (e) => {
     setPassword2(e);
-    if (e === password) {
-      setConfirmPass(true);
-      setSubmitStatus(true);
-    } else {
-      setConfirmPass(false);
-      setSubmitStatus(false);
-    }
+
+    const passwordsMatch = e === password && e.length > 0;
+
+    setConfirmPass(passwordsMatch);
+    setSubmitStatus(passcheck(password) && passwordsMatch);
   };
 
   function passcheck(str) {
