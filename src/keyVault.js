@@ -80,11 +80,35 @@ export async function getOrCreateVaultEncryptionKey() {
     return existingVaultKey;
   }
 
-  const newVaultKey = await generateVaultEncryptionKey();
+  const candidateVaultKey = await generateVaultEncryptionKey();
+  const db = await openKeyVaultDatabase();
 
-  await saveVaultEncryptionKey(newVaultKey);
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(STORE_NAME, "readwrite");
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.get(VAULT_KEY_ID);
 
-  return newVaultKey;
+    let vaultKey;
+
+    request.onsuccess = () => {
+      if (request.result) {
+        vaultKey = request.result;
+      } else {
+        vaultKey = candidateVaultKey;
+        store.put(candidateVaultKey, VAULT_KEY_ID);
+      }
+    };
+
+    transaction.oncomplete = () => {
+      db.close();
+      resolve(vaultKey);
+    };
+
+    transaction.onerror = () => {
+      db.close();
+      reject(transaction.error);
+    };
+  });
 }
 export async function saveEncryptedAccountPrivateKey(
   accountId,

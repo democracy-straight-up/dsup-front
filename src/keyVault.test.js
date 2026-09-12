@@ -210,3 +210,24 @@ test("rejects a tampered encrypted Account private key", async () => {
     decryptAccountPrivateKey(tampered, vaultKey)
   ).rejects.toThrow();
 });
+test("concurrent first use shares one vault encryption key", async () => {
+  const [firstVaultKey, secondVaultKey] = await Promise.all([
+    getOrCreateVaultEncryptionKey(),
+    getOrCreateVaultEncryptionKey(),
+  ]);
+
+  const encrypted = await encryptAccountPrivateKey(
+    "test-account-private-key",
+    firstVaultKey
+  );
+
+  await expect(
+    decryptAccountPrivateKey(encrypted, secondVaultKey)
+  ).resolves.toBe("test-account-private-key");
+
+  const storedVaultKey = await loadVaultEncryptionKey();
+
+  await expect(
+    decryptAccountPrivateKey(encrypted, storedVaultKey)
+  ).resolves.toBe("test-account-private-key");
+});
