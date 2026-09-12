@@ -1,5 +1,7 @@
 import sodium from "libsodium-wrappers";
 
+export const CRYPTO_ALGORITHM = "libsodium-sealed-box-v1";
+
 export async function generateKeyPair() {
   await sodium.ready;
 
