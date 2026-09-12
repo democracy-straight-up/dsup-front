@@ -51,6 +51,8 @@
     "node": "24.x"
   },
   "devDependencies": {
-    "eslint-plugin-jest": "25.6.0"
+    "core-js": "^3.50.0",
+    "eslint-plugin-jest": "25.6.0",
+    "fake-indexeddb": "^6.2.5"
   }
 }
