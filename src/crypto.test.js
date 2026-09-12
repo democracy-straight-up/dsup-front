@@ -6,6 +6,7 @@ import {
   decryptCircleCredential,
   wrapCirclePrivateKey,
   unwrapCirclePrivateKey,
+  CRYPTO_ALGORITHM,
 } from "./crypto";
 
 test("generates a public and private key pair", async () => {
@@ -128,4 +129,27 @@ test("member can decrypt a Circle credential through their key envelope", async 
   );
 
   expect(decryptedCredential).toEqual(credential);
+});
+test("rejects tampered ciphertext", async () => {
+  const keyPair = await generateKeyPair();
+
+  const ciphertext = await encryptForPublicKey(
+    "Sensitive value",
+    keyPair.publicKey
+  );
+
+  const tamperedCiphertext =
+    (ciphertext[0] === "A" ? "B" : "A") +
+    ciphertext.slice(1);
+
+  await expect(
+    decryptWithPrivateKey(
+      tamperedCiphertext,
+      keyPair.publicKey,
+      keyPair.privateKey
+    )
+  ).rejects.toThrow();
+});
+test("uses a versioned crypto algorithm identifier", () => {
+  expect(CRYPTO_ALGORITHM).toBe("libsodium-sealed-box-v1");
 });
