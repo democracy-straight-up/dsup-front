@@ -1,6 +1,6 @@
 # CYSVP Project Handoff
 
-Updated: 2026-09-13 UTC
+Updated: 2026-09-16 UTC
 
 This file preserves the Claim Your Seat Voting Portal's current checkpoint, recovered design decisions, and next steps so work can continue across chats. It is a partial reconstruction, not a complete record of the earlier conversation. Treat the current repository as authoritative for implementation and the explicitly identified decisions below as requirements or intended design.
 
@@ -115,15 +115,63 @@ Dahlia specified that a Circle has one remaining full member at creation (the fo
 - A subsequent group creates a new Circle number/code, invitation key, keypair, and memberships.
 - Dissolution should depend on authorization, not on successfully decrypting credentials.
 
-## Next work
+## Current priority: working prototype
 
-1. Add this handoff to Git through a documentation PR, and confirm Dahlia's local main contains merged #117.
-2. Inspect current backend models, routes, serializers, views, and tests for AccountKey, CircleKey, CircleKeyEnvelope, and CircleCredential. Recover current contracts before changing them.
-3. Implement the revised Circle-recovery authorization in small test-driven steps, including recovery for a delegate by an ordinary full member and denial to candidates/outsiders. Review account-key replacement, active-key selection, and existing-envelope update behavior before choosing exact tests.
-4. Bring frontend warning cleanup back onto the agenda now that #117 is merged. Start with potentially substantive warnings: unreachable code, map callbacks without returns, useEffect dependencies, and equality checks. Handle accessibility, unused code, and toolchain deprecations in separate focused changes.
-5. Connect Account keys to the user workflow only after recovery contracts and relevant failure handling are established. Signup integration was an inference made during incomplete context recovery, not the recovered immediate next task.
+As of 2026-09-16, Dahlia has prioritized a demonstrable working
+prototype: React screens with enough real backend functionality
+to form Circles and Links and demonstrate member lists,
+Housekeeping, Voter Pages, advisement, and especially custom
+bill ordering.
 
-Exact feature ordering beyond the recovered recovery-authorization step and promised warning-cleanup agenda remains to be confirmed. These entries are not a complete original project backlog.
+Broader scaling and recovery hardening are deferred. Preserve
+existing protections and the recovery design decisions above.
+
+Recommended implementation sequence:
+1. Repair Circle joining, authenticated live connections, and
+   Housekeeping updates.
+2. Make Voter Pages dependable and implement saved custom bill
+   ordering. Clarify whether ordering is personal, published
+   by delegates, or both before choosing its data model.
+3. Correct advisement role wiring and delegation-chain lookup;
+   verify voting and tally updates.
+4. Complete First Link and Second Link formation and membership
+   flows.
+5. Rehearse the complete journey across separate accounts,
+   including reloads and failed-request recovery.
+
+The source review identified missing Circle WebSocket tokens,
+broken reconnect logic, and Second Delegate/MoDA advisement
+tabs using the First Delegate type. These findings have not
+yet been repaired or verified in a live demonstration.
+
+## Paused recovery checkpoint
+
+Backend repository:
+https://github.com/democracy-straight-up/claim-your-seat
+
+Branch: circle-recovery-auth
+Checkpoint commit: 9154fe0
+Pushed to origin: 2026-09-16
+Status: unfinished; leave unmerged.
+
+The checkpoint changes api/tests.py to expect an ordinary full
+Circle member to retrieve another full member's Account public
+key within the same Circle.
+
+Last confirmed focused test result: five tests ran; four passed,
+and the revised test failed with 404 instead of the expected 200.
+No passing result for the proposed view fix has been confirmed.
+
+To resume:
+1. Inspect the saved branch and its diff against current main.
+2. Review CircleMemberAccountKeyView in api/views.py.
+3. Allow the intended full-member access while retaining
+   same-Circle and full-membership restrictions.
+4. Rerun CircleMemberAccountKeyAPITests, then the API suite.
+5. Address Circle-key envelope authorization separately.
+
+Keep prototype implementation on separate branches from main.
+The recovery and Circle lifecycle decisions above remain valid.
 
 ## Evidence and limits
 
