@@ -1,6 +1,6 @@
 # CYSVP Project Handoff
 
-Updated: 2026-09-16 UTC
+Updated: 2026-09-17 UTC
 
 This file preserves the Claim Your Seat Voting Portal's current checkpoint, recovered design decisions, and next steps so work can continue across chats. It is a partial reconstruction, not a complete record of the earlier conversation. Treat the current repository as authoritative for implementation and the explicitly identified decisions below as requirements or intended design.
 
@@ -114,6 +114,39 @@ Dahlia specified that a Circle has one remaining full member at creation (the fo
 - Dissolution is final. Do not introduce a revive-dissolved-Circle state.
 - A subsequent group creates a new Circle number/code, invitation key, keypair, and memberships.
 - Dissolution should depend on authorization, not on successfully decrypting credentials.
+
+## Circle connection checkpoint — 2026-09-17
+
+Branch: fix/circle-live-connection
+Status: locally verified; awaiting commit and PR review.
+
+Changes:
+- Circle Housekeeping and joining connections include an access token.
+- Successful Circle creation/joining retains the refreshed access token.
+- Housekeeping retries dropped connections after five seconds, with
+  a limit of three unsuccessful retries.
+- Leaving Housekeeping closes its socket and cancels pending retries.
+
+Validation:
+- All four frontend test suites passed: 25 tests total.
+- Five focused Housekeeping connection tests passed.
+- The first four focused tests also failed for the intended reasons
+  against the original component.
+- Production build succeeded with warnings before the final
+  unused-variable cleanup.
+- Local browser check against the hosted backend: member data loaded
+  after refresh and after navigating away and returning; no persistent
+  connection error.
+
+Limits and next work:
+- Circle creation/joining has not yet been browser-verified.
+- Browser network-interruption recovery has not been manually tested;
+  reconnect timing and limits are covered by mocked WebSocket tests.
+- React act deprecation warning remains.
+- Hosted Admin Chrome phishing warning remains unresolved; Dahlia
+  chose to defer its investigation.
+- Review and merge this focused fix, then continue Circle joining
+  and membership-update work using test-first changes.
 
 ## Current priority: working prototype
 

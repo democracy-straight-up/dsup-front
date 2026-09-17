@@ -31,8 +31,8 @@ function HouseKeeping() {
   const [vote_outs, setVote_outs] = useState([]);
   const [put_forwards, setPut_forwards] = useState([]);
 
-  const [isConnecting, setIsConnecting] = useState(false); // Track connection attempt state
-  const [isConnected, setIsConnected] = useState(false); // Track connection status
+  const [, setIsConnecting] = useState(false);
+  const [, setIsConnected] = useState(false);
   // Use useRef to hold the WebSocket instance
   const socketRef = useRef(null);
   const reconnectTimerRef = useRef(null); // To hold reconnect timeout ID
@@ -43,78 +43,101 @@ function HouseKeeping() {
   const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
-  // Effect for WebSocket connection management
-  useEffect(() => {
-    // Only attempt connection if we have the necessary details and aren't already connected/connecting
-    if (!code || !username || !baseUrl || isConnected || isConnecting) {
-      // Optional: set an error if connection can't be attempted due to missing info
-      if (!code || !username || !baseUrl) {
-        setErr("Missing connection details.");
-      }
-      return;
-    }
+// Connect when Circle or login details change; clean up when leaving.
+useEffect(() => {
+  const accessToken = AuthUser?.token?.access;
 
-    const url = `${ws_scheme}://${baseUrl}/circle/${circleInfo?.code}/${AuthUser?.username}`;
+  if (!code || !username || !baseUrl || !accessToken) {
+    setErr("Missing Circle or login details. Please sign in again.");
+    return;
+  }
+
+  let stopped = false;
+  let reconnectAttempts = 0;
+  let currentSocket = null;
+
+  const connect = () => {
+    if (stopped) return;
+
     setIsConnecting(true);
+    setIsConnected(false);
     setErr("Connecting...");
 
-    // Create the WebSocket instance
+    const url = `${ws_scheme}://${baseUrl}/circle/${code}/${username}?token=${encodeURIComponent(accessToken)}`;
     const chatSocket = new WebSocket(url);
-    socketRef.current = chatSocket; // Store it in the ref
+    currentSocket = chatSocket;
+    socketRef.current = chatSocket;
 
     chatSocket.onopen = () => {
-      setIsConnected(true);
+      if (stopped) return;
+      reconnectAttempts = 0;
       setIsConnecting(false);
-      setErr(""); // Clear connection status message
-      // Clear any previous reconnect timer if connection succeeds
-      if (reconnectTimerRef.current) {
-        clearTimeout(reconnectTimerRef.current);
-        reconnectTimerRef.current = null;
-      }
-      // Reset reconnect attempts logic if needed here
+      setIsConnected(true);
+      setErr("");
     };
 
-    chatSocket.onmessage = (e) => {
+    chatSocket.onmessage = (event) => {
+      if (stopped) return;
+
       try {
-        const data = JSON.parse(e.data);
-        // !!! IMPLEMENT THIS FUNCTION !!!
-        // action_lists(data);
-        MembersFilter(data);
+        MembersFilter(JSON.parse(event.data));
       } catch (error) {
-        console.error("Failed to parse message data:", error);
+        setErr("Could not update the member list. Please reload the page.");
       }
     };
 
-    chatSocket.onerror = (error) => {
-      // Don't set connecting false here, let onclose handle final state
-      setErr("WebSocket error occurred.");
-      // Note: onclose will usually be called immediately after onerror
+    chatSocket.onerror = () => {
+      if (!stopped) {
+        setErr("Circle connection failed.");
+      }
     };
 
     chatSocket.onclose = (event) => {
+      if (stopped) return;
+
+      socketRef.current = null;
+      setIsConnecting(false);
       setIsConnected(false);
-      setIsConnecting(true);
-      // socketRef.current = null; // Clear the ref
-      // Prevent reconnect loops if the closure was clean/intended or essential params are missing
-      if (!code || !username || !baseUrl || event.wasClean) {
-        setErr("Disconnected. Connection closed cleanly.");
+
+      if (event.code === 4401 || event.code === 4403) {
+        setErr("Circle access was refused. Please sign in again.");
         return;
       }
 
-      setErr("Disconnected. Attempting to reconnect in 5 seconds...");
-      // Simple reconnect delay
-      if (!reconnectTimerRef.current) {
-        // Avoid setting multiple timers
-        reconnectTimerRef.current = setTimeout(() => {
-          setIsConnecting(true); // Trigger the effect again by changing state
-          reconnectTimerRef.current = null; // Clear timer ID
-        }, 5000);
+      if (reconnectAttempts >= 3) {
+        setErr("Could not reconnect. Please sign in again or reload the page.");
+        return;
       }
+
+      reconnectAttempts += 1;
+      setErr("Disconnected. Reconnecting in 5 seconds...");
+
+      reconnectTimerRef.current = setTimeout(() => {
+        reconnectTimerRef.current = null;
+        connect();
+      }, 5000);
     };
+  };
 
-    // Dependencies: The effect should re-run if connection details change, or if we need to trigger a reconnect attempt
-  }, [code, username, baseUrl, ws_scheme, isConnecting]); // isConnecting is added to trigger reconnects
+  connect();
 
+  return () => {
+    stopped = true;
+    clearTimeout(reconnectTimerRef.current);
+    reconnectTimerRef.current = null;
+    socketRef.current = null;
+
+    if (currentSocket) {
+      currentSocket.onopen = null;
+      currentSocket.onmessage = null;
+      currentSocket.onerror = null;
+      currentSocket.onclose = null;
+      currentSocket.close();
+    }
+  };
+  // MembersFilter is the existing message handler for this Circle.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [code, username, baseUrl, ws_scheme, AuthUser?.token?.access]);
   // let ws_schame = window.location.protocol === "https:" ? "wss" : "ws";
   // const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${circleInfo?.code}/${AuthUser?.username}`;
   // const chatSocket = new WebSocket(url);
