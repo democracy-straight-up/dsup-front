@@ -115,6 +115,32 @@ Dahlia specified that a Circle has one remaining full member at creation (the fo
 - A subsequent group creates a new Circle number/code, invitation key, keypair, and memberships.
 - Dissolution should depend on authorization, not on successfully decrypting credentials.
 
+## Circle join feedback checkpoint — 2026-09-17
+
+Branch: fix/circle-join-feedback
+Status: locally tested; awaiting commit and PR review.
+
+Changes:
+- A correctly formatted invitation key no longer produces an
+  invalid-key error while the join request is pending.
+- A corrected submission replaces the previous invalid-key
+  error with "Joining Circle...".
+
+Validation:
+- Both new regression tests failed before their respective fixes
+  and passed afterward.
+- All five frontend suites passed: 27 tests total.
+- git diff --check passed.
+- This feedback change has not been browser-verified.
+- React act deprecation warnings remain.
+
+Next:
+- Review and merge this focused feedback fix.
+- Continue testing successful joining, failed requests, and
+  navigation to Housekeeping.
+
+Previous Circle connection fix:
+- Merged into main at 6704ad6 and pulled locally.
 ## Circle connection checkpoint — 2026-09-17
 
 Branch: fix/circle-live-connection

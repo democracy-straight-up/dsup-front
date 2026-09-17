@@ -56,6 +56,7 @@ function JoinCircle() {
     } else if (clicked === "join") {
       // console.log("joining a circle ...")
       if (token.length > 0 && inviteKey.length === 10) {
+        setMessage({ type: "alert alert-info", msg: "Joining Circle..." });
         let header = { Authorization: `Bearer ${token}` };
         const url = `${window.location.protocol}//${baseURL}/api/join-circle/`;
         const param = { user: AuthUser.username, circle: inviteKey };
@@ -92,8 +93,7 @@ function JoinCircle() {
             console.log("err: ", error);
             setMessage({ msg: error.response.data.message, type: "alert alert-danger" });
           });
-      }
-      {
+      } else {
         setMessage({ type: "alert alert-danger", msg: "invalid invitation key" });
       }
     }
@@ -102,7 +102,7 @@ function JoinCircle() {
   useEffect(() => {
     if (CIRCLE.length > 1) {
       let ws_schame = window.location.protocol == "https:" ? "wss" : "ws";
-const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${CIRCLE}/${AuthUser.username}/?token=${encodeURIComponent(token)}`;
+      const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${CIRCLE}/${AuthUser.username}/?token=${encodeURIComponent(token)}`;
       const chatSocket = new WebSocket(url);
       // get back the messages...
       chatSocket.onmessage = function (e) {
