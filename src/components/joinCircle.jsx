@@ -90,10 +90,14 @@ function JoinCircle() {
             }
           })
           .catch((error) => {
-            console.log("err: ", error);
-            setMessage({ msg: error.response.data.message, type: "alert alert-danger" });
+            setMessage({
+              msg:
+                error.response?.data?.message ||
+                "Could not join Circle. Check your connection and try again.",
+              type: "alert alert-danger",
+            });
           });
-      } else {
+              } else {
         setMessage({ type: "alert alert-danger", msg: "invalid invitation key" });
       }
     }

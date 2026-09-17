@@ -114,3 +114,25 @@ test("clears the previous invalid-key error when a corrected key is submitted", 
 
   expect(screen.queryByText(/invalid invitation key/i)).toBeNull();
 });
+test("shows a helpful message when the join request fails without a response", async () => {
+  axios.post
+    .mockResolvedValueOnce({
+      status: 200,
+      data: { access: "fresh-access-token" },
+    })
+    .mockRejectedValueOnce(new Error("Network Error"));
+
+  render(<JoinCircle />);
+
+  fireEvent.change(
+    screen.getByPlaceholderText("Enter the circle invitation key here"),
+    { target: { value: "1234567890" } }
+  );
+
+   fireEvent.click(screen.getByRole("button", { name: "Join The Circle" }));
+  await screen.findByText(
+    "Could not join Circle. Check your connection and try again."
+  );
+
+  expect(screen.queryByText("Joining Circle...")).toBeNull();
+});
