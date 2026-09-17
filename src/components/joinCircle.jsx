@@ -36,7 +36,13 @@ function JoinCircle() {
               let u = { ...AuthUser.users };
               let userType = "U1D0";
               let users = { ...u, userType };
-              dispatch(authenticate({ ...AuthUser, users }));
+              dispatch(
+                authenticate({
+                  ...AuthUser,
+                  users,
+                  token: { ...AuthUser.token, access: token },
+                })
+              );
               setMessage({ type: "alert alert-success", msg: "circle created." });
               navigate("/house-keeping-page");
             } else {
@@ -65,7 +71,13 @@ function JoinCircle() {
               let u = { ...AuthUser.users };
               let userType = "U1D0";
               let users = { ...u, userType };
-              dispatch(authenticate({ ...AuthUser, users }));
+              dispatch(
+                authenticate({
+                  ...AuthUser,
+                  users,
+                  token: { ...AuthUser.token, access: token },
+                })
+              );
               setMessage({
                 type: "alert alert-success",
                 msg: "",
@@ -90,7 +102,7 @@ function JoinCircle() {
   useEffect(() => {
     if (CIRCLE.length > 1) {
       let ws_schame = window.location.protocol == "https:" ? "wss" : "ws";
-      const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${CIRCLE}/${AuthUser.username}/`;
+const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/circle/${CIRCLE}/${AuthUser.username}/?token=${encodeURIComponent(token)}`;
       const chatSocket = new WebSocket(url);
       // get back the messages...
       chatSocket.onmessage = function (e) {
