@@ -310,3 +310,25 @@ At each milestone, update the dated checkpoint, test evidence, PR links, unresol
 Suggested opening instruction for a new chat: Read PROJECT_HANDOFF.md in democracy-straight-up/dsup-front, verify current repository and PR state, and continue from the recorded next step using small Windows Command Prompt steps.
 
 This handoff is maintained in the frontend repository. Update and push it at completed milestones and before moving to a new chat.
+
+## Checkpoint — 2026-09-18: Member Contact cancellation
+
+Branch: fix/member-contact-cancel
+Status: Implemented and tested; awaiting commit and PR.
+
+- Cancel restores saved email/phone, address, and contact rules.
+- Reopening each editor shows the restored values.
+- Cancel sends no PATCH request and clears save feedback.
+- Cancel buttons are disabled while saving.
+- Successful saves update the values used for subsequent cancellation.
+- Contact Rules textareas use controlled values to prevent stale display.
+
+Validation:
+- Each new cancellation test failed before its corresponding fix.
+- Focused suite: 10 tests passed.
+- Full suite: 40 tests passed across 7 suites.
+- git diff --check passed.
+- Existing React act deprecation warnings remain.
+
+Next:
+- Review staged changes, commit, push, and open a PR.

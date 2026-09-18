@@ -196,3 +196,101 @@ test("saves the edited email and confirms success", async () => {
     "Contact information saved."
   );
 });
+test("cancel restores the saved contact details without sending a request", () => {
+  axios.patch.mockClear();
+
+  render(
+    <table>
+      <tbody>
+        <ContactInfoItem index={0} delegate={delegate} member={member} />
+      </tbody>
+    </table>
+  );
+
+  fireEvent.click(screen.getAllByText("Edit this section")[1]);
+
+  fireEvent.change(screen.getByPlaceholderText("Email"), {
+    target: { value: "unsaved@example.com" },
+  });
+  fireEvent.change(screen.getByPlaceholderText("Phone"), {
+    target: { value: "555-9999" },
+  });
+
+  fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
+
+  expect(axios.patch).not.toHaveBeenCalled();
+  expect(screen.queryByPlaceholderText("Email")).not.toBeInTheDocument();
+  expect(screen.getByText("Email: member@example.com")).toBeInTheDocument();
+  expect(screen.getByText("Phone: 555-0100")).toBeInTheDocument();
+
+  // Reopening the editor should also show the saved values.
+  fireEvent.click(screen.getAllByText("Edit this section")[1]);
+
+  expect(screen.getByPlaceholderText("Email")).toHaveValue(
+    "member@example.com"
+  );
+  expect(screen.getByPlaceholderText("Phone")).toHaveValue("555-0100");
+});
+test("cancel restores the saved address without sending a request", () => {
+  axios.patch.mockClear();
+
+  render(
+    <table>
+      <tbody>
+        <ContactInfoItem index={0} delegate={delegate} member={member} />
+      </tbody>
+    </table>
+  );
+
+  fireEvent.click(screen.getAllByText("Edit this section")[0]);
+
+  fireEvent.change(screen.getByPlaceholderText("Please specify your address."), {
+    target: { value: "999 Unsaved Avenue" },
+  });
+
+  fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
+
+  expect(axios.patch).not.toHaveBeenCalled();
+  expect(
+    screen.queryByPlaceholderText("Please specify your address.")
+  ).not.toBeInTheDocument();
+  expect(screen.getByText("Address: 1 Main Street")).toBeInTheDocument();
+
+  fireEvent.click(screen.getAllByText("Edit this section")[0]);
+
+  expect(
+    screen.getByPlaceholderText("Please specify your address.")
+  ).toHaveValue("1 Main Street");
+});
+test("cancel restores the saved contact rules without sending a request", () => {
+  axios.patch.mockClear();
+
+  render(
+    <table>
+      <tbody>
+        <ContactInfoItem index={0} delegate={delegate} member={member} />
+      </tbody>
+    </table>
+  );
+
+  fireEvent.click(screen.getByText("Edit Contact Rules"));
+
+  fireEvent.change(
+    screen.getByPlaceholderText("Please specify how/when members can reach you out."),
+    { target: { value: "Unsaved contact rules." } }
+  );
+
+  fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
+
+  expect(axios.patch).not.toHaveBeenCalled();
+  expect(
+    screen.queryByPlaceholderText("Please specify how/when members can reach you out.")
+  ).not.toBeInTheDocument();
+  expect(screen.getByDisplayValue("Contact by email.")).toBeDisabled();
+
+  fireEvent.click(screen.getByText("Edit Contact Rules"));
+
+  expect(
+    screen.getByPlaceholderText("Please specify how/when members can reach you out.")
+  ).toHaveValue("Contact by email.");
+});
