@@ -5,9 +5,15 @@ import axios from "axios";
 
 export default function ContactInfoItem({ index, delegate, member }) {
   const [editContactRules, setEditContactRules] = useState(member?.contact_rules);
+  const [savedContactRules, setSavedContactRules] = useState(member?.contact_rules);
   const [editEmail, setEditEmail] = useState(member?.email);
   const [editPhone, setEditPhone] = useState(member?.phone);
+  const [savedContact, setSavedContact] = useState({
+    email: member?.email,
+    phone: member?.phone,
+  });
   const [editAddress, setEditAddress] = useState(member?.address);
+  const [savedAddress, setSavedAddress] = useState(member?.address);
   const [saveError, setSaveError] = useState("");
   const [saveSuccess, setSaveSuccess] = useState("");
   const [saving, setSaving] = useState(false);
@@ -46,9 +52,15 @@ export default function ContactInfoItem({ index, delegate, member }) {
       .patch(url, data, { headers: header })
       .then((res) => {
         setSaveSuccess("Contact information saved.");
+        setSavedContact({
+          email: res.data.email,
+          phone: res.data.phone,
+        });
         setEditPhone(res.data.phone);
         setEditEmail(res.data.email);
         setEditAddress(res.data?.address);
+        setSavedAddress(res.data?.address);
+        setSavedContactRules(res.data?.contact_rules);
         setEditContactRules(res.data?.contact_rules);
         setEditing(false);
         setEditingAddress(false);
@@ -93,7 +105,17 @@ export default function ContactInfoItem({ index, delegate, member }) {
           >
             {saving ? "Saving..." : "Update Contact"}
           </button>
-          <button onClick={() => setEditing(false)} className="btn btn-secondary btn-sm col-5">
+          <button
+            disabled={saving}
+            onClick={() => {
+              setEditEmail(savedContact.email);
+              setEditPhone(savedContact.phone);
+              setSaveError("");
+              setSaveSuccess("");
+              setEditing(false);
+            }}
+            className="btn btn-secondary btn-sm col-5"
+          >
             cancel
           </button>
         </div>
@@ -107,7 +129,7 @@ export default function ContactInfoItem({ index, delegate, member }) {
           <textarea
             onChange={(e) => setEditContactRules(e.target.value)}
             rows={2}
-            defaultValue={editContactRules}
+            value={editContactRules ?? ""}
             placeholder="Please specify how/when members can reach you out."></textarea>
         </div>
 
@@ -119,7 +141,16 @@ export default function ContactInfoItem({ index, delegate, member }) {
           >
             {saving ? "Saving..." : "Update Rules"}
           </button>
-          <button onClick={() => setEditingRules(false)} className="btn btn-secondary btn-sm col-5">
+          <button
+            disabled={saving}
+            onClick={() => {
+              setEditContactRules(savedContactRules);
+              setSaveError("");
+              setSaveSuccess("");
+              setEditingRules(false);
+            }}
+            className="btn btn-secondary btn-sm col-5"
+          >
             cancel
           </button>
         </div>
@@ -147,8 +178,15 @@ export default function ContactInfoItem({ index, delegate, member }) {
             {saving ? "Saving..." : "Update Address"}
           </button>
           <button
-            onClick={() => setEditingAddress(false)}
-            className="btn btn-secondary btn-sm mx-2">
+            disabled={saving}
+            onClick={() => {
+              setEditAddress(savedAddress);
+              setSaveError("");
+              setSaveSuccess("");
+              setEditingAddress(false);
+            }}
+            className="btn btn-secondary btn-sm mx-2"
+          >
             cancel
           </button>
         </div>
@@ -212,7 +250,7 @@ export default function ContactInfoItem({ index, delegate, member }) {
           ) : (
             <div className="container p-0 m-0">
               <div className="row  m-0 mb-1">
-                <textarea disabled={true} defaultValue={editContactRules}></textarea>
+                <textarea disabled={true} value={editContactRules ?? ""}></textarea>
               </div>
               {canEdit() === true && (
                 <span
