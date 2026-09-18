@@ -10,19 +10,25 @@ function CircleMemberContactPage() {
   const circleInfo = useSelector((state) => state.AuthUser.circle);
   const [contactList, setContactList] = useState([]);
   const [delegate, setDelegate] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+const fetchContactList = async () => {
+  setLoading(true);
+  setError("");
 
-  const fetchContactList = async () => {
-    try {
-      let header = { Authorization: `Bearer ${AuthUser.token.access}` };
-      let url = `${window.location.protocol}//${baseURL}/api/circle-member-contacts/`;
-      const response = await axios.get(url, { headers: header });
-      setDelegate(response.data.find((member) => member?.member.is_delegate) || {});
-      setContactList(response.data);
-    } catch (error) {
-      console.error("Error fetching contact list: ", error);
-    }
-  };
-
+  try {
+    let header = { Authorization: `Bearer ${AuthUser.token.access}` };
+    let url = `${window.location.protocol}//${baseURL}/api/circle-member-contacts/`;
+    const response = await axios.get(url, { headers: header });
+    setDelegate(response.data.find((member) => member?.member.is_delegate) || {});
+    setContactList(response.data);
+  } catch (error) {
+    console.error("Error fetching contact list: ", error);
+    setError("Could not load member contacts. Check your connection and try again.");
+  } finally {
+    setLoading(false);
+  }
+};
   useEffect(() => {
     fetchContactList();
   }, []);
@@ -32,7 +38,7 @@ function CircleMemberContactPage() {
       <div className="row">
         <div className="col-sm-12 col-md-3"></div>
         <div className="col-sm-12 col-md-6 mt-3">
-          <h1 className="text-center">Members Contact Page </h1>
+          <h1 className="text-center">Member Contact Page </h1>
           <h3 className="text-center">
             Circle: {circleInfo?.code} District: {circleInfo?.district?.code}
           </h3>
@@ -42,6 +48,16 @@ function CircleMemberContactPage() {
 
       <div className="row mt-3">
         {/* make a table with columns of No, Legal Name, Address, Contact Info, Contact Rules */}
+        {loading && (
+            <div role="status" className="alert alert-info">
+              Loading member contacts...
+            </div>
+          )}
+          {error && (
+            <div role="alert" className="alert alert-danger">
+              {error}
+            </div>
+          )}
         <table className="table table-bordered">
           <thead>
             <tr className="">
