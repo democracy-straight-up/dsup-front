@@ -8,6 +8,9 @@ export default function ContactInfoItem({ index, delegate, member }) {
   const [editEmail, setEditEmail] = useState(member?.email);
   const [editPhone, setEditPhone] = useState(member?.phone);
   const [editAddress, setEditAddress] = useState(member?.address);
+  const [saveError, setSaveError] = useState("");
+  const [saveSuccess, setSaveSuccess] = useState("");
+  const [saving, setSaving] = useState(false);
   const AuthUser = useSelector((state) => state.AuthUser.user);
 
   const [editing, setEditing] = useState(false);
@@ -23,6 +26,11 @@ export default function ContactInfoItem({ index, delegate, member }) {
   };
 
   const handleUpdate = () => {
+    if (saving) return;
+
+    setSaving(true);
+    setSaveError("");
+    setSaveSuccess("");
     const data = {
       email: editEmail,
       phone: editPhone,
@@ -37,7 +45,7 @@ export default function ContactInfoItem({ index, delegate, member }) {
     axios
       .patch(url, data, { headers: header })
       .then((res) => {
-        console.log("Contact info updated successfully", res.data);
+        setSaveSuccess("Contact information saved.");
         setEditPhone(res.data.phone);
         setEditEmail(res.data.email);
         setEditAddress(res.data?.address);
@@ -46,7 +54,12 @@ export default function ContactInfoItem({ index, delegate, member }) {
         setEditingAddress(false);
         setEditingRules(false);
       })
-      .catch((err) => console.log("error: ", err));
+      .catch(() => {
+        setSaveError("Could not save contact information. Please try again.");
+      })
+      .finally(() => {
+        setSaving(false);
+      });
   };
 
   const ContactEditMode = () => {
@@ -73,8 +86,12 @@ export default function ContactInfoItem({ index, delegate, member }) {
           </div>
         </div>
         <div className="row p-2 gap-3 mx-auto">
-          <button onClick={() => handleUpdate()} className="btn btn-primary btn-sm col-5">
-            Update Contact
+          <button
+            onClick={() => handleUpdate()}
+            disabled={saving}
+            className="btn btn-primary btn-sm col-5"
+          >
+            {saving ? "Saving..." : "Update Contact"}
           </button>
           <button onClick={() => setEditing(false)} className="btn btn-secondary btn-sm col-5">
             cancel
@@ -95,8 +112,12 @@ export default function ContactInfoItem({ index, delegate, member }) {
         </div>
 
         <div className="row py-1 gap-1">
-          <button onClick={() => handleUpdate()} className="btn  btn-primary btn-sm col-5">
-            Update Rules
+          <button
+            onClick={() => handleUpdate()}
+            disabled={saving}
+            className="btn btn-primary btn-sm col-5"
+          >
+            {saving ? "Saving..." : "Update Rules"}
           </button>
           <button onClick={() => setEditingRules(false)} className="btn btn-secondary btn-sm col-5">
             cancel
@@ -118,8 +139,12 @@ export default function ContactInfoItem({ index, delegate, member }) {
         </div>
 
         <div className="col py-1 gap-1">
-          <button onClick={() => handleUpdate()} className="btn btn-primary btn-sm">
-            Update Address
+          <button
+            onClick={() => handleUpdate()}
+            disabled={saving}
+            className="btn btn-primary btn-sm"
+          >
+            {saving ? "Saving..." : "Update Address"}
           </button>
           <button
             onClick={() => setEditingAddress(false)}
@@ -132,6 +157,7 @@ export default function ContactInfoItem({ index, delegate, member }) {
   };
 
   return (
+    <>
     <tr>
       <td>{index + 1}</td>
       <td>
@@ -201,5 +227,22 @@ export default function ContactInfoItem({ index, delegate, member }) {
         </div>
       </td>
     </tr>
+    {(saveError || saveSuccess) && (
+      <tr>
+        <td colSpan={5}>
+          {saveError && (
+            <div role="alert" className="alert alert-danger mb-0">
+              {saveError}
+            </div>
+          )}
+          {saveSuccess && (
+            <div role="status" className="alert alert-success mb-0">
+              {saveSuccess}
+            </div>
+          )}
+        </td>
+      </tr>
+    )}
+    </>
   );
 }

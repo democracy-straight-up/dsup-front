@@ -1,6 +1,6 @@
 # CYSVP Project Handoff
 
-Updated: 2026-09-17 UTC
+Updated: 2026-09-18 UTC
 
 This file preserves the Claim Your Seat Voting Portal's current checkpoint, recovered design decisions, and next steps so work can continue across chats. It is a partial reconstruction, not a complete record of the earlier conversation. Treat the current repository as authoritative for implementation and the explicitly identified decisions below as requirements or intended design.
 
@@ -9,6 +9,63 @@ This file preserves the Claim Your Seat Voting Portal's current checkpoint, reco
 1. Read this file before proposing the next feature. Check current Git status, branches, and PR state; the checkpoint below is dated.
 2. Preserve the recovery design and Circle lifecycle decisions below. Do not assume signup integration is the immediate next task.
 3. Update this file at completed PRs and before switching chats. Commit and push it so a new chat or developer can retrieve it.
+
+## Latest checkpoint — 2026-09-18
+
+Current frontend branch: feat/member-contact-tdd.
+Status: local changes tested and reviewed; not yet committed or merged.
+
+This checkpoint supersedes the pending-merge status and next actions
+in the older Circle connection and Circle join feedback entries.
+
+Completed previously:
+- Circle live connection fix merged; main reached 6704ad6.
+- Circle join feedback fix merged; main reached 2f36d7f.
+- Circle join network-error fix subsequently merged and pulled locally.
+  Its merge commit is not recorded here.
+
+Current Member Contact changes:
+- Loading feedback while contacts are fetched.
+- Visible feedback if fetching contacts fails.
+- Visible save-failure feedback while preserving entered details.
+- All three update buttons disable and show "Saving..." during saving.
+- Successful saves display confirmation and the returned contact values.
+- Existing First Delegate edit-control visibility is preserved.
+
+Validation:
+- Full frontend suite: 37 tests passed across 7 suites.
+- Nine new tests: two page tests and seven contact-row tests.
+- New feedback and saving behavior followed RED/GREEN steps.
+- Visibility tests characterize existing behavior.
+- git diff --check passed.
+- API calls are mocked; live persistence and backend authorization
+  have not been verified by these tests.
+- React act deprecation warnings remain.
+
+Browser verification:
+- Local frontend successfully loaded contacts from the hosted backend.
+- Contact Rules saved successfully and persisted after refresh.
+- Dahlia confirmed Contact Rules works within the current parameters.
+- Feedback moved into a separate row spanning all five columns.
+- Page heading corrected to "Member Contact Page".
+- All seven contact-row tests passed after the layout adjustment.
+- Local login was restored by setting REACT_APP_BASE_URL in
+  .env.local and restarting React. Keep that file out of commits.
+
+Next:
+- Review the final staged diff, commit, push, and open a PR.
+- Address the remaining issues listed below in subsequent focused work.
+
+Remaining work:
+- Cancellation currently retains draft values; review draft handling.
+- Review editing while a save is pending.
+- Improve keyboard access to edit controls.
+- Review missing-session handling, response validation, and page
+  loading lifecycle separately.
+
+Working preference:
+- Redirect test and review output to files in
+  %USERPROFILE%\Downloads for upload.
 
 ## Project and working environment
 
