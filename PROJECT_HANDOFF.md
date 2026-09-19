@@ -332,3 +332,29 @@ Validation:
 
 Next:
 - Review staged changes, commit, push, and open a PR.
+
+## Bill Focus tabs checkpoint — September 19, 2026
+
+Branch: feat/bill-focus-tabs
+Status: verified locally; awaiting review, commit, and PR.
+
+Implemented:
+- Replaced "List of Bills" with My Bills and All Bills tabs.
+- My Bills is selected initially and contains a temporary placeholder.
+- The existing bills table, pagination, and voting controls are
+  contained in All Bills.
+- Bill Focus lists, private stars, and backend persistence are
+  not implemented yet.
+
+Validation:
+- Two tests cover initial tab selection and switching.
+- The switching test includes Bootstrap's tab visibility CSS because
+  the test environment does not load it.
+- Full frontend suite: 42 tests passed across 8 suites.
+- Browser check confirmed initial selection and switching both ways.
+- Existing act deprecation warnings remain.
+
+Next:
+- Review and commit this checkpoint.
+- Continue with Bill Focus sections using the agreed Draft 3 design,
+  then connect each workflow to backend storage.
