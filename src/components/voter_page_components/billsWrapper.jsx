@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import BillItem from "../bills/bill_item";
-import { Table } from "react-bootstrap";
+import { Table, Tabs, Tab } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { baseURL } from "../../store/conf";
@@ -38,7 +38,16 @@ export default function BillsWrapper({ setMessage }) {
 
   return (
     <>
-      <h1 className="fs-3 mt-4 pl-4">List of Bills</h1>
+      <Tabs
+      id="voter-bill-tabs"
+      defaultActiveKey="my-bills"
+      className="mt-4 mb-3"
+      transition={false}
+    >
+      <Tab eventKey="my-bills" title="My Bills">
+        <p>Your Bill Focus lists will appear here once connected.</p>
+      </Tab>
+      <Tab eventKey="all-bills" title="All Bills">
       <Table striped bordered hover responsive="lg">
         <thead>
           <tr className="fw-normal ">
@@ -108,6 +117,8 @@ export default function BillsWrapper({ setMessage }) {
           </tr>
         </tfoot>
       </Table>
+        </Tab>
+      </Tabs>
     </>
   );
 }
