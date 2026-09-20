@@ -1,6 +1,6 @@
 # CYSVP Project Handoff
 
-Updated: 2026-09-18 UTC
+Updated: 2026-09-20 UTC
 
 This file preserves the Claim Your Seat Voting Portal's current checkpoint, recovered design decisions, and next steps so work can continue across chats. It is a partial reconstruction, not a complete record of the earlier conversation. Treat the current repository as authoritative for implementation and the explicitly identified decisions below as requirements or intended design.
 
@@ -10,66 +10,97 @@ This file preserves the Claim Your Seat Voting Portal's current checkpoint, reco
 2. Preserve the recovery design and Circle lifecycle decisions below. Do not assume signup integration is the immediate next task.
 3. Update this file at completed PRs and before switching chats. Commit and push it so a new chat or developer can retrieve it.
 
-## Latest checkpoint — 2026-09-18
+## Latest checkpoint — 2026-09-20
 
-Current frontend branch: feat/member-contact-tdd.
-Status: local changes tested and reviewed; not yet committed or merged.
+Backend branch: `feat/role-transitions`.
+Backend checkpoint committed and pushed to origin/feat/role-transitions:
+7b12d27 — Checkpoint role transitions, Caucus numbering, and Bill vote authentication.
+All 45 backend tests passed before this commit.
+This checkpoint has not yet been confirmed merged or deployed.
 
-This checkpoint supersedes the pending-merge status and next actions
-in the older Circle connection and Circle join feedback entries.
+### Verified results
 
-Completed previously:
-- Circle live connection fix merged; main reached 6704ad6.
-- Circle join feedback fix merged; main reached 2f36d7f.
-- Circle join network-error fix subsequently merged and pulled locally.
-  Its merge commit is not recorded here.
+Full backend suite: 45 tests passed in 9.673 seconds using local
+in-memory SQLite. Evidence: `backend-checkpoint-tests.txt`.
+Django system checks found no issues. The missing staticfiles directory
+warning did not prevent tests from passing.
 
-Current Member Contact changes:
-- Loading feedback while contacts are fetched.
-- Visible feedback if fetching contacts fails.
-- Visible save-failure feedback while preserving entered details.
-- All three update buttons disable and show "Saving..." during saving.
-- Successful saves display confirmation and the returned contact values.
-- Existing First Delegate edit-control visibility is preserved.
+Coverage includes:
+- 24 existing API credential, envelope, and account-key tests.
+- 13 Second Link role and Caucus-numbering tests.
+- One Caucus-number sequence data-migration test.
+- Three repaired Bill API tests.
+- Four replacement Django-native Bill WebSocket tests.
 
-Validation:
-- Full frontend suite: 37 tests passed across 7 suites.
-- Nine new tests: two page tests and seven contact-row tests.
-- New feedback and saving behavior followed RED/GREEN steps.
-- Visibility tests characterize existing behavior.
-- git diff --check passed.
-- API calls are mocked; live persistence and backend authorization
-  have not been verified by these tests.
-- React act deprecation warnings remain.
+### Implemented in this checkpoint
 
-Browser verification:
-- Local frontend successfully loaded contacts from the hosted backend.
-- Contact Rules saved successfully and persisted after refresh.
-- Dahlia confirmed Contact Rules works within the current parameters.
-- Feedback moved into a separate row spanning all five columns.
-- Page heading corrected to "Member Contact Page".
-- All seven contact-row tests passed after the layout adjustment.
-- Local login was restored by setting REACT_APP_BASE_URL in
-  .env.local and restarting React. Keep that file out of commits.
+- A forming Second Link founder receives U4D3 without joining General
+  Caucus before activation.
+- Second Links activate at six accepted members; candidates do not count.
+- Activation assigns a delegate without an existing Caucus membership
+  to district General Caucus 01; its first member becomes HoLC, U4D4.
+- Caucus numbers are unique within each district. Ordinary numbering
+  starts at 02, retires deleted numbers until 99, then reuses the lowest
+  available number. Creation is blocked when 02–99 are all occupied.
+- Model saves reject changes to an existing Caucus's number or district
+  and reject explicit assignments that bypass the allocation sequence.
+- A persistent district sequence preserves numbering progress.
+- Migration 0012 initializes sequences from surviving Caucus records;
+  its test verifies progress survives subsequent deletion.
+- Bill API test setup now supplies the required eligibility attestation,
+  activates its test account, and uses congress_url.
+- Obsolete pytest WebSocket scaffolding was replaced with Django tests.
+- Bill WebSocket connections reject anonymous/inactive users. Voting
+  uses the authenticated username and rejects a mismatched supplied
+  username before changing votes.
+- Tests verify authenticated connection/counts, anonymous rejection,
+  protection against changing another user's vote, and own-vote updates.
 
-Next:
-- Review the final staged diff, commit, push, and open a PR.
-- Address the remaining issues listed below in subsequent focused work.
+New files included in commit 7b12d27:
+- holc/migrations/0010_caucus_code_per_district.py
+- holc/migrations/0011_caucus_number_sequence.py
+- holc/migrations/0012_seed_caucus_number_sequences.py
+- holc/test_caucus_number_migration.py
 
-Remaining work:
-- Cancellation currently retains draft values; review draft handling.
-- Review editing while a save is pending.
-- Improve keyboard access to edit controls.
-- Review missing-session handling, response validation, and page
-  loading lifecycle separately.
+### Remaining work and limits
 
-Working preference:
-- Redirect test and review output to files in
-  %USERPROFILE%\Downloads for upload.
+- Backend checkpoint 7b12d27 is committed and pushed.
+  Commit and push this updated frontend handoff next.
+- This is not approval to deploy the completed role conversion.
+- SQLite tests do not establish concurrent row-lock behavior on the
+  deployment database.
+- Sequence initialization cannot reconstruct numbers deleted before
+  migration. Reconcile legacy numbering and General Caucus 01 identity.
+- Numbering deletion tests use QuerySet deletion; actual dissolution
+  and preservation of historical records remain unfinished.
+- Activation and General Caucus assignment still need atomicity,
+  failure/retry, pending-membership, and concurrent first-HoLC review.
+- Implement Caucus activity with one or more members and no size cap,
+  then continue agreed capabilities, succession, and transfers.
+- Before deploying Bill WebSocket authentication, verify React's Bill
+  connections send the access token and handle rejection/error messages.
+- Bill WebSocket vote-value validation, complete bill identity,
+  district-specific broadcasts, and connection cleanup remain review
+  items. AdviceConsumer has not received this authentication fix.
+- The existing vote-save signal assumes a GroupMember exists; tests
+  now supply memberships, but missing/multiple membership handling
+  remains unresolved.
+- U5D5 remains reserved; no Council of Co-Reps is to be implemented.
+  Resume paused Bill Focus after the required role alignment.
+
+### Paused frontend and recovery work
+
+- Frontend Bill Focus: `feat/bill-focus-sections`, based on `9a8c809`;
+  latest verified full run was 48 tests across eight suites. The detailed
+  checkpoint below records unfinished changes and unconfirmed tests.
+- Recovery: `circle-recovery-auth`, pushed checkpoint `9154fe0`, remains
+  unfinished and separate from role work.
+- Member Contact feedback and cancellation work were merged. Cancellation
+  reached main at `58e6c92`; Dahlia confirmed cancellation in the browser.
 
 ## Project and working environment
 
-The Democracy, Straight-Up! Project is building CYSVP to support its Directly-connected Legislature, including Circles, membership, delegation, credentials, and voting. The recent work concerns authorization and browser encryption of private Circle credentials.
+The Democracy, Straight-Up! Project is building CYSVP to support its Directly-connected Legislature, including Circles, membership, delegation, credentials, and voting. The current priority is a working prototype; role transitions and Caucus numbering are being aligned before resuming Bill Focus. Browser encryption and recovery remain preserved workstreams.
 
 | Item | Known value |
 | --- | --- |
@@ -77,23 +108,27 @@ The Democracy, Straight-Up! Project is building CYSVP to support its Directly-co
 | Frontend local folder | C:\Users\dahli\CYSVP\dsup-front |
 | Backend local folder | C:\Users\dahli\CYSVP\claim-your-seat |
 | Frontend stack inspected | React 18, react-scripts 5.0.1, Node 24, libsodium-wrappers |
-| Backend | Django; recent code in api, vote, and live |
+| Backend repository | https://github.com/democracy-straight-up/claim-your-seat |
+| Backend | Django/DRF; current changes in moda and holc |
 | Backend Python | .venv\Scripts\python within the backend folder |
 | User environment | Windows 11, Command Prompt, VS Code, Chrome |
 
-The backend repository URL, current branch, and complete current API contract have not yet been verified in this resumed session.
+Backend branch last reported: `feat/role-transitions`. Reviews have used uploaded source excerpts and local test output; a complete current API audit has not been performed.
 
 ## Working preferences
 
 - Give small, concrete steps and exact insertion or replacement locations when asking Dahlia to edit code.
 - Join consecutive Command Prompt commands with `&&` so a failure stops the sequence.
-- Save files intended for upload to `%USERPROFILE%\Downloads`.
+- Save files intended for upload to `%USERPROFILE%\Downloads`; redirect test and review output there with `> "..." 2>&1`.
+- Use VS Code. Say **create** for a new file, **open** for an existing file, and distinguish append from replace.
+- Use **forwardmost**, not highest, for representation along the delegation chain.
+- Keep recovered handoff backups. Use uniquely named downloads and verify their actual contents before supplying overwrite commands.
 - Follow focused test-driven changes: demonstrate the intended failure, implement, then verify. Distinguish test-environment failures from feature failures.
 - Review the actual GitHub diff before merging. The established workflow is for Dahlia to merge after review.
 - Avoid unrelated edits and broad formatting changes. An earlier global whitespace cleanup caused excessive changes in api/views.py.
 - Keep secrets, credentials, private keys, and personal account data out of this public repository and this handoff.
 
-## Verified checkpoint
+## Historical vault checkpoint — September 13, 2026
 
 Frontend PR [#117 Add browser account key vault](https://github.com/democracy-straight-up/dsup-front/pull/117) is merged. GitHub reported merged_at 2026-09-12T23:08:15Z; this was verified on 2026-09-13.
 
@@ -175,7 +210,7 @@ Dahlia specified that a Circle has one remaining full member at creation (the fo
 ## Circle join feedback checkpoint — 2026-09-17
 
 Branch: fix/circle-join-feedback
-Status: locally tested; awaiting commit and PR review.
+Status: merged; frontend main reached `2f36d7f`. The later network-error fix also merged (merge commit not recorded).
 
 Changes:
 - A correctly formatted invitation key no longer produces an
@@ -191,17 +226,14 @@ Validation:
 - This feedback change has not been browser-verified.
 - React act deprecation warnings remain.
 
-Next:
-- Review and merge this focused feedback fix.
-- Continue testing successful joining, failed requests, and
-  navigation to Housekeeping.
+Follow-up: network failures now show a helpful message without assuming an HTTP response exists; the full frontend suite reached 28 tests across five suites. End-to-end joining still needs a complete browser rehearsal.
 
 Previous Circle connection fix:
 - Merged into main at 6704ad6 and pulled locally.
 ## Circle connection checkpoint — 2026-09-17
 
 Branch: fix/circle-live-connection
-Status: locally verified; awaiting commit and PR review.
+Status: merged into main at `6704ad6` and pulled locally.
 
 Changes:
 - Circle Housekeeping and joining connections include an access token.
@@ -228,8 +260,7 @@ Limits and next work:
 - React act deprecation warning remains.
 - Hosted Admin Chrome phishing warning remains unresolved; Dahlia
   chose to defer its investigation.
-- Review and merge this focused fix, then continue Circle joining
-  and membership-update work using test-first changes.
+- Continue Circle joining and membership-update work using test-first changes.
 
 ## Current priority: working prototype
 
@@ -242,23 +273,40 @@ bill ordering.
 Broader scaling and recovery hardening are deferred. Preserve
 existing protections and the recovery design decisions above.
 
-Recommended implementation sequence:
-1. Repair Circle joining, authenticated live connections, and
-   Housekeeping updates.
-2. Make Voter Pages dependable and implement saved custom bill
-   ordering. Clarify whether ordering is personal, published
-   by delegates, or both before choosing its data model.
-3. Correct advisement role wiring and delegation-chain lookup;
+Current implementation order:
+1. Complete the agreed role transitions, group-scoped capabilities,
+   General Caucus behavior, and numbering work, with tests.
+2. Resume Bill Focus using the agreed Draft 3 design below. Personal
+   stars and delegate-published lists are distinct; this is no longer
+   an unresolved personal-versus-published ordering question.
+3. Correct advisement role wiring and actual delegation-chain lookup;
    verify voting and tally updates.
-4. Complete First Link and Second Link formation and membership
-   flows.
-5. Rehearse the complete journey across separate accounts,
-   including reloads and failed-request recovery.
+4. Complete Circle, First Link, and Second Link membership journeys.
+5. Rehearse the complete journey across separate accounts, including
+   reloads and failed-request recovery.
 
-The source review identified missing Circle WebSocket tokens,
-broken reconnect logic, and Second Delegate/MoDA advisement
-tabs using the First Delegate type. These findings have not
-yet been repaired or verified in a live demonstration.
+Circle WebSocket authentication and reconnection fixes are merged.
+The earlier finding that Second Delegate/MoDA advisement tabs use the
+First Delegate type remains a review item; do not assume it is fixed.
+
+## Member Contact feedback — completed milestone
+
+- Loading and fetch-failure feedback, save-failure feedback preserving
+  drafts, pending-save controls, and successful-save confirmation added.
+- First Delegate edit-control visibility retained. UI visibility tests
+  do not establish backend authorization.
+- Heading is "Member Contact Page"; feedback occupies a separate row
+  spanning all five columns.
+- At that milestone, 37 frontend tests passed across seven suites.
+- Local frontend loaded contacts from the hosted backend; Contact Rules
+  saved and persisted after refresh. Half-window and full-window screenshots
+  were different viewport sizes, not evidence of a layout regression.
+- Local login was restored with `REACT_APP_BASE_URL` in `.env.local`
+  and a React restart. The current URL builder expects a host without
+  a scheme; keep local environment files out of commits.
+- Further review: keyboard access, missing sessions, response validation,
+  loading lifecycle, and editing during saves. Cancellation was addressed
+  in the subsequent merged milestone below.
 
 ## Paused recovery checkpoint
 
@@ -314,7 +362,7 @@ This handoff is maintained in the frontend repository. Update and push it at com
 ## Checkpoint — 2026-09-18: Member Contact cancellation
 
 Branch: fix/member-contact-cancel
-Status: Implemented and tested; awaiting commit and PR.
+Status: merged and pulled to frontend main at `58e6c92`; cancellation confirmed working in the browser.
 
 - Cancel restores saved email/phone, address, and contact rules.
 - Reopening each editor shows the restored values.
@@ -330,13 +378,12 @@ Validation:
 - git diff --check passed.
 - Existing React act deprecation warnings remain.
 
-Next:
-- Review staged changes, commit, push, and open a PR.
+Next: retain this behavior while developing subsequent features.
 
 ## Bill Focus tabs checkpoint — September 19, 2026
 
 Branch: feat/bill-focus-tabs
-Status: verified locally; awaiting review, commit, and PR.
+Status: merged; frontend main reached `9a8c809` before the next Bill Focus branch.
 
 Implemented:
 - Replaced "List of Bills" with My Bills and All Bills tabs.
@@ -355,6 +402,229 @@ Validation:
 - Existing act deprecation warnings remain.
 
 Next:
-- Review and commit this checkpoint.
 - Continue with Bill Focus sections using the agreed Draft 3 design,
   then connect each workflow to backend storage.
+
+## Bill Focus paused for revised user-role model — updated September 20
+
+### Preserved coding checkpoint
+
+- Frontend branch `feat/bill-focus-sections`, based on main `9a8c809`.
+- Latest reviewed changes were uncommitted edits to
+  `src/components/voter_page_components/billsWrapper.jsx` and
+  `src/components/voter_page_components/billsWrapper.test.jsx`.
+- My Bills receiving/publishing headings exist for selected old role
+  codes; content remains placeholders. This slice has no persistence
+  or publishing API.
+- Last verified full run: 48 tests passed across eight suites;
+  `git diff --check` clean.
+- Four more tests were proposed for U2D1/U3D2/U4D3/U5D4; execution is
+  unconfirmed. U5D4 is obsolete. Existing JSX/tests also use U3D3 and
+  treat U5D5 as Rep; those expectations must change.
+- Check status and preserve working changes before switching branches.
+  Do not treat placeholder headings as a completed revised-role feature.
+- `VoterPage`'s reported `setMessage={() => setMessage()}` wiring drops
+  the argument; inspect and test it when resuming that workflow.
+
+### Agreed role guidance
+
+Dahlia's revised user-role document is accepted guidance. Remaining
+explicit TBDs do not reopen settled decisions. Earlier Co-Rep/Council
+proposals are superseded: **no Council of Co-Reps, ranking, or Council
+eligibility machinery is to be implemented.** A future DcL can design
+an intermediate role if it wants one; reserve U5D5 only.
+
+| Code | Meaning |
+| --- | --- |
+| U0D0 | No accepted Circle membership; includes Circle candidates |
+| U1D0 | Ordinary Circle voter |
+| U1D1 | First Delegate outside a First Link |
+| U2D1 | First Delegate accepted into a First Link |
+| U2D2 | Second Delegate outside a Second Link |
+| U3D2 | Second Delegate accepted into a Second Link |
+| U4D3 | Caucus Delegate, including delegate of a forming Second Link |
+| U4D4 | Head of a Legislative Caucus (HoLC) |
+| U5D5 | Reserved Custom Role; no current assignment or permissions |
+| U6D6 | Straight-Up Rep |
+
+U3D3 and U5D4 are not valid target roles. Role codes are not sufficient
+authorization by themselves: membership, office, group activation, and
+pending applications are separate facts. Pending applicants retain their
+previous role until accepted. Lower-role functions remain available where
+supported by the user's actual memberships and mandate, except for the
+Rep transition described below.
+
+### Formation, activation, and General Caucus
+
+- Assign the intended delegate role at group creation; do not introduce
+  a temporary role while waiting for activation.
+- Special functions requiring activation appear grayed out. Attempting
+  them explains: "This function becomes available to you when your group
+  becomes active." Use an accessible guarded interaction; a native disabled
+  button alone will not provide click feedback. Backend checks remain required.
+- A forming Second Link delegate is U4D3 immediately, but is not yet a
+  General Caucus member. Accepted membership reaches six before activation;
+  candidates do not count. Circle and Link size rules remain 6–12.
+- When the Second Link activates, its eligible delegate joins district
+  General Caucus 01. The very first such General Caucus member becomes
+  its HoLC at that time, receiving U4D4.
+- General Caucus has no admission voting or member-expulsion controls.
+  HoLC selection/replacement remains. Removal occurs through existing
+  mandate and succession mechanisms adapted to the revised roles.
+- Caucuses are active with at least one member and have no 12-member cap.
+  These Caucus rules still need implementation review; do not confuse
+  them with the Second Link activation test already passing.
+- Effects on Caucus membership/HoLC when a previously active Second Link
+  drops below six remain to be settled explicitly.
+
+### Caucus creation and transfers
+
+- Any Caucus Delegate who is not a HoLC may create a Caucus, leave the
+  previous Caucus, and become the new Caucus's HoLC.
+- A HoLC must relinquish that office before creating or switching Caucuses.
+- A transfer applicant remains in their existing Caucus until accepted
+  by the destination; pending applications do not create two memberships.
+- Expulsion from an ordinary Caucus returns an otherwise eligible Caucus
+  Delegate to General Caucus. Losing the underlying delegate mandate is a
+  different transition requiring succession, not automatic reassignment.
+
+### Representative and reserved role
+
+- U5D5 has no current operational meaning beyond reservation for a future
+  DcL-defined Custom Role. Do not build a Co-Rep page or proxy layer for it.
+- DSUp administrators record the DcL's Straight-Up Rep designation; the
+  initial software does not impose a method of selecting the person.
+- U6D6 designation preserves the account and history but ends active Circle
+  membership and delegate offices through appropriate succession.
+- The Rep has no ordinary voter ballot and retains no prior delegate proxy.
+  The Rep may view bills/tallies; Bill Focus publication and recording an
+  actual congressional action are separate capabilities. Details of Rep
+  functions remain TBD and must not accidentally grant ordinary proxy votes.
+- On replacement, the outgoing Rep returns to U0D0 and may apply to join
+  a Circle again. Portal designation does not establish that the person
+  holds a congressional seat.
+
+### Legacy terminology and implementation impact
+
+Internal names can remain if their behavior matches these requirements:
+
+| Existing model | Intended current meaning |
+| --- | --- |
+| SecDelModel | First Link |
+| ModaModel | Second Link |
+| ModaMembers | Second Delegates who belong to that Second Link |
+| HolcModel | Caucus |
+| HolcMembers | Caucus memberships |
+
+MoDA and the temporary L-Cauc terminology preceded Caucus Delegate.
+The district-wide body is intended to be capable of meeting in person.
+`ModaMembers` is not itself the roster of that whole district assembly.
+Inspect behavior rather than undertaking a cosmetic rename.
+
+Known implementation gaps from source review:
+- The tested forming-founder assignment in `moda/models.py` now uses U4D3;
+  other old U3D3 writes in succession, removal, election, and WebSocket
+  paths still require review, including `holc/models.py` and
+  `live/consumerHolc.py`.
+- `rep/models.py` uses obsolete U5D4/U5D5 Council semantics. Do not map those
+  legacy accounts automatically onto the reserved Custom Role.
+- `succession_line.py` encodes the old hierarchy.
+- Some membership cap checks count across all groups rather than within
+  the current group. Caucus activity/cap rules and `HolcModel.delete()`
+  require review; passing allocator tests does not resolve these issues.
+- Role-prefix checks in API creation/joining may conflict with U4D3.
+  Inspect full views, serializers, API/WebSocket authorization, and
+  delegate/vote resolution before relying on the new codes.
+- Frontend `wrapper.jsx` currently routes U5 to HouseRepWrapper and needs
+  explicit U6 routing and handling of reserved U5. Use common components
+  and capabilities rather than new Council screens.
+
+### Implementation direction
+
+1. Preserve the focused backend checkpoint and review its diff/migrations
+   as listed at the start of this file.
+2. Maintain an agreed role/capability/transition table and update Developer
+   Guidance. Implement shared role calculation and transition handling,
+   with tests for group-specific permissions and activation gating.
+3. Complete General Caucus assignment, succession, transfers, and ordinary
+   Caucus creation, adapting existing removal mechanisms. Review concurrent
+   and partially failed transitions.
+4. Implement representative designation only with settled capabilities;
+   leave U5D5 reserved. No Co-Rep or Council ranking implementation.
+5. Prepare a dry-run migration using real memberships and mandates. Review
+   ambiguous legacy accounts individually and reconcile numbering history.
+6. Coordinate frontend/backend rollout and refresh persisted frontend user
+   data. Do not deploy incompatible role meanings independently.
+7. Resume Bill Focus with shared role helpers/API capabilities, TDD, and
+   browser verification, keeping the recovery branch separate.
+
+## Bill Focus — agreed Draft 3 design to preserve
+
+Source: `Bills on Voter Page` Draft 3 and Dahlia's subsequent role clarifications.
+These are requirements, not a claim that storage or workflows are implemented.
+
+- My Bills is the default tab; All Bills retains the eight-column bill
+  table and existing browsing controls.
+- My Bills shows received delegate focus first, followed by the voter's
+  private starred bills in the order added. Stars are private and do not
+  automatically publish anything.
+- Delegate roles receive focus through the actual delegation chain and
+  publish a list for their represented group. The Rep publishes to HoLCs
+  and has no received focus list from a further delegate.
+- Copying a bill into a published list preserves its Added value. A bill
+  can also be published directly from All Bills. Add/remove one at a time;
+  arbitrary manual reordering is outside this agreed design.
+- Avoid duplicate bills. A bill both focused and starred appears once in
+  the focus section; after focus removal it returns to its original place
+  among private stars.
+- Removing a bill locally does not cascade into other lists or erase votes.
+  Published group lists survive a change of delegate.
+- Use the forwardmost applicable source along the voter's actual chain;
+  do not infer it from role rank alone.
+- A voter choosing Present revokes their delegate proxy for that bill.
+  A delegate holding proxy power who selects Present retains that proxy
+  power and can change the vote again.
+- Bill identity includes Congress, bill type, and number. The current
+  planned prototype dataset is the 119th Congress's House bills. Link to
+  Congress.gov, with a sensible fallback when a title is missing.
+- Daily import is planned for midnight America/New_York. Preserve existing
+  data on import failure. January 3, 2027 rollover clears focus lists,
+  not historical bill/vote records.
+- National/district tallies must avoid double-counting delegated votes.
+- Detailed history views and other deferred Draft 3 questions remain
+  deferred; do not invent requirements while implementing the next slice.
+
+### Caucus numbering — agreed September 20, 2026
+
+- Numbering is independent within each congressional district.
+- General Caucus always uses 01; that number is permanently reserved.
+- Other Caucuses receive 02 through 99 sequentially.
+- Dissolved Caucus numbers remain retired until 99 has been assigned
+  in that district.
+- After reaching 99, assign the lowest currently unused number
+  from 02–99. Never reuse a number held by an existing Caucus.
+- If all numbers are occupied, block creation with a clear message.
+- Preserve district numbering progress despite Caucus dissolution.
+- Each Caucus retains a distinct permanent internal identity;
+  reusing its display number must not combine historical records.
+- Display numbers with two digits.
+
+Implementation checkpoint: 13 role/numbering tests and one sequence
+data-migration test pass within the 45-test backend suite. Production
+data reconciliation, actual dissolution, concurrency, and API behavior
+remain unfinished; see the latest checkpoint at the start of this file.
+
+## Handoff recovery and evidence — September 20, 2026
+
+This revision uses `PROJECT_HANDOFF_RECOVERED.md`, restored by Dahlia from
+VS Code Timeline, as its base. An outdated September 13 download previously
+overwrote the newer local handoff. The recovered source is preserved unchanged;
+this update is delivered under a distinct filename.
+
+Later statuses above reconcile earlier pending-PR notes with supplied Git
+output and browser reports. Backend results are taken from uploaded local
+logs, especially `caucus-numbering-boundaries.txt`. The assistant has not run Dahlia's Windows checkout. Uploaded
+backend-checkpoint-save.txt confirms commit 7b12d27 was pushed to
+origin/feat/role-transitions; merge and deployment remain unconfirmed. Check actual
+repository state before continuing. Test counts are dated milestones, not
+interchangeable claims about the current full suite.
