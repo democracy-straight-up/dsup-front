@@ -10,6 +10,29 @@ This file preserves the Claim Your Seat Voting Portal's current checkpoint, reco
 2. Preserve the recovery design and Circle lifecycle decisions below. Do not assume signup integration is the immediate next task.
 3. Update this file at completed PRs and before switching chats. Commit and push it so a new chat or developer can retrieve it.
 
+## Caucus activity checkpoint — 2026-09-20
+
+Backend commit: 51bd859, pushed to origin/feat/role-transitions.
+This supplements the earlier checkpoint below; merge and deployment
+remain unconfirmed.
+
+- Caucus activity now requires at least one accepted member, with no
+  upper limit.
+- Removed the global membership-cap check from HolcMembers.save().
+- Three tests cover one-member activation, fourteen-member admission
+  and activity, and clearing active status for an empty Caucus.
+- Full backend suite: 48 tests passed in 9.979 seconds.
+  Evidence: caucus-activity-full-tests.txt.
+- Backend working tree was clean after committing and pushing.
+
+This completes the model-level activity/cap change previously listed
+as unfinished below. Activity status is refreshed when is_active is
+evaluated; automatic refresh on every membership transition is not
+established by these tests.
+
+Next: review API/WebSocket admission rules and membership transitions,
+including General Caucus assignment and succession.
+
 ## Latest checkpoint — 2026-09-20
 
 Backend branch: `feat/role-transitions`.
