@@ -1,6 +1,6 @@
 # CYSVP Project Handoff
 
-Updated: 2026-09-20 UTC
+Updated: 2026-09-22 UTC
 
 This file preserves the Claim Your Seat Voting Portal's current checkpoint, recovered design decisions, and next steps so work can continue across chats. It is a partial reconstruction, not a complete record of the earlier conversation. Treat the current repository as authoritative for implementation and the explicitly identified decisions below as requirements or intended design.
 
@@ -783,6 +783,142 @@ ordinary-Caucus acceptance/expulsion decision mechanism that calls the
 now-tested transition functions, rather than reviving the obsolete
 WebSocket vote-in/vote-out implementation unchanged.
 
+## Latest completed checkpoint — 2026-09-22: Caucus admission voting
+
+Backend branch:
+`feat/role-transitions`
+
+Latest pushed backend checkpoint:
+`a2f1537` — `Implement Caucus admission voting`
+
+Parent checkpoint:
+`9496ef8` — `Harden Caucus admission and transfers`
+
+Backend working tree was clean after commit and push, and the branch was confirmed up to date with `origin/feat/role-transitions`.
+
+### Implemented in this checkpoint
+
+Caucus admission now has a complete decision path from authenticated API vote through majority calculation to the previously tested atomic membership transfer.
+
+New model:
+
+`CaucusAdmissionVote`
+
+Each record stores:
+
+* The accepted Caucus member casting the vote.
+* The pending Caucus application being voted on.
+* The vote timestamp.
+
+A database uniqueness constraint on `(voter, application)` enforces one admission vote per member per application.
+
+Migration:
+
+`holc/migrations/0013_caucusadmissionvote_and_more.py`
+
+### Admission decision service
+
+New transition/service:
+
+`cast_caucus_admission_vote()`
+
+The service:
+
+* Requires the target `HolcMembers` record to remain a pending application.
+
+* Rejects admission voting for General Caucus 01.
+
+* Allows only a currently accepted member of the destination Caucus to vote.
+
+* Prevents the same member from voting twice on the same application.
+
+* Calculates the majority as:
+
+  `current accepted member count // 2 + 1`
+
+* Counts only votes cast by members who are still currently accepted members of the destination Caucus.
+
+* Preserves historical vote records when a voter later leaves, but such votes cease contributing to the live majority.
+
+* Invokes `accept_eligible_delegate_into_caucus()` when the current majority threshold is reached.
+
+Both the vote operation and the completed membership-transfer transition are explicitly wrapped in `@transaction.atomic`.
+
+### API
+
+`HolcMembersViewSet` now exposes:
+
+`POST /holc-members/<application-id>/vote_admission/`
+
+through the DRF `vote_admission` detail action.
+
+The action:
+
+* Requires an authenticated active user.
+* Passes the authenticated user to the admission-vote service rather than accepting an arbitrary voter identity from request data.
+* Returns the current/accepted `HolcMembers` representation after a successful vote.
+* Converts domain `ValidationError` failures into HTTP 400 responses.
+
+The existing `join_invite_key` action remains a `detail=False` action; an accidental route change discovered during review was corrected before commit.
+
+### Decision semantics verified
+
+Six focused admission-decision tests now verify:
+
+1. A majority of accepted Caucus members accepts a pending delegate.
+2. A nonmember cannot vote on another Caucus's application.
+3. One accepted member cannot vote twice on the same application.
+4. An accepted member can cast an admission vote through the API.
+5. The deciding majority vote through the API completes the full Caucus transfer while preserving the applicant's Second Link mandate and U4D3 role.
+6. A vote cast by a member who subsequently leaves the Caucus remains in the audit record but no longer counts toward the current majority.
+
+The completed admission path therefore now connects:
+
+pending application
+→ accepted-member vote
+→ durable vote record
+→ current-member majority
+→ atomic source/destination Caucus transfer.
+
+### Important remaining work
+
+Ordinary-Caucus admission is now implemented through the decision layer.
+
+The corresponding ordinary-Caucus expulsion decision workflow remains to be rebuilt.
+
+That work should:
+
+* Use the existing `expel_eligible_delegate_to_general()` domain transition after a completed expulsion.
+* Apply only to ordinary Caucuses, never General Caucus 01.
+* Define a durable one-member/one-vote expulsion record rather than restoring the deleted legacy `VoteOutHolcMember` model unchanged.
+* Count only votes belonging to members who remain currently accepted in the Caucus.
+* Prevent the target HoLC from being expelled through the ordinary member-expulsion path until HoLC relinquishment/replacement is handled deliberately.
+* Preserve the distinction between ordinary Caucus expulsion and loss of the underlying Second Link delegate mandate.
+* Keep historical vote records for auditability without letting departed voters continue to affect a live majority.
+
+The old WebSocket vote-in/vote-out implementation remains stale and should not be revived piecemeal.
+
+### Frontend preservation
+
+Frontend branch:
+`feat/bill-focus-sections`
+
+Current pushed frontend handoff checkpoint:
+`3bb7946` — `Update handoff for Caucus admission hardening`
+
+Continue preserving these two uncommitted Bill Focus files:
+
+* `src/components/voter_page_components/billsWrapper.jsx`
+* `src/components/voter_page_components/billsWrapper.test.jsx`
+
+Do not restore, discard, or include those files in a handoff-only commit.
+
+### Next
+
+Continue from backend checkpoint `a2f1537`.
+
+The next backend slice should implement the ordinary-Caucus expulsion voting decision mechanism, using the same current-membership majority principles established for admission and invoking the already-tested `expel_eligible_delegate_to_general()` transition only after the required majority is reached.
+
 ## Latest completed checkpoint — 2026-09-22: Caucus admission and exit transitions
 
 Backend repository:
@@ -1104,3 +1240,252 @@ Bill Focus work.
 
 After the required Caucus/role alignment is sufficient for the prototype,
 resume Bill Focus Draft 3 on `feat/bill-focus-sections`.
+
+## Latest completed checkpoint — 2026-09-22: Caucus expulsion voting
+
+Backend repository:
+`C:\Users\dahli\CYSVP\claim-your-seat`
+
+Backend branch:
+`feat/role-transitions`
+
+Latest pushed backend checkpoint:
+`84258d4` — `Implement Caucus expulsion voting`
+
+Parent checkpoint:
+`a2f1537` — `Implement Caucus admission voting`
+
+The backend working tree was clean after commit and push. The branch was confirmed pushed to `origin/feat/role-transitions`.
+
+### Verified results
+
+Full backend suite: **75 tests passed**.
+
+Focused ordinary-Caucus expulsion-decision suite: **8 tests passed**.
+
+`makemigrations --check` reported no model changes after migration generation.
+
+`git diff --check` was clean before commit.
+
+Django system checks reported no issues. The previously known PowerShell `NativeCommandError` wrapper around Django's test-database stderr output remains harmless when the test suite proceeds normally and ends in `OK`.
+
+### Implemented in this checkpoint
+
+Ordinary Caucus expulsion now has a complete decision path from authenticated member vote through majority calculation to return of the expelled eligible delegate to General Caucus.
+
+New model:
+
+`CaucusExpulsionVote`
+
+Migration:
+
+`holc/migrations/0014_caucusexpulsionvote_and_more.py`
+
+Each expulsion-vote record stores:
+
+* The accepted Caucus member casting the vote.
+* The user targeted for expulsion.
+* The ordinary Caucus in which the vote occurs.
+* A snapshot of the target's specific `HolcMembers` membership ID.
+* The vote timestamp.
+
+The target membership ID is intentionally stored as a numeric snapshot rather than as a foreign key to `HolcMembers`. This allows the expulsion-vote audit history to survive deletion of the expelled ordinary-Caucus membership.
+
+The membership-ID snapshot also distinguishes separate membership episodes. If the same user later rejoins the same Caucus with a new `HolcMembers` record, votes from the previous membership episode do not apply to the new one.
+
+A database uniqueness constraint on:
+
+`(voter, caucus, target_membership_id)`
+
+enforces one expulsion vote per accepted member per target membership episode.
+
+### Expulsion decision service
+
+New transition/service:
+
+`cast_caucus_expulsion_vote()`
+
+The service is wrapped in `@transaction.atomic`.
+
+It:
+
+* Requires the target to remain an accepted Caucus member.
+
+* Applies only to ordinary Caucuses.
+
+* Rejects use of the ordinary expulsion mechanism in General Caucus 01.
+
+* Prevents an incumbent HoLC from being expelled through the ordinary member-expulsion path. The HoLC must first relinquish that office through the separate succession/replacement process.
+
+* Allows only a currently accepted member of the target's Caucus to cast an expulsion vote.
+
+* Prevents the same member from voting twice against the same membership episode.
+
+* Calculates the live majority as:
+
+  `current accepted member count // 2 + 1`
+
+* Counts the target as part of the accepted Caucus membership when determining the majority threshold.
+
+* Counts only votes belonging to users who remain currently accepted members of that Caucus.
+
+* Preserves historical votes after a voter leaves the Caucus, while removing that departed voter's vote from the live majority calculation.
+
+* Invokes `expel_eligible_delegate_to_general()` when the required current-member majority is reached.
+
+### Completed expulsion transition
+
+When the deciding vote reaches the majority threshold, the existing domain transition:
+
+`expel_eligible_delegate_to_general()`
+
+returns the expelled delegate from the ordinary Caucus to district General Caucus 01.
+
+The completed transition:
+
+* Removes the ordinary-Caucus membership.
+* Preserves the durable expulsion-vote records.
+* Preserves the user's underlying accepted delegate mandate in an active Second Link.
+* Preserves the U4D3 Caucus Delegate role unless existing first-member General-Caucus behavior legitimately assigns HoLC office.
+* Creates or restores accepted General Caucus membership.
+* Does not treat ordinary Caucus expulsion as loss of the underlying Second Link delegate mandate.
+
+Loss of that underlying mandate remains a separate succession transition.
+
+### API
+
+`HolcMembersViewSet` now exposes:
+
+`POST /holc-members/<membership-id>/vote_expulsion/`
+
+through the DRF `vote_expulsion` detail action.
+
+The action:
+
+* Requires an authenticated, active user.
+* Uses the authenticated user as the voter rather than accepting an arbitrary voter identity from request data.
+* Passes the target `HolcMembers` record to the expulsion service.
+* Returns the resulting membership representation after a successful vote.
+* Before majority, that is still the target's ordinary-Caucus membership.
+* On the deciding majority vote, it is the resulting General Caucus membership.
+* Converts domain `ValidationError` failures into HTTP 400 responses.
+
+The existing `join_invite_key` action remains `detail=False`.
+
+### Expulsion semantics verified
+
+Eight focused tests in:
+
+`holc/test_caucus_expulsion_decisions.py`
+
+verify:
+
+1. A majority of accepted ordinary-Caucus members expels an eligible delegate and returns that delegate to General Caucus.
+2. An accepted Caucus member can cast an expulsion vote through the API.
+3. The deciding majority vote through the API completes the full expulsion-to-General transition.
+4. An incumbent HoLC cannot be targeted through the ordinary expulsion mechanism.
+5. General Caucus 01 cannot use ordinary member expulsion.
+6. A nonmember/outsider cannot cast an expulsion vote.
+7. One accepted member cannot vote twice against the same membership episode.
+8. A historical vote cast by a member who subsequently leaves remains in the audit record but no longer counts toward the current majority.
+
+The completed expulsion path therefore now connects:
+
+accepted ordinary-Caucus membership
+→ accepted-member expulsion vote
+→ durable vote record
+→ current-member majority
+→ atomic return to General Caucus
+→ preserved Second Link delegate mandate and U4D3 role.
+
+### Caucus decision-layer status
+
+Ordinary-Caucus admission and expulsion now both have working decision paths.
+
+Admission:
+
+pending application
+→ current accepted-member vote
+→ current-member majority
+→ atomic transfer into destination Caucus.
+
+Expulsion:
+
+accepted ordinary-Caucus membership
+→ current accepted-member vote
+→ current-member majority
+→ atomic return to General Caucus.
+
+Both workflows deliberately avoid reviving the stale legacy `VoteInHolcMember` / `VoteOutHolcMember` WebSocket machinery unchanged.
+
+### Important remaining Caucus and role work
+
+The admission and ordinary-expulsion decision layers are now implemented, but the broader role-transition review is not complete.
+
+Still outstanding:
+
+* Implement HoLC relinquishment/replacement and succession deliberately.
+* A HoLC must relinquish office before switching Caucuses, leaving an ordinary Caucus, or becoming subject to ordinary expulsion.
+* Keep loss of the underlying Second Link delegate mandate separate from voluntary departure or ordinary-Caucus expulsion.
+* Review succession behavior when a Second Link delegate loses that mandate.
+* Review what happens to General Caucus membership and HoLC office when a previously active Second Link drops below its activation threshold.
+* Review legacy `HolcMembers.delete()` and `HolcModel.delete()` behavior, which still contains obsolete U3D3 role writes.
+* Review remaining succession and WebSocket paths that still encode obsolete role codes or hierarchy assumptions.
+* Review stale `live/consumerHolc.py` vote-in/vote-out machinery rather than patching it piecemeal.
+* Review `HolcMembersViewSet.get_holc_by_user` and other lookups that assume one `HolcMembers` record per user; accepted plus pending transfer records can make those assumptions false.
+* Review similar contact/member lookups for accepted-plus-pending membership ambiguity.
+* Continue treating actual membership, office, delegate mandate, district, and activation state as authorization facts; role code alone is not sufficient.
+* SQLite tests do not establish production-database row-lock behavior.
+
+Do not claim that completion of admission and expulsion voting resolves these succession, legacy-role, concurrency, or deployment issues.
+
+### Current role/design constraints to preserve
+
+* U0D0 — no accepted Circle membership.
+* U1D0 — ordinary Circle voter.
+* U1D1 — First Delegate outside a First Link.
+* U2D1 — First Delegate accepted into a First Link.
+* U2D2 — Second Delegate outside a Second Link.
+* U3D2 — Second Delegate accepted into a Second Link.
+* U4D3 — Caucus Delegate, including the delegate of a forming Second Link.
+* U4D4 — HoLC.
+* U5D5 — reserved Custom Role with no current permissions.
+* U6D6 — Straight-Up Rep.
+* U3D3 and U5D4 are obsolete target roles.
+
+General Caucus 01 remains system-assigned from the active Second Link mandate. It does not expose ordinary application or ordinary member-expulsion behavior.
+
+### Frontend preservation
+
+Frontend repository:
+`C:\Users\dahli\CYSVP\dsup-front`
+
+Frontend branch:
+`feat/bill-focus-sections`
+
+Continue preserving the existing paused Bill Focus edits:
+
+* `src/components/voter_page_components/billsWrapper.jsx`
+* `src/components/voter_page_components/billsWrapper.test.jsx`
+
+Do not restore, discard, or accidentally include those files in a handoff-only commit.
+
+Recovery/security work remains preserved separately on backend branch:
+
+`circle-recovery-auth`
+
+checkpoint:
+
+`9154fe0`
+
+### Next
+
+Continue the revised role/Caucus lifecycle from backend checkpoint:
+
+`84258d4`
+
+The ordinary admission and expulsion decision workflows are now sufficiently rebuilt that the next substantive backend work should move to **HoLC relinquishment/replacement and succession behavior**, including the role and membership consequences of a HoLC stepping down.
+
+Do not revive the obsolete WebSocket succession/removal behavior unchanged. Establish the intended current behavior with focused TDD and use explicit transition functions where practical.
+
+After enough remaining Caucus/role behavior is aligned for the working prototype, resume the paused Bill Focus Draft 3 work on frontend branch `feat/bill-focus-sections`.
