@@ -652,6 +652,137 @@ origin/feat/role-transitions; merge and deployment remain unconfirmed. Check act
 repository state before continuing. Test counts are dated milestones, not
 interchangeable claims about the current full suite.
 
+## Latest completed checkpoint — 2026-09-22: Caucus admission hardening and transfers
+
+Backend branch:
+`feat/role-transitions`
+
+Latest pushed backend checkpoint:
+`9496ef8` — `Harden Caucus admission and transfers`
+
+Parent checkpoint:
+`a8065cc` — `Implement Caucus admission and exit transitions`
+
+Backend working tree was clean after commit and push, and the branch was
+confirmed up to date with `origin/feat/role-transitions`.
+
+### Verified results
+
+Full backend suite: **61 tests passed**.
+
+Focused Caucus lifecycle suite: **13 tests passed**.
+
+`git diff --check` was clean before commit.
+
+### Implemented in this checkpoint
+
+A new atomic transition,
+`accept_eligible_delegate_into_caucus()`, now represents a completed
+acceptance of a pending ordinary-Caucus application.
+
+The transition:
+
+* Requires an existing pending Caucus membership rather than an already
+  accepted membership.
+* Rejects General Caucus 01 as an ordinary admission destination.
+* Re-verifies an actual accepted delegate mandate in an active Second
+  Link in the same district.
+* Requires the applicant to have exactly one existing accepted Caucus
+  membership before transfer.
+* Prevents a current HoLC from transferring until the office is
+  relinquished.
+* Deletes the previous accepted Caucus membership and converts the
+  pending destination membership to accepted status inside one atomic
+  transaction.
+* Preserves the applicant's active Second Link delegate mandate.
+* Preserves the U4D3 Caucus Delegate role.
+* Refreshes activity status for the source and destination Caucuses.
+* Deliberately bypasses the legacy `HolcMembers.delete()` instance
+  behavior because that method still writes obsolete U3D3.
+
+### Admission API hardening
+
+`HolcMembersViewSet.join_invite_key()` now also:
+
+* Rejects ordinary applications to General Caucus 01. General membership
+  remains system-assigned from the underlying Second Link mandate.
+* Rejects a duplicate membership or pending application for the same
+  user and destination Caucus.
+* Checks actual accepted `HolcMembers.is_delegate` office state, so a
+  stale U4D3 profile code cannot allow a current HoLC to apply to another
+  Caucus.
+* Continues to require authentication, self-application, U4D3, and an
+  actual active Second Link delegate mandate.
+
+### Tests added
+
+Four additional focused tests brought the full backend suite from
+57 to 61.
+
+They verify:
+
+1. Accepting a pending eligible delegate transfers the accepted Caucus
+   membership from the source Caucus to the destination while preserving
+   the Second Link mandate and U4D3.
+2. An eligible delegate cannot apply manually to General Caucus.
+3. A duplicate pending application to the same Caucus is rejected
+   without creating another membership row.
+4. A user who actually holds HoLC office cannot apply to another Caucus
+   merely because their cached profile role has become inconsistent and
+   says U4D3.
+
+The completed-admission transition test belongs to
+`CaucusAdmissionTests`; creation, admission, and exit tests remain
+separated by lifecycle responsibility.
+
+### Important remaining work
+
+A completed-admission transition now exists, but the actual Caucus
+decision mechanism that determines when a pending applicant has been
+accepted has not yet been rebuilt.
+
+The legacy WebSocket vote-in/vote-out code still references missing or
+obsolete models and serializers. Do not restore its old role behavior
+piecemeal.
+
+Still outstanding:
+
+* Define and implement the ordinary-Caucus acceptance decision workflow
+  that invokes `accept_eligible_delegate_into_caucus()`.
+* Rebuild the ordinary-Caucus expulsion decision workflow to invoke
+  `expel_eligible_delegate_to_general()`.
+* Keep General Caucus outside ordinary admission and expulsion workflows.
+* Implement HoLC relinquishment/replacement deliberately before allowing
+  HoLC transfer or departure.
+* Keep loss of the underlying Second Link delegate mandate separate from
+  ordinary Caucus departure or expulsion; mandate loss requires the
+  succession path.
+* Review legacy `HolcMembers.delete()`, `HolcModel.delete()`, succession,
+  and WebSocket role writes that still use obsolete U3D3 or old hierarchy
+  assumptions.
+* SQLite tests do not establish production-database row-lock behavior.
+
+### Frontend preservation
+
+Frontend branch:
+`feat/bill-focus-sections`
+
+Continue preserving the two uncommitted Bill Focus files:
+
+* `src/components/voter_page_components/billsWrapper.jsx`
+* `src/components/voter_page_components/billsWrapper.test.jsx`
+
+Do not restore, discard, or include those files in a handoff-only commit.
+
+### Next
+
+Continue from backend checkpoint `9496ef8`.
+
+The next substantive Caucus work should define and test the actual
+ordinary-Caucus acceptance/expulsion decision mechanism that calls the
+now-tested transition functions, rather than reviving the obsolete
+WebSocket vote-in/vote-out implementation unchanged.
+
 ## Latest completed checkpoint — 2026-09-22: Caucus admission and exit transitions
 
 Backend repository:
