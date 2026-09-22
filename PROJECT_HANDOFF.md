@@ -1489,3 +1489,105 @@ The ordinary admission and expulsion decision workflows are now sufficiently reb
 Do not revive the obsolete WebSocket succession/removal behavior unchanged. Establish the intended current behavior with focused TDD and use explicit transition functions where practical.
 
 After enough remaining Caucus/role behavior is aligned for the working prototype, resume the paused Bill Focus Draft 3 work on frontend branch `feat/bill-focus-sections`.
+
+## Latest completed checkpoint — 2026-09-22: HoLC replacement voting
+
+Backend branch: `feat/role-transitions`
+
+Current clean backend HEAD:
+
+`61762afdab1d3e18d7f585fd4abd0588c2af3712` — `Add final newlines to HoLC replacement files`
+
+Substantive implementation commit:
+
+`a1f995a612dfbe9b43c70e2412236cc41db4b264` — `Implement HoLC replacement voting`
+
+Parent completed checkpoint:
+
+`84258d4d399cfc30ba5e313c1cd46e5500d4f4b7` — `Implement Caucus expulsion voting`
+
+### HoLC replacement behavior now implemented
+
+Authenticated accepted Caucus members can vote to replace the current HoLC through:
+
+`POST /holc-members/<candidate-membership-id>/vote_holc_replacement/`
+
+Current rules enforced:
+
+* The candidate must be a currently accepted member of that Caucus.
+* The candidate must not already be the incumbent HoLC.
+* The candidate must hold an active Second Link delegate mandate in the same district.
+* The voter must be a currently accepted member of the candidate’s Caucus.
+* A member cannot cast more than one replacement vote for the same candidate.
+* The database now enforces uniqueness for `(voter, candidate, holc)`.
+* Only votes belonging to currently accepted Caucus members count toward the live majority.
+* Historical votes from members who later leave remain stored but stop contributing to the live majority.
+* A simple majority is `current accepted membership // 2 + 1`.
+* When the candidate reaches the live majority:
+
+  * the incumbent remains an accepted Caucus member;
+  * the incumbent ceases to be HoLC and returns to U4D3;
+  * the successful candidate becomes the sole HoLC and becomes U4D4.
+* A pending Caucus applicant cannot become HoLC.
+* An outsider cannot cast a HoLC replacement vote.
+* A replacement vote cannot be associated with a different Caucus from the candidate.
+* Direct legacy `PutForwardHolcMember` writes are also guarded against pending candidates, outsiders, Caucus mismatch, duplicate votes, and votes naming the incumbent as the replacement candidate.
+
+Migration `holc/0015_putforwardholcmember_unique_holc_replacement_vote.py` removes pre-existing duplicate replacement-vote rows before installing the uniqueness constraint, preserving the earliest vote in each duplicate group.
+
+### Test checkpoint
+
+`holc.test_holc_replacement`:
+
+**11 tests GREEN**
+
+Coverage includes:
+
+* departed-member vote excluded from live majority;
+* duplicate vote protection;
+* pending applicant rejection;
+* outsider rejection;
+* candidate/Caucus mismatch rejection;
+* active Second Link mandate requirement;
+* authenticated API vote;
+* API rejection without active Second Link mandate;
+* end-to-end majority HoLC replacement;
+* direct-model rejection of incumbent self-candidacy;
+* API rejection of incumbent self-candidacy.
+
+Final backend suite:
+
+**86 tests / OK**
+
+Also verified:
+
+* `manage.py makemigrations --check` → `No changes detected`
+* `git diff --check` → clean
+* backend working tree clean after push
+
+### Known remaining succession cleanup
+
+The successful HoLC replacement still invokes legacy `succession_line.py`.
+
+During the passing replacement test, the succession logger reported that the former HoLC was updated to U4D3 “after removal from districtcouncil,” even though the test involved no District Council membership. This is stale hierarchy terminology/logic from the obsolete District Council / Co-Rep architecture and was deliberately not changed in the HoLC replacement slice.
+
+`succession_line.py` still needs a deliberate cleanup for the current role architecture rather than piecemeal fixes.
+
+### Still unresolved
+
+Voluntary HoLC relinquishment semantics have not yet been specified.
+
+The current implementation covers **replacement of an incumbent HoLC by Caucus majority**. It does not decide whether an HoLC may voluntarily resign and leave the office temporarily vacant, or whether relinquishment must occur only as part of an immediate successor transition.
+
+Do not invent this behavior until the rule is explicitly settled.
+
+### Next logical work
+
+Continue the role-transition/lifecycle work from this clean checkpoint.
+
+The next work should distinguish:
+
+1. cleanup of obsolete succession behavior and role mappings in `succession_line.py`; and
+2. the still-unresolved rule for voluntary HoLC relinquishment.
+
+Do not reopen completed Caucus admission, expulsion, or HoLC replacement behavior unless a new failing test establishes a regression.
