@@ -652,6 +652,173 @@ origin/feat/role-transitions; merge and deployment remain unconfirmed. Check act
 repository state before continuing. Test counts are dated milestones, not
 interchangeable claims about the current full suite.
 
+## Latest completed checkpoint — 2026-09-22: Caucus admission and exit transitions
+
+Backend repository:
+`C:\Users\dahli\CYSVP\claim-your-seat`
+
+Branch:
+`feat/role-transitions`
+
+Latest pushed backend checkpoint:
+`a8065cc` — `Implement Caucus admission and exit transitions`
+
+Parent checkpoint:
+`d262b29` — `Implement Caucus creation and membership transfer`
+
+The backend working tree was clean after commit and push, and the branch
+was confirmed up to date with `origin/feat/role-transitions`.
+
+### Verified results
+
+Full backend suite: **57 tests passed in 8.621 seconds** using the local
+in-memory SQLite test configuration.
+
+Focused Caucus lifecycle suite: **9 tests passed**.
+
+Django system checks reported no issues. The existing missing
+`staticfiles` directory warning did not prevent the suite from passing.
+
+`git diff --check` was clean before commit.
+
+### Implemented in this checkpoint
+
+Existing-Caucus admission now:
+
+* Requires an authenticated, active user.
+* Requires the submitted username to match the authenticated user.
+* Requires U4D3 plus an actual accepted delegate mandate in an active
+  Second Link in the destination Caucus's district.
+* Does not treat the U4D3 role code alone as sufficient authorization.
+* Creates a pending destination membership rather than immediately
+  transferring the applicant.
+* Preserves the applicant's existing accepted Caucus membership and
+  U4D3 role while the destination application is pending.
+* Uses current Caucus terminology in the reviewed error path and removes
+  obsolete membership-cap exception handling from that path.
+
+Voluntary ordinary-Caucus departure now:
+
+* Uses the standard HolcMembers API DELETE route.
+* Allows a user to leave only their own Caucus membership.
+* Prevents a HoLC from leaving without first relinquishing that office.
+* Prevents voluntary departure from General Caucus as if it were an
+  ordinary Caucus.
+* Allows cancellation of a pending application without affecting the
+  user's accepted Caucus membership or role.
+* Requires an actual active Second Link delegate mandate before an
+  accepted ordinary-Caucus member can use the return-to-General
+  transition.
+* Returns an otherwise eligible Caucus Delegate automatically to district
+  General Caucus 01.
+* Preserves the underlying Second Link delegate mandate.
+* Preserves U4D3 unless existing first-member model behavior legitimately
+  makes the returning member the General Caucus HoLC.
+* Refreshes activity status for the affected ordinary and General
+  Caucuses.
+
+### Shared transition layer
+
+New file:
+`holc/transitions.py`
+
+`return_eligible_delegate_to_general()` centralizes the atomic transition
+from an ordinary Caucus back to General Caucus.
+
+It deliberately bypasses the legacy `HolcMembers.delete()` instance
+method because that method still writes obsolete U3D3.
+
+The transition locks and re-reads the relevant membership, verifies an
+accepted non-HoLC ordinary-Caucus membership and an active Second Link
+delegate mandate, removes the ordinary membership, restores General
+Caucus membership, repairs the current Caucus role, and refreshes the
+affected Caucus activity states.
+
+`expel_eligible_delegate_to_general()` is an explicit semantic entry
+point for the same transition after a completed ordinary-Caucus
+expulsion. The actual voting/expulsion mechanism has not yet been
+rebuilt.
+
+### Tests added in this slice
+
+`holc/test_caucus_admission.py` is now organized into:
+
+* `CaucusCreationTests`
+* `CaucusAdmissionTests`
+* `CaucusExitTests`
+
+Five additional tests brought the full backend suite from 52 to 57.
+
+They verify:
+
+1. A signed-in delegate cannot apply another user to an existing Caucus.
+2. U4D3 role code alone cannot authorize an existing-Caucus application
+   without an actual active Second Link delegate mandate.
+3. An eligible delegate's application to another Caucus remains pending
+   while the existing accepted Caucus membership and U4D3 role remain
+   intact.
+4. An eligible delegate voluntarily leaving an ordinary Caucus is
+   returned automatically to General Caucus while retaining the active
+   Second Link delegate mandate.
+5. The explicit completed-expulsion transition returns an otherwise
+   eligible ordinary-Caucus member to General Caucus with the same
+   mandate preserved.
+
+### Important remaining gaps
+
+The old Caucus vote-in/vote-out WebSocket machinery is stale and should
+not be patched piecemeal.
+
+`live/consumerHolc.py` still references `VoteOutHolcMember` and
+`VoteInHolcMember`, but those current model/serializer definitions are
+absent. Its legacy removal path also writes obsolete U3D3 directly.
+
+Therefore:
+
+* The new expulsion transition exists and is tested.
+* A functioning majority vote-out/expulsion workflow does **not** yet
+  exist on this branch.
+* Rebuild the expulsion decision path deliberately rather than layering
+  new behavior onto the obsolete WebSocket implementation.
+* General Caucus must not expose ordinary application or expulsion
+  behavior; its membership is system-assigned from the underlying active
+  Second Link mandate.
+* Duplicate pending applications and other admission edge cases still
+  need review.
+* HoLC succession/relinquishment remains separate work.
+* Loss of the underlying Second Link delegate mandate is a succession
+  transition and must not be treated as an ordinary return-to-General
+  exit.
+* `HolcMembers.delete()` and `HolcModel.delete()` still contain obsolete
+  role-transition behavior.
+* Other succession paths still encode obsolete role codes and hierarchy.
+* SQLite tests do not establish production-database row-lock behavior.
+
+### Current frontend state
+
+Frontend branch:
+`feat/bill-focus-sections`
+
+Preserve the existing uncommitted Bill Focus edits:
+
+* `src/components/voter_page_components/billsWrapper.jsx`
+* `src/components/voter_page_components/billsWrapper.test.jsx`
+
+Do not restore, discard, or accidentally include those files in a
+handoff-only commit.
+
+### Next
+
+Continue the Caucus lifecycle from checkpoint `a8065cc`.
+
+The next substantive backend work should review and rebuild the actual
+ordinary-Caucus admission/acceptance and expulsion decision mechanisms
+against the revised role model, using the shared transition functions
+rather than the obsolete WebSocket removal behavior.
+
+Once enough Caucus/role behavior is aligned for the prototype, resume
+the paused Bill Focus Draft 3 work on `feat/bill-focus-sections`.
+
 ## Completed checkpoint — 2026-09-22: Caucus creation and membership transfer
 
 Backend repository:
