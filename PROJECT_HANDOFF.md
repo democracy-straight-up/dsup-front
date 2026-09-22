@@ -651,3 +651,158 @@ backend-checkpoint-save.txt confirms commit 7b12d27 was pushed to
 origin/feat/role-transitions; merge and deployment remain unconfirmed. Check actual
 repository state before continuing. Test counts are dated milestones, not
 interchangeable claims about the current full suite.
+
+## Completed checkpoint — 2026-09-22: Caucus creation and membership transfer
+
+Backend repository:
+`C:\Users\dahli\CYSVP\claim-your-seat`
+
+Branch:
+`feat/role-transitions`
+
+Latest pushed backend checkpoint:
+`d262b29` — `Implement Caucus creation and membership transfer`
+
+Backend working tree was clean after the commit and push. The branch was
+confirmed up to date with `origin/feat/role-transitions`.
+
+### Verified results
+
+Full backend suite: **52 tests passed in 8.471 seconds** using the local
+in-memory SQLite test configuration.
+
+Focused Caucus-creation suite: **4 tests passed**.
+
+Django system checks reported no issues. The existing missing
+`staticfiles` directory warning did not prevent the suite from passing.
+
+`git diff --check` was clean before commit.
+
+### Implemented in this checkpoint
+
+`HolcViewSet.create` now:
+
+* Requires an authenticated, active user whose profile role is U4D3.
+* Requires the submitted username to match the authenticated user.
+* Requires creation in the user's own congressional district.
+* Verifies an actual accepted, active Second Link delegate mandate;
+  U4D3 role code alone is not treated as sufficient authorization.
+* Refuses creation by a user who currently holds a HoLC office.
+* Performs existing-Caucus departure and new-Caucus creation inside an
+  atomic transaction.
+* Creates the new ordinary Caucus using the existing per-district
+  numbering allocator.
+* Makes the creator the first accepted member and therefore HoLC, U4D4,
+  through the existing HolcMembers model behavior.
+* Preserves the creator's underlying Second Link delegate mandate.
+* Immediately evaluates the new Caucus's activity status.
+* Converts Caucus-number exhaustion into a controlled HTTP 400 response.
+* Rolls back the membership transfer if Caucus creation fails.
+
+The transfer deliberately uses QuerySet deletion for the old
+HolcMembers record rather than `HolcMembers.delete()`, because the
+instance delete method still writes the obsolete U3D3 role.
+
+### Tests added
+
+New file:
+`holc/test_caucus_admission.py`
+
+The four tests verify:
+
+1. An ordinary member cannot create a Caucus.
+2. A signed-in Caucus Delegate cannot create a Caucus for another user.
+3. An eligible active Second Link delegate can leave General Caucus 01,
+   create ordinary Caucus 02, become its HoLC, retain the Second Link
+   delegate mandate, and leave the existing General HoLC unchanged.
+4. If ordinary Caucus numbers 02–99 are all occupied, creation returns
+   HTTP 400 and the atomic transaction preserves the creator's existing
+   General Caucus membership and U4D3 role.
+
+### Current role/design constraints
+
+* U4D3 is Caucus Delegate; U4D4 is HoLC.
+* Forming Second Link delegates receive U4D3 immediately, but
+  activation-gated functions require an active Second Link.
+* General Caucus membership begins only upon Second Link activation.
+* Any eligible Caucus Delegate who is not a HoLC may create a Caucus,
+  leave the previous Caucus, and become HoLC of the new Caucus.
+* A HoLC must relinquish office before creating or switching Caucuses.
+* Actual membership, mandate, activation, office, and district matter;
+  role code alone is insufficient authorization.
+* A transfer applicant to an existing Caucus remains in the old Caucus
+  until the destination accepts them. Pending membership must not create
+  two accepted Caucus memberships.
+* General Caucus is always 01.
+* Ordinary Caucuses use 02–99 independently within each district.
+* Retired ordinary numbers remain unavailable until 99 has been issued;
+  thereafter the allocator uses the lowest currently available number.
+* Caucuses are active with at least one accepted member and have no
+  maximum membership.
+* U5D5 remains a reserved Custom Role with no current permissions.
+* U6D6 is Straight-Up Rep.
+* U3D3 and U5D4 are obsolete target roles.
+
+### Known remaining model/API gaps
+
+* `HolcMembers.delete()` still writes obsolete U3D3.
+* `HolcModel.delete()` also contains legacy role-transition behavior.
+* `ModaMembers` still has an incorrect global membership-cap check.
+* `ModaModel.is_active` performs activation side effects.
+* Some Second Link succession paths still write obsolete role codes.
+* Several succession and WebSocket paths still encode the old hierarchy.
+* Existing-Caucus admission, switching, expulsion, HoLC succession, and
+  return-to-General-Caucus behavior still require deliberate review and
+  tests.
+* SQLite tests do not establish production-database row-lock behavior.
+
+Do not claim that the Caucus-creation checkpoint resolves these remaining
+transition and succession issues.
+
+### Frontend state
+
+Frontend repository:
+`C:\Users\dahli\CYSVP\dsup-front`
+
+Branch:
+`feat/bill-focus-sections`
+
+Current local frontend edits must be preserved:
+
+* `PROJECT_HANDOFF.md`
+* `src/components/voter_page_components/billsWrapper.jsx`
+* `src/components/voter_page_components/billsWrapper.test.jsx`
+
+The Bill Focus work remains paused while the revised role and Caucus
+behavior is aligned. Do not restore, discard, or casually commit the two
+Bill Focus files.
+
+Recovery/security work remains preserved separately on branch
+`circle-recovery-auth`, checkpoint `9154fe0`.
+
+### Working conventions
+
+* Dahlia edits locally in VS Code and runs commands from Windows CMD.
+* Give exact create/open/append/replace instructions.
+* Use `&&` between consecutive CMD commands where appropriate.
+* Follow TDD: establish and inspect the real RED before implementation,
+  then focused GREEN, full-suite GREEN, and diff review.
+* Do not assume access to Dahlia's local checkout.
+* Do not use VS Code `Save As` merely to make upload copies of repository
+  files; it retargets the editor to the copied file.
+* Use `copy` from CMD when a repository file needs to be copied to
+  Downloads for upload.
+* For test runs, prefer showing output on screen while simultaneously
+  saving it to Downloads with PowerShell `Tee-Object`. This lets Dahlia
+  catch simple syntax or indentation errors immediately without having
+  to copy terminal output manually.
+
+### Next
+
+Continue the revised Caucus lifecycle review from this committed
+checkpoint. Prioritize the remaining admission and membership-transition
+behavior needed for the working prototype, while preserving the paused
+Bill Focus work.
+
+After the required Caucus/role alignment is sufficient for the prototype,
+resume Bill Focus Draft 3 on `feat/bill-focus-sections`.
