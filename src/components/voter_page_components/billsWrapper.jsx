@@ -7,6 +7,11 @@ import { baseURL } from "../../store/conf";
 
 export default function BillsWrapper({ setMessage }) {
   const AuthUser = useSelector((state) => state.AuthUser.user);
+  const circleInfo = useSelector((state) => state.AuthUser.circle);
+  const firstLinkInfo = useSelector((state) => state.AuthUser.sec_del);
+  const caucusInfo = useSelector((state) => state.AuthUser.holc);
+  const secondLinkInfo = useSelector((state) => state.AuthUser.moda);
+  const isFirstDelegate = AuthUser?.users?.userType === "U1D1";
   const [currentPage, setCurrentPage] = useState(1);
   const [bills, setBills] = useState({});
 
@@ -45,7 +50,61 @@ export default function BillsWrapper({ setMessage }) {
       transition={false}
     >
       <Tab eventKey="my-bills" title="My Bills">
-        <p>Your Bill Focus lists will appear here once connected.</p>
+            {["U1D0", "U1D1", "U2D2", "U3D3", "U4D4"].includes(AuthUser?.users?.userType) ? (
+          <>
+            <section className="mb-4">
+              <h2 className="fs-4">Bill Focus from My Delegate</h2>
+              <p>Your delegate's Bill Focus will appear here once connected.</p>
+            </section>
+
+            {isFirstDelegate && (
+              <section className="mb-4">
+                <h2 className="fs-4">
+                  Bill Focus for Circle {circleInfo?.code}
+                </h2>
+                <p>Your Circle's Bill Focus will appear here once connected.</p>
+              </section>
+            )}
+
+            {AuthUser?.users?.userType === "U2D2" && (
+              <section className="mb-4">
+                <h2 className="fs-4">
+                  Bill Focus for First Link {firstLinkInfo?.code}
+                </h2>
+                <p>
+                  Your First Link's Bill Focus will appear here once connected.
+                </p>
+              </section>
+            )}
+                        {AuthUser?.users?.userType === "U3D3" && (
+              <section className="mb-4">
+                <h2 className="fs-4">
+                  Bill Focus for Second Link {secondLinkInfo?.code}
+                </h2>
+                <p>
+                  Your Second Link's Bill Focus will appear here once connected.
+                </p>
+              </section>
+            )}
+                       {AuthUser?.users?.userType === "U4D4" && (
+              <section className="mb-4">
+                <h2 className="fs-4">
+                  Bill Focus for Caucus {caucusInfo?.code}
+                </h2>
+                <p>
+                  Your Caucus's Bill Focus will appear here once connected.
+                </p>
+              </section>
+            )}
+          </>
+        ) : AuthUser?.users?.userType === "U5D5" ? (
+          <section className="mb-4">
+            <h2 className="fs-4">Bill Focus for HoLCs</h2>
+            <p>Your Bill Focus for HoLCs will appear here once connected.</p>
+          </section>
+        ) : (
+          <p>Your Bill Focus lists will appear here once connected.</p>
+        )}
       </Tab>
       <Tab eventKey="all-bills" title="All Bills">
       <Table striped bordered hover responsive="lg">

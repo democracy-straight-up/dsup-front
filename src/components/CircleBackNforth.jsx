@@ -28,7 +28,7 @@ const CircleBackNforth = () => {
   useEffect(() => {
     /** This useEffect opens the web socket protocal and fetches B&F data */
     let ws_schame = window.location.protocol == "https:" ? "wss" : "ws";
-    const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/ws/${circleInfo?.code}/${AuthUser?.username}/`;
+    const url = `${ws_schame}://${process.env.REACT_APP_BASE_URL}/ws/${circleInfo?.code}/${AuthUser?.username}/?token=${AuthUser?.token?.access}`;
     socketRef.current = new WebSocket(url);
 
     socketRef.current.onopen = (event) => {
@@ -79,7 +79,7 @@ const CircleBackNforth = () => {
         It checks if the web socket is open   */
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       socketRef.current.send(
-        JSON.stringify({ sender: AuthUser.username, message: message })
+        JSON.stringify({ message: message })
       );
       setMessage("");
     }
@@ -114,7 +114,9 @@ const CircleBackNforth = () => {
           {/* checking if this message has handle */}
           <p className="mb-0">
             <span className="fw-bold fw-bold">
-              {message.sender?.users?.legalName}
+              {message.is_system
+                ? "System"
+                : message.sender?.users?.legalName}
             </span>
             <span className="text-muted small">
               {" "}
