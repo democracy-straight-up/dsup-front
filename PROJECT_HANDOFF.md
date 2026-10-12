@@ -1,6 +1,6 @@
 # CYSVP Project Handoff
 
-Updated: 2026-09-22 UTC
+Updated: 2026-010-11 UTC
 
 This file preserves the Claim Your Seat Voting Portal's current checkpoint, recovered design decisions, and next steps so work can continue across chats. It is a partial reconstruction, not a complete record of the earlier conversation. Treat the current repository as authoritative for implementation and the explicitly identified decisions below as requirements or intended design.
 
@@ -1581,6 +1581,779 @@ The current implementation covers **replacement of an incumbent HoLC by Caucus m
 
 Do not invent this behavior until the rule is explicitly settled.
 
+## Design clarification — succession and group operational powers
+
+The current `succession_line.py` does **not** fully reflect the intended succession design and should not be treated as authoritative. In particular, current code can prefer members based on legacy `put_forward` votes and only fall back to join order. The intended system is an explicit, maintained succession line.
+
+### Succession line
+
+Every group has an ordered line of succession.
+
+The initial succession order is the order in which members were **accepted into the group**, not merely the order in which membership/application records were created.
+
+Conceptually:
+
+```text
+Delegate
+1. First successor
+2. Second successor
+3. Third successor
+...
+```
+
+The succession order must be persisted explicitly rather than inferred from `joined_at`, `date_joined`, `put_forward` votes, or other incidental data.
+
+The group delegate has authority to reorder the succession line. This should be exposed through a delegate-only interface.
+
+Ordinary members do **not** have authority to arbitrarily reorder the succession line. The expectation is that members may discuss the desired ordering through the group's B&F process and ask the delegate to execute an agreed change.
+
+However, every accepted member has one unilateral succession power:
+
+**A member may replace the person immediately ahead of them in the succession order.**
+
+This operation may be repeated. Therefore, if several people ahead of a member are unexpectedly unavailable, that member can move forward through the line one position at a time and, if necessary, become delegate.
+
+Example:
+
+```text
+Delegate: Alice
+1. Betty
+2. Carlos
+3. Dahlia
+4. Erin
+```
+
+Dahlia may first replace Carlos:
+
+```text
+Delegate: Alice
+1. Betty
+2. Dahlia
+3. Carlos
+4. Erin
+```
+
+and may then replace Betty:
+
+```text
+Delegate: Alice
+1. Dahlia
+2. Betty
+3. Carlos
+4. Erin
+```
+
+and may then replace Alice and become delegate:
+
+```text
+Delegate: Dahlia
+1. Alice
+2. Betty
+3. Carlos
+4. Erin
+```
+
+This is primarily a fault-tolerance and continuity mechanism, not an election procedure.
+
+Legacy `put_forward` voting and the succession line are separate concepts. Majority replacement of a delegate, where applicable, must not determine the automatic succession order.
+
+### Group operational powers
+
+The delegate must have sufficient housekeeping authority to prevent a group from becoming mechanically deadlocked.
+
+This authority is deliberately stronger than ordinary member authority, but it applies only to **group operation and housekeeping**, not to a member's sovereign legislative voting power.
+
+The operational powers package includes:
+
+* control of the group's succession order;
+* authority to exercise or change housekeeping votes on behalf of any group member when necessary; and
+* authority to unilaterally expel a member from the group.
+
+The delegate must always have the technical ability to control the housekeeping votes of every group member. The circumstances in which the delegate should use that power are properly a subject of group discussion and norms, but the software must not eliminate the discretion.
+
+This is necessary because otherwise membership inclusion, promotion, exclusion, succession, or other housekeeping decisions could become impossible when members are absent, incapacitated, unreachable, or dead.
+
+A catastrophic case makes the requirement clear: a 12-member group might lose six members simultaneously. The surviving members cannot be allowed to remain permanently unable to remove the deceased members, admit replacements, or restore the group to working order merely because the ordinary vote threshold can no longer be reached.
+
+Accordingly, unilateral delegate expulsion is an anti-logjam power.
+
+### Boundary between housekeeping authority and voter sovereignty
+
+A delegate's housekeeping authority ends at the boundary of the group.
+
+Unilaterally expelling someone from a Circle, Link, Caucus, or other group disconnects that person from the group and its internal processes. It does **not** give the delegate authority to alter or erase that person's sovereign legislative votes.
+
+Delegates must never have a general power to delete another voter's legislative voting history.
+
+### Death, loss of eligibility, and district changes
+
+A separate problem arises when a voter dies, leaves the district, or otherwise ceases to be a legal voter.
+
+That is not ultimately a group-housekeeping determination. It belongs to the voter-verification system and, where human review is necessary, the **Voter Verification Committee**.
+
+A voter who changes districts should normally update their district status. A voter who cancels an account or otherwise becomes ineligible should likewise be disconnected appropriately. But the system must also handle cases in which the voter cannot or does not perform that action because of death, incapacity, injury, or noncooperation.
+
+Once the voter-verification process establishes that a person is no longer an eligible voter in the relevant jurisdiction, that person's sovereign votes must cease to count promptly.
+
+The preferred design is:
+
+**Preserve the historical vote record, but remove its legal effect.**
+
+For example:
+
+```text
+Voter cast YES on Bill 817.
+Voter later became ineligible in the district.
+The historical YES record remains auditable.
+The YES vote no longer contributes to the live tally.
+```
+
+This is preferable to physically deleting the historical vote record. It prevents an ineligible voter from continuing to exercise political power while preserving an auditable record of what occurred and avoiding any mechanism by which a delegate or administrator can rewrite voting history.
+
+The same principle already appears conceptually in recent housekeeping work: a departed member's historical HoLC replacement vote may remain stored while no longer counting toward the current-member majority.
+
+### Authority separation
+
+The software should maintain a clear separation among three kinds of authority:
+
+**Voter sovereignty**
+The individual voter's legislative vote. Group delegates cannot alter or erase it.
+
+**Group housekeeping**
+Operational authority necessary to keep Circles, Links, Caucuses, and other groups functioning. Delegates have strong anti-logjam powers here, including succession control, housekeeping-vote control, and unilateral expulsion.
+
+**Voter eligibility**
+Whether a person remains legally entitled to cast or maintain effective sovereign votes in a particular jurisdiction. This belongs to voter verification and the Voter Verification Committee, not to the group delegate.
+
+These distinctions should guide the upcoming succession rewrite and any later work involving housekeeping voting, expulsion, voter verification, and the treatment of votes belonging to voters who become ineligible.
+
+## Design clarification — legislative proxies and forward delegation
+
+The current bill-voting code does **not** yet implement the intended proxy architecture and should not be treated as authoritative for proxy semantics.
+
+### Core voter-level proxy rule
+
+Every bill begins with the voter's **proxy enabled by default**.
+
+A Circle Voter may revoke or restore the proxy on any bill at any time.
+
+Proxy status is conceptually separate from the voter's substantive position on the bill.
+
+The system therefore needs to be capable of representing separately:
+
+```text
+Voter's substantive bill position:
+Yea / Nay / Present / no direct position yet
+
+Proxy status:
+Enabled / Revoked
+```
+
+The current implementation instead represents `Yea`, `Nay`, `Present`, and `Proxy` as four mutually exclusive values of one `BillVote.your_vote` field. That does not match the intended architecture and will require redesign.
+
+The existing model default of `Px` also does not by itself provide the intended default-proxy behavior because a `BillVote` database row is not currently created automatically for every eligible voter on every bill. A voter with no row has no proxy state represented in the current UI.
+
+### First Delegate proxy interface
+
+A First Delegate must have a proxy-management interface for the Circle voters they represent.
+
+The anticipated interface should allow the F-Del to move among the represented Circle members — for example, through one tab per member — and inspect the proxies currently available to the F-Del.
+
+The F-Del must have enough information to represent the Circle intelligently in First Link deliberation.
+
+At minimum the F-Del needs an aggregate picture of the represented voters' bill positions and proxy availability, including:
+
+```text
+Yea
+Nay
+Present
+Proxy
+```
+
+The exact visibility of individual Circle Voters' substantive votes remains **TBD**.
+
+Do not assume that a Circle Voter's legislative vote must be confidential from the F-Del. It may ultimately be desirable for the F-Del to see individual voter positions in order to represent the Circle accurately, but that privacy/visibility rule has not yet been settled.
+
+### Scope of the F-Del proxy view — TBD
+
+Two related interface questions remain unresolved:
+
+**TBD 1 — Active proxies versus all bill activity**
+
+Should the F-Del's member view display only bills for which that voter currently has an active proxy available to the F-Del?
+
+Or should it display all bill votes/positions, including bills on which the voter has revoked proxy authority?
+
+**TBD 2 — Bill Focus**
+
+Should the F-Del proxy-management interface be limited to bills currently within the relevant `Bill Focus`?
+
+Or should the F-Del be able to inspect/manage proxy information for all active bills regardless of Bill Focus?
+
+Do not settle either question in code until the design is explicitly resolved.
+
+### Forwarding proxies
+
+A First Delegate must be able to cede the proxies they currently hold to their Second Delegate as a **bundle**.
+
+This cession is revocable.
+
+The important conceptual distinction is:
+
+```text
+Circle Voter
+    ↓ individual revocable proxy
+F-Del
+    ↓ revocable bundle of received proxies
+Sec-Del
+    ↓ potentially further forward delegation
+...
+```
+
+An F-Del who directly holds proxies from Circle Voters may exercise those proxies individually for the voters who have delegated them.
+
+When a forward delegate receives a bundle from a lower-level delegate, the present design concept is that the received bundle must be exercised **as a block**, rather than splitting and independently voting its constituent proxies.
+
+The rationale is that accumulated proxies provide delegates with negotiating authority on behalf of the represented constituency as delegation proceeds forward through the system.
+
+**However, the bundle-as-a-block rule remains TBD.** It is an active design question and should not yet be hard-coded as irrevocable architecture.
+
+### Revocation must propagate downstream
+
+Proxy delegation must remain revocable throughout the chain.
+
+If an individual Circle Voter revokes their proxy for a bill, that voter's proxy must immediately cease contributing to every forwarded bundle containing it.
+
+Likewise, if an F-Del or another forward delegate revokes a bundle they previously ceded upward, the proxies represented by that cession must cease contributing to the receiving delegate's authority.
+
+Therefore proxy bundles must be dynamically traceable to their underlying constituent proxies.
+
+A forwarded bundle should **not** be represented merely as a static integer such as:
+
+```text
+proxy_weight = 37
+```
+
+because that would make correct downstream subtraction difficult or impossible when one underlying voter revokes a proxy.
+
+The system must preserve sufficient provenance to answer questions such as:
+
+```text
+Which voters currently constitute this bundle?
+Through which delegates did each proxy arrive?
+Is each underlying proxy still active?
+Has any intermediate cession been revoked?
+What is the bundle's current effective weight?
+```
+
+A voter's revocation should remove only that voter's proxy from downstream authority, not invalidate unrelated proxies in the same bundle.
+
+An intermediate delegate's revocation of a forwarded bundle should remove that cession from the next level while leaving the underlying voter-to-lower-delegate proxies intact unless those voters themselves revoke them.
+
+### Proxy authority versus voter sovereignty
+
+A proxy delegates the ability to act for the voter; it does not transfer ownership of the vote.
+
+The individual voter remains sovereign.
+
+A voter must always be able to revoke or restore their proxy without requiring permission from the F-Del or any forward delegate.
+
+Changes at the voter level must propagate through the delegation chain so that no delegate can continue exercising proxy weight that is no longer valid.
+
+This is consistent with the broader Straight-Up principle of revocable delegation.
+
+### Relationship to Bill Focus
+
+`Bill Focus` and proxy delegation are related but distinct concepts.
+
+Bill Focus determines which bills receive concentrated attention and organization.
+
+Proxy status determines who currently possesses authority to act for a voter on a bill.
+
+The software should not conflate the two unless and until the unresolved scope decision described above is settled.
+
+### Current implementation audit — 2026-09-22
+
+The existing code contains only partial foundations for this design.
+
+Current backend `bills.models.BillVote` represents the voter's state with one mutually exclusive field:
+
+```text
+Y = Yea
+N = Nay
+Pr = Present
+Px = Proxy
+```
+
+`your_vote` has a model default of `Px`, but BillVote records are not automatically instantiated for every voter/bill combination. Consequently, a bill on which a voter has never acted currently has no stored proxy state.
+
+The current voter interface likewise presents Yea, Nay, Present, and Proxy as mutually exclusive radio buttons. Proxy is therefore presently treated as an alternative to casting Yea/Nay/Present rather than as a separately revocable delegation flag.
+
+The backend currently supports:
+
+* creation and updating of an individual voter's bill-vote record;
+* aggregate Yea/Nay/Present/Proxy counts;
+* district-level Yea/Nay/Present/Proxy counts;
+* delegate advisements on bills.
+
+It does **not** currently provide the intended F-Del proxy-management architecture.
+
+In particular, the normal `BillVoteViewSet` deliberately exposes only the authenticated user's own BillVote records. There is no current F-Del API that returns the represented Circle's proxy inventory or substantive vote distribution.
+
+The existing F-Link frontend is a housekeeping/member-management interface and does not contain the required per-Circle-member proxy tabs or proxy-management view.
+
+No implemented data model was found for:
+
+```text
+proxy ownership/holder
+forwarded proxy bundles
+bundle constituent membership
+bundle cession to the next delegate
+bundle revocation
+downstream subtraction after voter revocation
+proxy provenance through multiple delegation levels
+```
+
+The current frontend `My Bills` / Bill Focus work is also incomplete. The current branch still contains a placeholder indicating that Bill Focus lists will be connected later.
+
+### Implementation consequence
+
+Do not extend the existing `Y / N / Pr / Px` representation into the forward-delegation system.
+
+Before implementing proxy forwarding, the bill-vote domain should be redesigned so that substantive voter position and proxy/delegation state can be represented independently.
+
+The proxy system should then be built around revocable, traceable authority rather than copied vote totals.
+
+The exact F-Del visibility rule, Bill Focus scope, and forwarded-bundle voting semantics remain explicit **TBDs**.
+
+## Design clarification — voter resolutions and Resolution Focus
+
+The resolution system has not yet been part of the developer specification and should be treated as new authoritative design guidance.
+
+The Voter Page should ultimately have three principal legislative tabs:
+
+```text
+Bill Focus
+All Bills
+Resolutions
+```
+
+The `Resolutions` tab should contain two principal sections:
+
+```text
+Approved Resolutions / Resolution Focus
+All Resolutions
+```
+
+The final public-facing name for the focused resolution list remains **TBD**. `Resolution Focus` may better express the relationship to `Bill Focus` than `Approved Resolutions`, because committee placement on this list is not itself final voter approval of the resolution.
+
+### Purpose of resolutions
+
+Resolutions provide a voter-originated mechanism for establishing and changing the internal rules, procedures, policies, and other collective decisions that properly belong in a rules document rather than in enacted legislation.
+
+Any eligible voter should be able to originate a resolution.
+
+The resolution system should therefore provide an interface in which a voter can:
+
+* create and submit a proposed resolution;
+* search the existing resolution database before or while drafting;
+* inspect related existing resolutions;
+* revise a proposed resolution before final submission where appropriate; and
+* participate in voting on resolutions.
+
+### AI-assisted aggregation
+
+One important purpose of the resolution system is to use AI to help aggregate similar voter proposals before they fragment into many substantially overlapping resolutions.
+
+AI may assist with tasks such as:
+
+* semantic search across existing and proposed resolutions;
+* identifying substantially similar resolutions;
+* identifying overlapping language or objectives;
+* suggesting that authors consider merging proposals;
+* helping compare alternative formulations;
+* assisting humans in consolidating related proposals; and
+* surfacing clusters of proposals addressing the same underlying issue.
+
+For example, when a voter drafts or submits a resolution, the system might say:
+
+```text
+Your proposed resolution appears similar to Resolution 184.
+
+Would you like to:
+
+View Resolution 184
+Compare the two
+Contact or collaborate with its author
+Propose a merger
+Continue submitting your resolution separately
+```
+
+AI is an **aggregation and decision-support tool**, not a decision maker.
+
+AI must not automatically merge resolutions, rewrite one voter's proposal into another, approve a resolution, reject a resolution, or determine what becomes a rule.
+
+Final substantive decisions remain with human beings.
+
+### Resolution Committee
+
+A **Resolution Committee** is responsible for reviewing the larger pool of submitted resolutions and identifying resolutions that should receive focused attention.
+
+The composition and operation of `default` committees will be specified separately. Do not invent those rules yet.
+
+The Resolution Committee is composed of Circle Voters rather than delegates.
+
+This distinction is intentional.
+
+Resolution Focus is therefore generated through a voter committee rather than through the forward-delegate structure.
+
+The committee may use AI extensively to search, organize, compare, cluster, and evaluate the submitted-resolution pool, but placement on Resolution Focus must remain a human committee decision.
+
+### Resolution Focus versus approval
+
+Committee selection for Resolution Focus is not final passage.
+
+Conceptually:
+
+```text
+Any voter may submit a resolution
+        ↓
+All Resolutions database
+        ↓
+Resolution Committee review and aggregation
+        ↓
+Resolution Focus
+        ↓
+Voter voting
+        ↓
+Majority approval
+        ↓
+Rules document
+```
+
+A resolution approved by the required voter majority should automatically become part of the applicable rules document.
+
+This is intended to echo the way a legislative body maintains formal rules, while placing final authority in the voters.
+
+The exact technical representation of the rules document, amendment/versioning behavior, effective dates, and treatment of superseded or conflicting resolutions remain to be designed.
+
+### Voting on resolutions
+
+Resolution voting should use the same basic voter-sovereignty principle as bill voting.
+
+Eligible voters may cast their own resolution votes.
+
+The proxy system should apply to resolutions in substantially the same way that it applies to bills.
+
+Accordingly:
+
+* a voter's resolution proxy should initially be available by default;
+* the voter may revoke or restore that proxy;
+* the F-Del may exercise individual proxies directly;
+* proxy authority may be bundled and forwarded through the delegation structure;
+* forwarded proxy authority remains revocable;
+* revocation must propagate downstream through any bundle containing that proxy; and
+* the eventual resolution-proxy implementation should use the same traceable provenance architecture as bill proxies rather than an independent incompatible system.
+
+The unresolved proxy questions identified for bills also apply to resolutions unless later specified otherwise, including the exact rules governing bundled proxy exercise by forward delegates.
+
+### Resolution Focus differs from Bill Focus
+
+Although the interfaces may be parallel, `Bill Focus` and `Resolution Focus` should not be assumed to have identical selection mechanisms.
+
+The important distinction is:
+
+```text
+Bill Focus:
+focus mechanism for external legislation
+selection rules still governed by the bill-focus design
+
+Resolution Focus:
+focus mechanism for voter-originated resolutions
+selected by the Resolution Committee
+```
+
+The Resolution Committee's power is therefore an **agenda/focus power**, not sovereign lawmaking power.
+
+The voters retain the final decision over whether a focused resolution passes.
+
+### Search and aggregation should begin during submission
+
+Resolution aggregation should not be treated merely as a cleanup step after thousands of proposals have accumulated.
+
+The system should help aggregation begin at the point of authorship.
+
+As a voter types or prepares a resolution, semantic search should be capable of surfacing existing proposals with related meaning.
+
+This creates an opportunity for voluntary consolidation before duplicate resolutions proliferate.
+
+The design principle is:
+
+**AI should make coordination easier without taking coordination away from people.**
+
+Possible future workflow:
+
+```text
+Draft resolution
+      ↓
+AI similarity search
+      ↓
+Related resolutions surfaced
+      ↓
+Human chooses:
+merge / collaborate / revise / remain separate
+      ↓
+Submit
+```
+
+The author always retains the final choice about whether to merge, revise, or submit separately unless a later human-governed procedural rule specifies otherwise.
+
+### Architectural implication
+
+Bills and resolutions should share reusable infrastructure where their semantics genuinely match, especially:
+
+* individual voter voting;
+* proxy activation/revocation;
+* proxy provenance;
+* delegate-held proxies;
+* forwarding/bundling;
+* downstream revocation;
+* tallies;
+* advisement where applicable; and
+* voter eligibility filtering.
+
+They should not be collapsed into one indistinguishable object simply because both are voted upon.
+
+Bills and resolutions have different origins, workflows, focus-selection mechanisms, and final effects.
+
+A likely architecture is shared voting/proxy infrastructure beneath separate Bill and Resolution domain models.
+
+### Explicit TBDs
+
+The following resolution questions remain deliberately unresolved:
+
+* whether the focused list should be publicly named `Approved Resolutions`, `Resolution Focus`, or something else;
+* the design and membership rules for the Resolution Committee and other default committees;
+* the exact majority denominator required for passage;
+* how abstention/nonparticipation affects that denominator;
+* how amendments to resolutions work;
+* whether authors can formally co-author or merge submissions;
+* what happens to the original proposals after a merger;
+* how conflicting approved resolutions are reconciled;
+* how the rules document is versioned and published;
+* when an approved resolution becomes effective; and
+* whether some categories of resolutions require different thresholds.
+
+Do not invent these rules during implementation. Preserve them as explicit design decisions still to be made.
+
+## Design clarification — default committees, sortition, and launch scope
+
+As a general rule, the creation, purpose, structure, membership, powers, and dissolution of working bodies inside a DcL should be controlled by the DcL itself rather than predetermined by the software.
+
+The software should therefore avoid hard-coding a general committee system that dictates what committees voters must have.
+
+There are, however, a very small number of committees that are sufficiently fundamental to operation of the system that they may properly be treated as **default or constitutional committees**: committees established by the software itself rather than separately created by each DcL.
+
+At present, two such committees have been identified:
+
+```text
+Voter Verification Committee
+Resolution Committee
+```
+
+The aim is to keep this hard-coded list as small as possible. Do not add additional default committees merely because they might be useful. New committees should normally be created through the DcL's own decision-making processes.
+
+### Committee pool
+
+Once a voter is connected to the DcL, the voter may voluntarily enter the pool from which default committee members are selected.
+
+A voter may join this pool only if the voter is **not currently a delegate**.
+
+The Voter Page should provide an appropriate control, such as:
+
+```text
+Join Committee Pool
+```
+
+Participation is voluntary.
+
+The exact rules for entering, leaving, re-entering, or temporarily becoming ineligible for the committee pool remain to be specified.
+
+### Sortition
+
+Default committee membership will be selected from the willing committee pool by **sortition**.
+
+The point is not to create another elected political class. Committee service should be distributed among ordinary connected voters who have volunteered to be available.
+
+Important parameters remain TBD, including:
+
+* the DcL membership level at which each committee first becomes active;
+* whether committee activation is keyed directly to total DcL size;
+* committee size;
+* whether committee size grows as the DcL grows;
+* term length;
+* replacement rules;
+* rotation frequency;
+* treatment of a selected member who declines or becomes unavailable;
+* whether previous members face a waiting period before reselection; and
+* any additional eligibility requirements.
+
+Do not invent these thresholds during implementation.
+
+### Delegate incompatibility
+
+A connected voter who is serving as a delegate should not simultaneously serve on one of these default committees.
+
+The intended principle is:
+
+```text
+Ordinary connected voter
+        ↓
+may volunteer for committee pool
+
+Current delegate
+        ↓
+not eligible for committee pool/service
+```
+
+This helps keep default committees rooted in the ordinary voter population rather than allowing the forward-delegation hierarchy to occupy the committee structure as well.
+
+The exact behavior when a committee member subsequently becomes a delegate remains TBD and should be specified before implementation.
+
+### Committee decision interface
+
+Committee members will require their own interface for committee business.
+
+At minimum, a committee should be able to:
+
+* see matters currently before the committee;
+* deliberate using whatever communication tools are ultimately provided;
+* cast committee votes;
+* see appropriate committee tallies and status; and
+* record committee decisions.
+
+Committee voting is distinct from sovereign bill or resolution voting by the full electorate.
+
+### Internal organization of larger committees
+
+If a default committee becomes sufficiently large, it may need a way to organize its own voter power.
+
+One possible design is an internal delegation system analogous in some respects to the proxy/delegate architecture used for bills and resolutions.
+
+Committee members might be able to put forward internal delegates who help organize and communicate the committee's collective position.
+
+The purpose would be organizational rather than to create a permanent hierarchy.
+
+This remains **TBD**.
+
+Do not assume that committee delegation must exactly duplicate legislative proxy mechanics. The eventual design should reuse common infrastructure where appropriate while preserving the distinct nature of committee decision-making.
+
+### Voter Verification Committee
+
+The Voter Verification Committee is the human-review body associated with voter eligibility and verification.
+
+Its eventual responsibilities may include cases in which the system cannot automatically resolve whether a person remains an eligible voter, including circumstances such as death, relocation, loss of district eligibility, or disputed verification status.
+
+Its authority concerns **eligibility**, not the content of sovereign votes.
+
+The committee must not have discretionary authority to rewrite a voter's legislative history.
+
+Once the appropriate verification process establishes that a voter is no longer eligible in the relevant jurisdiction, that voter's votes should cease to have current legal effect according to the voter-eligibility rules described elsewhere in this handoff, while historical audit records may remain preserved.
+
+The exact verification standards, evidence requirements, appeal procedures, thresholds, and committee workflow remain TBD.
+
+### Resolution Committee
+
+The Resolution Committee is the voter committee responsible for reviewing the general resolution pool and selecting resolutions for `Resolution Focus` or whatever final name is chosen for the focused resolution list.
+
+Its power is an agenda/focus power.
+
+It does not have authority to enact a resolution.
+
+The full voter body retains final authority over passage.
+
+The committee should be able to use AI-assisted search, clustering, comparison, and aggregation tools while leaving all final decisions to human committee members and resolution authors.
+
+The fuller Resolution Committee workflow is described in the Resolution System design section.
+
+### Default committees versus DcL-created bodies
+
+The distinction should remain explicit:
+
+```text
+DEFAULT / CONSTITUTIONAL COMMITTEES
+Created by the software because the system itself requires them.
+Current expected set:
+- Voter Verification Committee
+- Resolution Committee
+
+OTHER WORKING BODIES
+Created, structured, modified, and dissolved by the DcL itself.
+Not predetermined by software.
+```
+
+The default-committee mechanism should not gradually become a software-defined legislative committee system.
+
+The presumption is always in favor of allowing the DcL to create its own institutions.
+
+### Launch priority
+
+Default committees and the resolution system are **not required for the initial launch** of the Claim Your Seat Voting Portal.
+
+The first priority is membership:
+
+**Build the connected voter population and make the core DcL membership architecture work.**
+
+Accordingly, implementation of the Resolution system, Resolution Committee, Voter Verification Committee interface, sortition machinery, and general committee interface may be deferred until after launch.
+
+This deferral is intentional scope control rather than abandonment of the features.
+
+### Voter Page placeholders for deferred features
+
+The Voter Page may expose the future architecture before the underlying systems are implemented.
+
+For example, the interface may contain tabs or buttons for:
+
+```text
+Resolutions
+Committees
+```
+
+During the initial launch phase, selecting one of these may display a short coming-soon explanation rather than an unfinished functional interface.
+
+The message should explain that the feature is part of the planned Straight-Up architecture but that initial development is being concentrated on the first requirement: building and connecting the membership.
+
+It may also include an appropriate invitation to financially support development, for example:
+
+```text
+This feature is planned for a later development phase.
+
+Right now we are concentrating resources on connecting the voters and
+building the working DcL.
+
+Want to help us build the rest? Support Democracy, Straight-Up!
+```
+
+The exact fundraising language and presentation can be determined later.
+
+Do not allow post-launch committee and resolution features to distract from the prototype's immediate membership and core-group functionality.
+
+### Current implementation status
+
+Treat the committee architecture described here as **new design guidance** unless later code review establishes otherwise.
+
+No assumption should be made that the existing legacy committee, representative, or delegation code implements this design.
+
+Before committee implementation begins, the remaining TBDs should be resolved and the data model should be designed around:
+
+* voluntary pool membership;
+* non-delegate eligibility;
+* sortition;
+* committee terms and rotation;
+* committee voting;
+* committee-specific authority boundaries; and
+* clean separation between default committees and bodies created later by the DcL itself.
+
 ### Next logical work
 
 Continue the role-transition/lifecycle work from this clean checkpoint.
@@ -1591,3 +2364,368 @@ The next work should distinguish:
 2. the still-unresolved rule for voluntary HoLC relinquishment.
 
 Do not reopen completed Caucus admission, expulsion, or HoLC replacement behavior unless a new failing test establishes a regression.
+
+### Succession checkpoint — HoLC is the prototype ceiling
+
+Backend branch `feat/succession-order` completed the explicit succession-line implementation through the HoLC level. Full backend suite: **115 tests GREEN**.
+
+Implemented succession semantics:
+
+- Circle, First Link, Second Link, and Caucus memberships have persisted `succession_position`.
+- Initial succession order follows acceptance order.
+- An ordinary accepted member may move forward one position at a time.
+- Position 1 may replace the current delegate at position 0.
+- Pending applicants cannot advance; the current delegate cannot advance.
+- Loss of a lower-level delegate mandate removes dependent accepted membership at the next level.
+- If the removed higher-level member held that group's delegate office, persisted succession position 1 is promoted.
+- Remaining succession positions compact after removal.
+- These higher-level transitions now use shared helper `succession_helpers.remove_dependent_memberships()`.
+- Legacy `succession_line.py` is not authoritative and should not be reused for these transitions.
+
+### Prototype boundary
+
+For the usable prototype, **HoLC is the highest implemented level of the DcL**.
+
+Do **not** implement Straight-Up Rep/U6D6 functionality yet. Even an optimistic DcL will not be large enough to put forward a congressional candidate soon, and premature Rep functionality could encourage a developing DcL to anoint a partisan candidate too early or assume an already-seated representative should be grandfathered into the role.
+
+Therefore:
+
+- Do not extend automatic succession above HoLC.
+- Do not create a Straight-Up Rep model, election/selection workflow, Rep succession, or U6D6 behavior yet.
+- U5D5 remains reserved.
+- The existing `rep/` DistrictCouncil/U5D4/U5D5 code is legacy/obsolete architecture. Do not build new functionality on it.
+- Do not make HoLC depend on `rep/`.
+- Keep HoLC/Caucus and Back & Forth architecture extensible so a future Straight-Up Rep can communicate with HoLCs without redesigning the lower hierarchy.
+- Existing bill code that finds a “House Rep” through `DistrictCouncilMembers` is legacy and should eventually be redirected when the real Straight-Up Rep architecture is designed, but it is not a prototype-launch priority.
+
+### Next development phase
+
+Shift from building higher hierarchy levels to a **prototype-readiness audit through HoLC**.
+
+The question is now: can a real user begin at U0D0 and successfully build and operate a DcL through U4D4?
+
+Audit creation/joining/acceptance, activation thresholds, role transitions, leaving/expulsion, succession, General and ordinary Caucus behavior, HoLC selection/replacement, Back & Forth, API surfaces, and the frontend paths required to operate those functions.
+
+### Pre-deployment succession notification requirement
+
+Before deployment, add a notification layer for succession changes.
+
+Whenever a group’s persisted succession line changes, the application should automatically create a **system-generated Back & Forth post for that group describing exactly what changed**.
+
+Examples:
+
+- “Dahlia advanced from succession position 3 to position 2.”
+- “Betty became Circle Delegate; Alice moved from position 0 to position 1.”
+- “Carlos was removed from the First Link after losing the required Circle-delegate mandate.”
+- “Erin became First-Link Delegate after the previous delegate was removed.”
+- “Following removal of a member, remaining succession positions compacted: Frank moved from position 3 to position 2; Grace moved from position 4 to position 3.”
+
+The Back & Forth post should be specific enough that members can reconstruct the change rather than merely saying that “the succession line changed.”
+
+When a succession event **changes the group’s delegate**, the system should additionally send email notification to:
+
+- the outgoing delegate; and
+- the incoming delegate.
+
+The purpose is to ensure that nobody is unexpectedly made delegate without direct notice, and that the outgoing delegate is explicitly informed that the office has changed hands.
+
+Ordinary succession-position changes do **not** require individual email notifications. Responsibility for keeping group members informed about routine succession-order changes, including shifts caused by compaction, remains with the delegates according to whatever communication preferences or guidelines individual voters have established.
+
+Implementation guidance:
+
+- Treat notifications as a layer on top of the already-tested succession state transitions.
+- Do not scatter direct email calls throughout model `save()` methods.
+- Prefer a small succession-event/notification service that receives the completed transition and then:
+  1. writes the appropriate system Back & Forth message; and
+  2. sends outgoing/incoming delegate emails when the delegate actually changes.
+- Notification behavior should be separately testable from the succession transition itself.
+- The existing succession logic remains authoritative for state changes; notification failures should not silently alter or reverse the succession result unless a deliberate transactional policy is later adopted.
+
+This is a **pre-deployment requirement**, but it should be implemented on a separate branch after the current `feat/succession-order` PR rather than folded into the already-complete succession-core branch.
+
+Authoritative delegate and membership terminology
+Use the following terminology consistently in product language, documentation, tests, notification text, and new code comments. Existing model/class names may retain legacy technical names until separately refactored, but they should not determine user-facing terminology.
+A Circle is represented by its First Delegate, abbreviated F-Del. Do not call this person the “Circle Delegate.”
+When an F-Del is accepted into a First Link, that person is a First Link Member. Membership in a First Link already implies that the person is an F-Del; “First Link Delegate” is therefore incorrect terminology.
+One First Link Member is additionally designated the Second Delegate, abbreviated Sec-Del. The Sec-Del represents the First Link at the next layer.
+When a Sec-Del is accepted into a Second Link, that person is a Second Link Member. Membership in the Second Link implies that the person is a Sec-Del; do not call such a person a “Second Link Delegate.”
+One Second Link Member is additionally designated the Caucus Delegate. The Caucus Delegate represents that Second Link in a Caucus.
+When a Caucus Delegate is accepted into a Caucus, that person is a Caucus Member. Do not describe their membership as being a “Caucus Delegate” within the Caucus; Caucus Delegate describes the office by which they represent their Second Link and qualify for Caucus membership.
+One Caucus Member is additionally designated the HoLC (Head of Local Caucus), who represents the Caucus.
+The hierarchy should therefore be described as:
+Circle
+  → First Delegate / F-Del
+
+First Link
+  → First Link Members (all are F-Dels)
+  → one is Second Delegate / Sec-Del
+
+Second Link
+  → Second Link Members (all are Sec-Dels)
+  → one is Caucus Delegate
+
+Caucus
+  → Caucus Members (all entered as Caucus Delegates)
+  → one is HoLC
+
+Important distinction: membership title and representative office are not interchangeable. “First Link Member,” “Second Link Member,” and “Caucus Member” describe membership in a group. “F-Del,” “Sec-Del,” “Caucus Delegate,” and “HoLC” describe representative offices.
+For succession notifications, prefer language such as:
+Betty became F-Del, replacing Alice.
+Carlos became Sec-Del, replacing Betty.
+Dahlia became Caucus Delegate, replacing Carlos.
+Erin became HoLC, replacing Dahlia.
+
+For mandate-loss cascades, describe the lost office and the resulting membership separately:
+Alice was removed from the First Link after losing the F-Del mandate required for membership.
+
+Betty was removed from the Second Link after losing the Sec-Del mandate required for membership.
+
+Carlos was removed from the Caucus after losing the Caucus Delegate mandate required for membership.
+
+This terminology supersedes earlier handoff wording that used Circle Delegate, First-Link Delegate, or Second-Link Delegate as role names.
+
+## Checkpoint — 2026-10-11: Succession notifications and Back & Forth hardening
+
+### Repository and branch state
+
+Backend repository:
+
+`C:\Users\dahli\CYSVP\claim-your-seat`
+
+The succession-order work was completed on PR #170 and squash-merged into
+`feat/role-transitions`.
+
+The updated `feat/role-transitions` base after that merge was:
+
+`139e0de827acf03ad3034b0c79e09fb574f2f976`
+
+Current backend working branch:
+
+`feat/succession-notifications`
+
+The last verified full backend suite before beginning the notification branch was:
+
+**115 tests passed**
+
+The current succession-notification and Back & Forth changes are local and
+uncommitted.
+
+Important staging state:
+
+- Some notification files were staged earlier to generate a review diff.
+- Additional changes were then made without restaging.
+- The index and working tree may therefore contain different portions of the
+  current work.
+- Before final review or commit, inspect both staged and unstaged changes and
+  deliberately restage the complete feature.
+- Run both `git diff --check` and `git diff --cached --check`.
+- Do not assume the current index represents the finished feature.
+
+An earlier review file named `succession-notifications.diff` was generated
+before later vacancy, terminology, serializer, WebSocket, and append-only
+changes. Treat that diff as stale historical evidence only. New review/output
+files should be written to `%USERPROFILE%\Downloads`, not the repository root.
+
+### Succession notification implementation
+
+The pre-deployment succession-notification requirement described immediately
+above is now substantially implemented.
+
+New shared notification logic is in:
+
+`succession_notifications.py`
+
+The implementation provides shared behavior for:
+
+- displaying a user's appropriate name in a notification;
+- writing system-generated Back & Forth succession posts;
+- notifying an outgoing and incoming delegate when the delegate office changes;
+- handling delegate promotion after removal; and
+- recording a delegate vacancy when no accepted successor exists.
+
+Email is scheduled through `transaction.on_commit()` rather than being sent
+directly from model `save()` methods.
+
+System-generated Back & Forth posts are explicitly represented with:
+
+- `sender=None`
+- `is_system=True`
+
+The four current Back & Forth message models were extended accordingly.
+
+Relevant migrations created on this branch:
+
+- `vote/migrations/0063_...`
+- `api/migrations/0028_...`
+- `moda/migrations/0009_...`
+- `holc/migrations/0017_...`
+
+The exact migration filenames should be confirmed from the working tree before
+commit; the numeric migration sequence above is the current checkpoint.
+
+### Succession notification behavior
+
+Direct succession changes now generate specific Back & Forth posts using the
+authoritative terminology:
+
+- F-Del
+- First Link Member
+- Sec-Del
+- Second Link Member
+- Caucus Delegate
+- Caucus Member
+- HoLC
+
+Examples of intended delegate-change wording include:
+
+- `Betty became F-Del, replacing Alice.`
+- `Carlos became Sec-Del, replacing Betty.`
+- `Dahlia became Caucus Delegate, replacing Carlos.`
+- `Erin became HoLC, replacing Dahlia.`
+
+Mandate-loss cascades describe the lost mandate separately from the resulting
+membership removal, for example:
+
+- `Alice was removed from the First Link after losing the F-Del mandate required for membership.`
+- `Betty was removed from the Second Link after losing the Sec-Del mandate required for membership.`
+- `Carlos was removed from the Caucus after losing the Caucus Delegate mandate required for membership.`
+
+When the current delegate is removed and an accepted successor exists, the
+successor is promoted and the corresponding succession notification is posted.
+
+When the current delegate is removed and no accepted successor exists, the
+system now posts an explicit vacancy notification rather than attempting to
+refer to a nonexistent successor.
+
+The no-successor vacancy path was established through an intended RED test and
+then fixed.
+
+### Higher-level cascade integration
+
+Mandate loss continues to use the existing shared succession transition helper:
+
+`succession_helpers.remove_dependent_memberships()`
+
+The notification layer is integrated with the tested cascade behavior:
+
+F-Del mandate loss:
+
+- removes the affected First Link membership;
+- advances First Link succession if required;
+- may replace the Sec-Del.
+
+Sec-Del mandate loss:
+
+- removes the affected Second Link membership;
+- advances Second Link succession if required;
+- may replace the Caucus Delegate.
+
+Caucus Delegate mandate loss:
+
+- removes the affected Caucus membership;
+- advances Caucus succession if required;
+- may replace the HoLC.
+
+Do not use legacy `succession_line.py` as the authoritative implementation for
+these transitions.
+
+### Succession notification test checkpoint
+
+The focused notification/cascade suite reached:
+
+**27 tests passed**
+
+Command used:
+
+```cmd
+.\.venv\Scripts\python.exe manage.py test vote.test_succession_notifications api.test_succession_notifications moda.test_succession_notifications holc.test_succession_notifications vote.test_higher_level_succession api.test_higher_level_succession moda.test_higher_level_succession
+```
+
+> Archival note (2026-10-12): The preceding test command was already truncated
+> in the supplied local handoff backup. It has not been reconstructed.
+
+## Latest completed checkpoint — 2026-10-12: Succession notifications and direct removals
+
+### Backend repository and commit
+
+- Repository: `democracy-straight-up/claim-your-seat`
+- Local folder: `C:\Users\dahli\CYSVP\claim-your-seat`
+- Branch: `feat/succession-notifications`
+- Baseline before this work: `139e0de` (also on `feat/role-transitions`)
+- Committed and pushed: **`34dc710` — `Implement succession notifications and direct removal transitions`**
+- Commit scope: **54 files changed**, including Back & Forth protections,
+  succession/removal tests, notification helpers, model updates, and migrations.
+- This is a pushed feature-branch checkpoint, **not a merge or deployment**.
+- The only untracked backend item at the post-commit status check was
+  `succession-notifications.diff`, a review artifact intentionally excluded.
+
+### Verified tests and checks
+
+- Focused Second Link direct-removal promotion notification: **1 green**,
+  including explicit assertions about outgoing/incoming email recipients,
+  accurate removal wording, and no `position None` or `lower-level` in the
+  outgoing email.
+- Focused Second Link removal/notification/succession regressions: **13 green**.
+- Broad four-app test command:
+  `.\.venv\Scripts\python.exe manage.py test moda api vote holc`
+  — **181 tests passed** after the final wording correction.
+- `makemigrations --check --dry-run`: **No changes detected**.
+- Git unstaged and staged whitespace checks passed before commit.
+- The 181-test count covers these four selected Django apps; it is **not** a
+  claim that every backend test or frontend integration test has run.
+
+### Implemented behavior and correction
+
+- Circle, First Link, Second Link, and Caucus succession notification work
+  is recorded in the committed implementation and its tests.
+- System-authored Back & Forth messages use `sender=None`, `is_system=True`;
+  the code also includes append-only/message protections and corresponding
+  tests. Emails are scheduled via `transaction.on_commit()`.
+- Direct removal compacts succession positions and promotes an accepted
+  successor where applicable, with dependent membership cascades through
+  `succession_helpers.remove_dependent_memberships()`.
+- Specifically, direct removal of a Second Link Caucus Delegate promotes
+  position 1 to Caucus Delegate (`U4D3`), removes the outgoing delegate's
+  dependent Caucus membership where applicable, posts a promotion notice,
+  and emails the outgoing and incoming delegates.
+- A focused RED exposed misleading notification text that put the removed
+  delegate at `position None`. The direct-removal path now uses
+  `notify_delegate_promotion_after_removal(..., direct_removal=True)`.
+  This distinguishes loss of membership from a delegate-position swap.
+- In the mandate-loss email wording, `lower-level delegate mandate` was
+  replaced with **`prerequisite delegate mandate`**. The latter remains
+  provisional wording for review before deployment.
+- Terminology rule: representation proceeds *forward* from voters and
+  information returns *back*; avoid `higher`/`lower` as descriptions of
+  relative political authority. F-Dels are not politically subordinate to
+  Sec-Dels. Prefer the agreed office titles and *forwardmost* when relevant.
+
+### Frontend preservation — verified 2026-10-12
+
+- The authoritative handoff stays at
+  `C:\Users\dahli\CYSVP\dsup-front\PROJECT_HANDOFF.md`.
+- Frontend branch: `feat/bill-focus-sections`.
+- Before this handoff update, `git status --short` reported modified:
+  `PROJECT_HANDOFF.md`, `src/components/CircleBackNforth.jsx`,
+  `src/components/voter_page_components/billsWrapper.jsx`, and
+  `src/components/voter_page_components/billsWrapper.test.jsx`;
+  untracked: `src/components/CircleBackNforth.test.jsx`.
+- **Do not stage, restore, overwrite, or discard the four frontend code/test
+  files as part of a handoff-only commit.** Preserve all their local edits.
+- The uploaded source for this update was copied directly from the existing
+  uncommitted frontend `PROJECT_HANDOFF.md`, preserving its earlier contents.
+
+### Limits and next actions
+
+1. Update/commit/push **only** `PROJECT_HANDOFF.md` in the frontend repository;
+   verify the local handoff against its backup and inspect `git diff` first.
+2. On the backend, review the pushed feature branch against its intended
+   integration base and check any remaining succession edge cases,
+   authorization, activation states, failure/retry and concurrency behavior.
+   Passing SQLite/Django tests does not establish production locking behavior.
+3. Coordinate migrations, APIs, WebSockets, and frontend behavior before a
+   merge or deployment. No production rollout is authorized by this checkpoint.
+4. Resume the prototype-priority Bill Focus Draft 3 work only after sufficient
+   role/succession integration alignment, preserving its existing local edits.
+5. Keep recovery work on `circle-recovery-auth` separate; retain the no-extra-
+   recovery-secret architecture and the agreed Circle lifecycle decisions.
